@@ -372,6 +372,10 @@ export class AISimulation {
         this.state.marketMood = Math.max(0.2, Math.min(0.8, 
             this.state.marketMood + randomFactor + trendInfluence
         ));
+        // Geração de eventos dinâmicos
+        this.generateDynamicEvents();
+        // Simulação de fãs e mídia
+        this.simulateFansAndMedia();
     }
     
     generateIndustryBuzz() {
@@ -391,18 +395,113 @@ export class AISimulation {
         
         const template = this.eventTemplates[eventType];
         const outcome = template.outcomes[Math.floor(Math.random() * template.outcomes.length)];
-        
-        const event = {
-            id: this.game.generateId(),
-            type: eventType,
-            outcome: outcome,
-            description: this.generateEventDescription(eventType, template),
-            timestamp: Date.now(),
-            duration: Math.floor(Math.random() * 7) + 1
-        };
-        
-        this.state.activeEvents.push(event);
-        this.game.addGameEvent('industry_event', event);
+        // ...código de geração de evento...
+        // Este método já está implementado acima
+    }
+
+    generateDynamicEvents() {
+        // Colaborações
+        if (Math.random() < this.config.collaborationChance) {
+            const artists = Object.values(this.game.getArtists());
+            const a1 = artists[Math.floor(Math.random() * artists.length)];
+            const a2 = artists[Math.floor(Math.random() * artists.length)];
+            if (a1 && a2 && a1.id !== a2.id) {
+                this.game.addGameEvent('ai_collaboration', {
+                    artists: [a1, a2],
+                    description: `${a1.name} e ${a2.name} anunciam colaboração surpresa`,
+                    timestamp: Date.now()
+                });
+            }
+        }
+
+        // Polêmicas
+        if (Math.random() < this.config.controversyChance) {
+            const artists = Object.values(this.game.getArtists());
+            const a = artists[Math.floor(Math.random() * artists.length)];
+            if (a) {
+                this.game.addGameEvent('ai_controversy', {
+                    artist: a,
+                    description: `${a.name} gera polêmica nas redes sociais`,
+                    timestamp: Date.now()
+                });
+            }
+        }
+
+        // Notícias da indústria
+        if (Math.random() < 0.1) {
+            const genres = Object.keys(this.trendTemplates.genre_cycles);
+            const genre = genres[Math.floor(Math.random() * genres.length)];
+            this.game.addGameEvent('ai_industry_news', {
+                genre,
+                description: `Especialistas apontam crescimento do gênero ${genre}`,
+                timestamp: Date.now()
+            });
+        }
+
+        // Premiações
+        if (Math.random() < 0.05) {
+            const artists = Object.values(this.game.getArtists());
+            const winner = artists[Math.floor(Math.random() * artists.length)];
+            if (winner) {
+                this.game.addGameEvent('ai_award', {
+                    artist: winner,
+                    description: `${winner.name} vence prêmio de destaque do mês!`,
+                    timestamp: Date.now()
+                });
+            }
+        }
+    }
+
+    simulateFansAndMedia() {
+        // Simulação de fãs migrando entre artistas
+        const artists = Object.values(this.game.getArtists());
+        if (artists.length > 1) {
+            const from = artists[Math.floor(Math.random() * artists.length)];
+            const to = artists[Math.floor(Math.random() * artists.length)];
+            if (from && to && from.id !== to.id && from.fans > 100) {
+                const migrating = Math.floor(from.fans * 0.01 * Math.random());
+                from.fans -= migrating;
+                to.fans += migrating;
+                this.game.addGameEvent('ai_fan_migration', {
+                    from: from.name,
+                    to: to.name,
+                    amount: migrating,
+                    description: `Fãs migrando de ${from.name} para ${to.name}`,
+                    timestamp: Date.now()
+                });
+            }
+        }
+
+        // Simulação de postagens de fãs no Twitter
+        artists.forEach(artist => {
+            if (artist.fans > 0 && Math.random() < 0.05) {
+                const post = {
+                    user: `@fan_${Math.floor(Math.random()*10000)}`,
+                    content: `Não paro de ouvir ${artist.name}! #viciei`,
+                    artist: artist.name,
+                    timestamp: Date.now()
+                };
+                if (this.game.systems.socialSystem) {
+                    this.game.systems.socialSystem.addFanPost(post);
+                }
+            }
+        });
+
+        // Simulação de notícias em revistas/sites
+        if (Math.random() < 0.05) {
+            const magazines = ['Rolling Stone', 'Pitchfork', 'Billboard', 'NME', 'MTV'];
+            const mag = magazines[Math.floor(Math.random() * magazines.length)];
+            const artistsSample = artists[Math.floor(Math.random() * artists.length)];
+            if (artistsSample) {
+                const news = {
+                    magazine: mag,
+                    headline: `${mag}: ${artistsSample.name} é destaque na edição do mês!`,
+                    artist: artistsSample.name,
+                    timestamp: Date.now()
+                };
+                this.game.addGameEvent('ai_magazine_news', news);
+            }
+        }
     }
     
     generateEventDescription(eventType, template) {

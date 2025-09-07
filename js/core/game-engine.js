@@ -72,13 +72,12 @@ export class RisingStarGame {
         // Inicializar sistema de IA
         this.systems.aiSimulation = new AISimulation(this);
         
-        // Inicializar outros sistemas
+        // Inicializar outros sistemas básicos
         this.systems.characterCreator = new CharacterCreator(this);
         this.systems.interfaceManager = new InterfaceManager(this);
-        this.systems.musicCreation = new MusicCreation(this);
-        this.systems.careerManagement = new CareerManagement(this);
-        this.systems.socialSystem = new SocialSystem(this);
-        this.systems.industrySimulation = new IndustrySimulation(this);
+        
+        // Outros sistemas serão inicializados conforme necessário
+        console.log('✅ Sistemas básicos inicializados');
     }
     
     async loadGameData() {
