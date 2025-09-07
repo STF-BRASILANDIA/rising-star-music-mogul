@@ -1,0 +1,228 @@
+{
+  "name": "Rising Star: Music Mogul",
+  "short_name": "Rising Star",
+  "description": "Um simulador completo de carreira musical onde você constrói seu império na indústria da música",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#6366f1",
+  "background_color": "#0f0f23",
+  "scope": "/",
+  "lang": "pt-BR",
+  
+  "icons": [
+    {
+      "src": "assets/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-96.png", 
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-128.png",
+      "sizes": "128x128", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png", 
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "assets/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Dashboard principal com estatísticas do jogador"
+    },
+    {
+      "src": "assets/screenshots/studio.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Estúdio de gravação e produção musical"
+    },
+    {
+      "src": "assets/screenshots/career.png",
+      "sizes": "1280x720", 
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Gestão de carreira e contratos"
+    },
+    {
+      "src": "assets/screenshots/mobile-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png", 
+      "platform": "narrow",
+      "label": "Dashboard em dispositivos móveis"
+    }
+  ],
+  
+  "categories": [
+    "games",
+    "entertainment",
+    "music",
+    "simulation"
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "Acesso rápido ao dashboard principal",
+      "url": "/#dashboard",
+      "icons": [
+        {
+          "src": "assets/icons/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Estúdio",
+      "short_name": "Studio", 
+      "description": "Ir direto para o estúdio de gravação",
+      "url": "/#studio",
+      "icons": [
+        {
+          "src": "assets/icons/shortcut-studio.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Carreira",
+      "short_name": "Career",
+      "description": "Gerenciar carreira e contratos",
+      "url": "/#career", 
+      "icons": [
+        {
+          "src": "assets/icons/shortcut-career.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Social",
+      "short_name": "Social",
+      "description": "Redes sociais e interação com fãs", 
+      "url": "/#social",
+      "icons": [
+        {
+          "src": "assets/icons/shortcut-social.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  
+  "prefer_related_applications": false,
+  "related_applications": [],
+  
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/x-risingstar-save": [".rssave"]
+      }
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+risingstar",
+      "url": "/?action=%s"
+    }
+  ],
+  
+  "share_target": {
+    "action": "/share-achievement",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "screenshot",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  
+  "handle_links": "preferred",
+  
+  "scope_extensions": [
+    {
+      "origin": "*.github.io"
+    }
+  ],
+  
+  "permissions_policy": {
+    "microphone": [],
+    "camera": [],
+    "geolocation": [],
+    "notifications": ["self"],
+    "push": ["self"],
+    "background-sync": ["self"],
+    "periodic-background-sync": ["self"]
+  },
+  
+  "features": [
+    "offline",
+    "push-notifications", 
+    "background-sync",
+    "installable",
+    "responsive",
+    "progressive"
+  ],
+  
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+}

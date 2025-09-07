@@ -1,0 +1,130 @@
+# Node modules (if using npm in future)
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# ARQUIVOS ANTIGOS REMOVIDOS - NÃO DEVEM VOLTAR
+# Pastas Python antigas
+ai/
+app/
+config/
+database/
+docs/
+src/
+ui/
+
+# Arquivos Python antigos
+auto_demo.py
+demo.py
+*.py
+
+# Workflows antigos
+.github/workflows/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# PROTEÇÃO EXTRA - Previne retorno de arquivos antigos
+# Qualquer pasta com sufixo "old" ou "backup"
+*_old/
+*_backup/
+*.old
+*.backup
+*.bak
+
+# Arquivos de configuração antigos
+game-config.json
+schema.md
+design-document.md
+github-pages-architecture.md
+roadmap.md
+prototype.html
+game_state.py
+music_industry_ai.py
+
+# Previne criação acidental de pastas antigas
+/ai/
+/app/
+/config/
+/database/
+/docs/
+/src/
+/ui/
