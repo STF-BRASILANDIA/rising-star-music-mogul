@@ -3,9 +3,9 @@
  * Provides PWA functionality, offline support, and caching
  */
 
-const CACHE_NAME = 'rising-star-v1.0.0';
-const STATIC_CACHE = 'rising-star-static';
-const DYNAMIC_CACHE = 'rising-star-dynamic';
+const CACHE_NAME = 'rising-star-v1.0.1';
+const STATIC_CACHE = 'rising-star-static-v1.0.1';
+const DYNAMIC_CACHE = 'rising-star-dynamic-v1.0.1';
 
 // Files to cache immediately
 const STATIC_FILES = [

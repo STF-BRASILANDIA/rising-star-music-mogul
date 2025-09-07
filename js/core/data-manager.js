@@ -1,7 +1,9 @@
 /**
  * Rising Star: Music Mogul - Data Manager
- * Sistema de persistência de dados usando IndexedDB
+ * Sistema de persistência de dados usando IndexedDB com sincronização Firebase
  */
+
+import { FirebaseManager } from './firebase-manager.js';
 
 export class DataManager {
     constructor() {
@@ -9,12 +11,14 @@ export class DataManager {
         this.dbVersion = 1;
         this.db = null;
         this.useLocalStorageFallback = false;
+        this.firebaseManager = new FirebaseManager();
         this.stores = {
             gameData: 'gameData',
             playerData: 'playerData',
             statistics: 'statistics',
             achievements: 'achievements',
-            settings: 'settings'
+            settings: 'settings',
+            saves: 'saves'
         };
     }
     
@@ -72,6 +76,11 @@ export class DataManager {
                         if (storeName === 'achievements') {
                             store.createIndex('unlocked', 'unlocked', { unique: false });
                             store.createIndex('date', 'dateUnlocked', { unique: false });
+                        }
+                        
+                        if (storeName === 'saves') {
+                            store.createIndex('lastPlayed', 'metadata.lastPlayed', { unique: false });
+                            store.createIndex('playerName', 'metadata.playerName', { unique: false });
                         }
                     }
                 });
@@ -543,5 +552,276 @@ export class DataManager {
             this.autoSaveInterval = null;
             console.log('⏰ Auto-save disabled');
         }
+    }
+    
+    // Save Game Management
+    async getSavedGames() {
+        try {
+            let localSaves = [];
+            
+            if (this.useLocalStorageFallback) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('risingstar_save_')) {
+                        try {
+                            const saveData = JSON.parse(localStorage.getItem(key));
+                            localSaves.push({
+                                id: key.replace('risingstar_save_', ''),
+                                isLocal: true,
+                                ...saveData.metadata
+                            });
+                        } catch (error) {
+                            console.warn('Save corrompido encontrado:', key);
+                        }
+                    }
+                }
+            } else {
+                // IndexedDB implementation
+                const transaction = this.db.transaction(['saves'], 'readonly');
+                const store = transaction.objectStore('saves');
+                const request = store.getAll();
+                
+                localSaves = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => {
+                        const saves = request.result.map(save => ({
+                            id: save.id,
+                            isLocal: true,
+                            ...save.metadata
+                        }));
+                        resolve(saves);
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Get cloud saves
+            let cloudSaves = [];
+            if (this.firebaseManager.isAvailable()) {
+                try {
+                    cloudSaves = await this.firebaseManager.getSavedGamesFromCloud();
+                } catch (error) {
+                    console.warn('Erro ao carregar saves da nuvem:', error);
+                }
+            }
+            
+            // Combine and deduplicate saves
+            const allSaves = [...localSaves];
+            
+            // Add cloud saves that don't exist locally
+            cloudSaves.forEach(cloudSave => {
+                const existsLocally = localSaves.find(local => local.id === cloudSave.id);
+                if (!existsLocally) {
+                    allSaves.push({
+                        ...cloudSave,
+                        isLocal: false,
+                        isCloudSave: true
+                    });
+                } else {
+                    // Mark local save as also in cloud
+                    const localSave = allSaves.find(save => save.id === cloudSave.id);
+                    if (localSave) {
+                        localSave.isCloudSave = true;
+                    }
+                }
+            });
+            
+            return allSaves.sort((a, b) => new Date(b.lastPlayed) - new Date(a.lastPlayed));
+            
+        } catch (error) {
+            console.error('Erro ao carregar saves:', error);
+            return [];
+        }
+    }
+    
+    async deleteSave(saveId) {
+        try {
+            if (this.useLocalStorageFallback) {
+                localStorage.removeItem(`risingstar_save_${saveId}`);
+                return true;
+            } else {
+                const transaction = this.db.transaction(['saves'], 'readwrite');
+                const store = transaction.objectStore('saves');
+                const request = store.delete(saveId);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(true);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao deletar save:', error);
+            throw error;
+        }
+    }
+    
+    async saveGameWithMetadata(gameData, metadata) {
+        try {
+            const saveData = {
+                id: metadata.id || `save_${Date.now()}`,
+                gameData: gameData,
+                metadata: {
+                    playerName: metadata.playerName || 'Artista Desconhecido',
+                    level: metadata.level || 1,
+                    genre: metadata.genre || 'Pop',
+                    money: metadata.money || 0,
+                    fans: metadata.fans || 0,
+                    lastPlayed: new Date().toISOString(),
+                    version: '1.0.0'
+                }
+            };
+            
+            // Save locally first
+            if (this.useLocalStorageFallback) {
+                localStorage.setItem(`risingstar_save_${saveData.id}`, JSON.stringify(saveData));
+            } else {
+                const transaction = this.db.transaction(['saves'], 'readwrite');
+                const store = transaction.objectStore('saves');
+                await new Promise((resolve, reject) => {
+                    const request = store.put(saveData, saveData.id);
+                    request.onsuccess = () => resolve(saveData.id);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Sync to cloud if available
+            if (this.firebaseManager.isAvailable()) {
+                try {
+                    await this.firebaseManager.saveGameToCloud(
+                        saveData.id, 
+                        saveData.gameData, 
+                        saveData.metadata
+                    );
+                    console.log('☁️ Save sincronizado com Firebase');
+                } catch (error) {
+                    console.warn('⚠️ Falha na sincronização, dados salvos localmente:', error);
+                }
+            }
+            
+            return saveData.id;
+            
+        } catch (error) {
+            console.error('Erro ao salvar jogo:', error);
+            throw error;
+        }
+    }
+    
+    async loadSpecificSave(saveId) {
+        try {
+            if (this.useLocalStorageFallback) {
+                const saveData = localStorage.getItem(`risingstar_save_${saveId}`);
+                return saveData ? JSON.parse(saveData) : null;
+            } else {
+                const transaction = this.db.transaction(['saves'], 'readonly');
+                const store = transaction.objectStore('saves');
+                const request = store.get(saveId);
+                
+                return new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result || null);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        } catch (error) {
+            console.error('Erro ao carregar save específico:', error);
+            return null;
+        }
+    }
+    
+    // Firebase Sync Methods
+    async syncAllData() {
+        if (!this.firebaseManager.isAvailable()) {
+            console.log('⚠️ Firebase não disponível para sincronização');
+            return { success: false, message: 'Firebase offline' };
+        }
+        
+        try {
+            // Get all local saves
+            const localSaves = await this.getAllLocalSaves();
+            
+            // Sync with Firebase
+            const syncResult = await this.firebaseManager.syncAllSaves(localSaves);
+            
+            console.log(`☁️ Sincronização concluída: ${syncResult.synced} saves`);
+            
+            if (syncResult.conflicts.length > 0) {
+                console.warn(`⚠️ ${syncResult.conflicts.length} conflitos encontrados`);
+                return {
+                    success: true,
+                    synced: syncResult.synced,
+                    conflicts: syncResult.conflicts
+                };
+            }
+            
+            return {
+                success: true,
+                synced: syncResult.synced,
+                conflicts: []
+            };
+            
+        } catch (error) {
+            console.error('❌ Erro durante sincronização:', error);
+            return { success: false, message: error.message };
+        }
+    }
+    
+    async getAllLocalSaves() {
+        const saves = [];
+        
+        if (this.useLocalStorageFallback) {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('risingstar_save_')) {
+                    try {
+                        const saveData = JSON.parse(localStorage.getItem(key));
+                        saves.push(saveData);
+                    } catch (error) {
+                        console.warn('Save corrompido:', key);
+                    }
+                }
+            }
+        } else {
+            const transaction = this.db.transaction(['saves'], 'readonly');
+            const store = transaction.objectStore('saves');
+            const request = store.getAll();
+            
+            return new Promise((resolve) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve([]);
+            });
+        }
+        
+        return saves;
+    }
+    
+    async downloadCloudSave(saveId) {
+        try {
+            const cloudData = await this.firebaseManager.loadGameFromCloud(saveId);
+            if (!cloudData) {
+                throw new Error('Save não encontrado na nuvem');
+            }
+            
+            // Save locally
+            if (this.useLocalStorageFallback) {
+                localStorage.setItem(`risingstar_save_${saveId}`, JSON.stringify(cloudData));
+            } else {
+                const transaction = this.db.transaction(['saves'], 'readwrite');
+                const store = transaction.objectStore('saves');
+                await new Promise((resolve, reject) => {
+                    const request = store.put(cloudData, saveId);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            console.log('📥 Save baixado da nuvem:', saveId);
+            return cloudData;
+            
+        } catch (error) {
+            console.error('❌ Erro ao baixar save da nuvem:', error);
+            throw error;
+        }
+    }
+    
+    getFirebaseStatus() {
+        return this.firebaseManager.getStatus();
     }
 }

@@ -7,6 +7,7 @@ import { AISimulation } from './ai-simulation.js';
 import { DataManager } from './data-manager.js';
 import { CharacterCreator } from '../ui/character-creator.js';
 import { InterfaceManager } from '../ui/interface-manager.js';
+import { MainMenu } from '../ui/main-menu.js';
 
 export class RisingStarGame {
     constructor() {
@@ -21,6 +22,7 @@ export class RisingStarGame {
             aiSimulation: null,
             characterCreator: null,
             interfaceManager: null,
+            mainMenu: null,
             musicCreation: null,
             careerManagement: null,
             socialSystem: null,
@@ -59,7 +61,8 @@ export class RisingStarGame {
             
             // Aguardar um pouco para que a animação de loading seja vista
             setTimeout(() => {
-                this.showCharacterCreation();
+                console.log('🎯 Timeout executado - mostrando menu principal');
+                this.showMainMenu();
             }, 2000);
             
         } catch (error) {
@@ -78,7 +81,16 @@ export class RisingStarGame {
         
         // Inicializar outros sistemas básicos
         this.systems.characterCreator = new CharacterCreator(this);
+        console.log('✅ CharacterCreator inicializado');
+        
         this.systems.interfaceManager = new InterfaceManager(this);
+        console.log('✅ InterfaceManager inicializado');
+        
+        this.systems.mainMenu = new MainMenu(this);
+        console.log('✅ MainMenu inicializado');
+        
+        // Make main menu globally available
+        window.mainMenu = this.systems.mainMenu;
         
         // Outros sistemas serão inicializados conforme necessário
         console.log('✅ Sistemas básicos inicializados');
@@ -212,9 +224,24 @@ export class RisingStarGame {
         }
     }
     
+    showMainMenu() {
+        console.log('🎯 showMainMenu() chamado');
+        this.gameState = 'main_menu';
+        this.hideLoadingScreen();
+        
+        // Debug: verificar se o sistema existe
+        if (!this.systems.mainMenu) {
+            console.error('❌ MainMenu não inicializado!');
+            return;
+        }
+        
+        console.log('📋 Mostrando menu principal...');
+        this.systems.mainMenu.show();
+    }
+    
     showCharacterCreation() {
         this.gameState = 'character_creation';
-        this.hideLoadingScreen();
+        this.systems.mainMenu.hide();
         this.systems.characterCreator.show();
     }
     
@@ -226,7 +253,8 @@ export class RisingStarGame {
         this.systems.aiSimulation.initializePlayer(playerData);
         this.systems.careerManagement.initializeCareer(playerData);
         
-        // Mostrar interface principal
+        // Esconder telas anteriores e mostrar interface principal
+        this.systems.mainMenu.hide();
         this.systems.characterCreator.hide();
         this.systems.interfaceManager.showMainInterface();
         
@@ -311,6 +339,32 @@ export class RisingStarGame {
         }
         
         console.log('📁 Save carregado com sucesso');
+    }
+    
+    async loadGame(saveId) {
+        try {
+            // Get save data from DataManager
+            const saveData = await this.systems.dataManager.loadSpecificSave(saveId);
+            if (!saveData) {
+                console.error('Save não encontrado:', saveId);
+                return false;
+            }
+            
+            // Load the save data
+            this.loadSaveData(saveData.gameData);
+            
+            // Update game state and show main interface
+            this.gameState = 'playing';
+            this.systems.mainMenu.hide();
+            this.systems.interfaceManager.showMainInterface();
+            
+            console.log('✅ Jogo carregado com sucesso:', saveId);
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Erro ao carregar jogo:', error);
+            return false;
+        }
     }
     
     hideLoadingScreen() {
@@ -414,5 +468,24 @@ export class RisingStarGame {
     
     isPaused() {
         return this.gameState === 'paused';
+    }
+    
+    applySettings(settings) {
+        // Apply game-related settings
+        this.settings = settings;
+        
+        // Update auto-save based on settings
+        if (settings.autoSaveEnabled && !this.autoSaveInterval) {
+            this.systems.dataManager.startAutoSave(2); // Auto-save every 2 minutes
+        } else if (!settings.autoSaveEnabled && this.autoSaveInterval) {
+            this.systems.dataManager.stopAutoSave();
+        }
+        
+        // Apply difficulty settings
+        if (this.systems.aiSimulation) {
+            this.systems.aiSimulation.setDifficulty(settings.difficulty);
+        }
+        
+        console.log('⚙️ Configurações aplicadas:', settings);
     }
 }

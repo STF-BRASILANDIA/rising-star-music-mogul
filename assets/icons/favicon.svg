@@ -1,20 +1,12 @@
-<!-- Rising Star: Music Mogul - Favicon SVG -->
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
   <!-- Background circle -->
-  <circle cx="16" cy="16" r="15" fill="#0f0f23" stroke="url(#starGradient)" stroke-width="2"/>
+  <circle cx="16" cy="16" r="15" fill="#FF6B35"/>
   
   <!-- Music note -->
-  <path d="M12 8 L20 6 L20 18 C20 20 18 22 16 22 C14 22 12 20 12 18 C12 16 14 14 16 14 C17 14 18 14.5 18 15 L18 8 L12 10 Z" 
-        fill="url(#starGradient)"/>
+  <circle cx="12" cy="20" r="3" fill="white"/>
+  <rect x="14.5" y="12" width="1.5" height="8" fill="white"/>
+  <path d="M16 12 Q20 10 20 14 Q20 16 16 15 Z" fill="white"/>
   
   <!-- Star accent -->
-  <path d="M24 10 L25 12 L27 12 L25.5 13.5 L26 16 L24 15 L22 16 L22.5 13.5 L21 12 L23 12 Z" 
-        fill="#fbbf24" opacity="0.8"/>
+  <polygon points="24,8 25,11 28,11 25.5,13 26.5,16 24,14 21.5,16 22.5,13 20,11 23,11" fill="#FFD700"/>
 </svg>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FF6B35">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Rising Star: Music Mogul</title>
     <meta name="description" content="Simulação de carreira musical com IA dinâmica">
@@ -27,6 +27,152 @@
                 <div class="loading-progress"></div>
             </div>
             <p class="loading-text">Carregando universo musical...</p>
+        </div>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="screen" style="display: none;">
+        <div class="menu-container">
+            <div class="menu-header">
+                <div class="logo-large">
+                    <h1>Rising Star</h1>
+                    <p>Music Mogul</p>
+                    <span class="version">v1.0</span>
+                </div>
+                <p class="tagline">Construa seu império musical</p>
+            </div>
+
+            <div class="menu-content">
+                <div class="menu-section main-actions">
+                    <button class="menu-btn primary" id="newGameBtn">
+                        <span class="btn-icon">🎵</span>
+                        <div class="btn-content">
+                            <h3>Novo Jogo</h3>
+                            <p>Comece sua jornada musical</p>
+                        </div>
+                    </button>
+
+                    <button class="menu-btn" id="loadGameBtn">
+                        <span class="btn-icon">💾</span>
+                        <div class="btn-content">
+                            <h3>Carregar Jogo</h3>
+                            <p>Continue de onde parou</p>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="menu-section secondary-actions">
+                    <button class="menu-btn small" id="settingsBtn">
+                        <span class="btn-icon">⚙️</span>
+                        <span>Configurações</span>
+                    </button>
+
+                    <button class="menu-btn small" id="creditsBtn">
+                        <span class="btn-icon">👥</span>
+                        <span>Créditos</span>
+                    </button>
+
+                    <button class="menu-btn small" id="helpBtn">
+                        <span class="btn-icon">❓</span>
+                        <span>Como Jogar</span>
+                    </button>
+                </div>
+
+                <div class="saved-games" id="savedGamesList" style="display: none;">
+                    <h3>Jogos Salvos</h3>
+                    <div class="saves-container" id="savesContainer">
+                        <!-- Saves will be populated by JS -->
+                    </div>
+                    <button class="menu-btn small back-btn" id="backToMenuBtn">
+                        <span class="btn-icon">←</span>
+                        <span>Voltar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-footer">
+                <div class="sync-status" id="syncStatus">
+                    <span class="status-indicator offline" id="statusIndicator">⚪</span>
+                    <span class="status-text" id="statusText">Verificando conexão...</span>
+                </div>
+                <p>© 2025 Rising Star Studios | Versão Beta</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configurações</h2>
+                <button class="close-btn" id="closeSettingsBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Audio</h3>
+                    <div class="setting-item">
+                        <label for="masterVolume">Volume Geral</label>
+                        <input type="range" id="masterVolume" min="0" max="100" value="75">
+                        <span class="volume-value">75%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="musicVolume">Música</label>
+                        <input type="range" id="musicVolume" min="0" max="100" value="60">
+                        <span class="volume-value">60%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="sfxVolume">Efeitos Sonoros</label>
+                        <input type="range" id="sfxVolume" min="0" max="100" value="80">
+                        <span class="volume-value">80%</span>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Interface</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="animationsEnabled" checked>
+                            Ativar Animações
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="notificationsEnabled" checked>
+                            Notificações
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="uiScale">Tamanho da Interface</label>
+                        <select id="uiScale">
+                            <option value="0.8">Pequeno</option>
+                            <option value="1.0" selected>Normal</option>
+                            <option value="1.2">Grande</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Jogo</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="autoSaveEnabled" checked>
+                            Salvamento Automático
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="difficulty">Dificuldade</label>
+                        <select id="difficulty">
+                            <option value="easy">Fácil</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="hard">Difícil</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary" id="resetSettingsBtn">Restaurar Padrões</button>
+                <button class="btn primary" id="saveSettingsBtn">Salvar</button>
+            </div>
         </div>
     </div>
 
@@ -69,7 +215,7 @@
                 <div class="appearance-editor">
                     <div class="avatar-preview">
                         <div class="avatar-container">
-                            <img id="avatarPreview" src="assets/avatars/default.png" alt="Avatar Preview">
+                            <div id="avatarPreview" class="avatar-placeholder">👤</div>
                         </div>
                     </div>
                     <div class="appearance-options">

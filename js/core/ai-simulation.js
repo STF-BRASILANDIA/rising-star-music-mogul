@@ -603,4 +603,23 @@ export class AISimulation {
         this.playerMetrics = savedState.playerMetrics || this.playerMetrics;
         this.lastDailyUpdate = savedState.lastDailyUpdate;
     }
+    
+    setDifficulty(difficulty) {
+        // Adjust AI simulation parameters based on difficulty
+        switch (difficulty) {
+            case 'easy':
+                this.config.eventGenerationChance = 0.2;
+                this.config.controversyChance = 0.02;
+                break;
+            case 'normal':
+                this.config.eventGenerationChance = 0.3;
+                this.config.controversyChance = 0.05;
+                break;
+            case 'hard':
+                this.config.eventGenerationChance = 0.4;
+                this.config.controversyChance = 0.08;
+                break;
+        }
+        console.log(`🎯 Dificuldade definida para: ${difficulty}`);
+    }
 }
