@@ -8,6 +8,7 @@ export class DataManager {
         this.dbName = 'RisingStarDB';
         this.dbVersion = 1;
         this.db = null;
+        this.useLocalStorageFallback = false;
         this.stores = {
             gameData: 'gameData',
             playerData: 'playerData',
@@ -19,12 +20,21 @@ export class DataManager {
     
     async init() {
         try {
+            // Verificar se IndexedDB está disponível
+            if (!window.indexedDB) {
+                console.warn('⚠️ IndexedDB não disponível, usando localStorage como fallback');
+                this.useLocalStorageFallback = true;
+                return true;
+            }
+            
             this.db = await this.openDatabase();
             console.log('✅ Database initialized successfully');
             return true;
         } catch (error) {
             console.error('❌ Failed to initialize database:', error);
-            throw error;
+            console.warn('⚠️ Usando localStorage como fallback');
+            this.useLocalStorageFallback = true;
+            return true; // Não falhar, usar fallback
         }
     }
     
@@ -305,21 +315,57 @@ export class DataManager {
     
     async loadStaticData(dataType) {
         try {
-            const response = await fetch(`data/${dataType}.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to load ${dataType}.json`);
+            // Retornar dados estáticos básicos sem depender de arquivos externos
+            switch (dataType) {
+                case 'artists':
+                    return this.getDefaultArtists();
+                case 'labels':
+                    return this.getDefaultLabels();
+                default:
+                    console.warn(`⚠️ Tipo de dados desconhecido: ${dataType}`);
+                    return {};
             }
-            const data = await response.json();
-            console.log(`📊 Loaded static data: ${dataType}`);
-            return data;
         } catch (error) {
             console.error(`❌ Failed to load static data ${dataType}:`, error);
-            throw error;
+            return {};
         }
+    }
+
+    getDefaultArtists() {
+        return {
+            'taylor_swift': { id: 'taylor_swift', name: 'Taylor Swift', primary_genre: 'pop', fame_level: 0.9, fans: 50000000 },
+            'drake': { id: 'drake', name: 'Drake', primary_genre: 'hip-hop', fame_level: 0.9, fans: 45000000 },
+            'billie_eilish': { id: 'billie_eilish', name: 'Billie Eilish', primary_genre: 'alternative', fame_level: 0.8, fans: 30000000 },
+            'the_weeknd': { id: 'the_weeknd', name: 'The Weeknd', primary_genre: 'rnb', fame_level: 0.8, fans: 25000000 },
+            'bad_bunny': { id: 'bad_bunny', name: 'Bad Bunny', primary_genre: 'latin', fame_level: 0.9, fans: 40000000 }
+        };
+    }
+
+    getDefaultLabels() {
+        return {
+            tier1: {
+                'universal': { id: 'universal', name: 'Universal Music Group', tier: 1, prestige: 0.9 },
+                'sony': { id: 'sony', name: 'Sony Music Entertainment', tier: 1, prestige: 0.9 },
+                'warner': { id: 'warner', name: 'Warner Music Group', tier: 1, prestige: 0.9 }
+            },
+            tier2: {
+                'republic': { id: 'republic', name: 'Republic Records', tier: 2, prestige: 0.8 },
+                'interscope': { id: 'interscope', name: 'Interscope Records', tier: 2, prestige: 0.8 },
+                'atlantic': { id: 'atlantic', name: 'Atlantic Records', tier: 2, prestige: 0.8 }
+            },
+            tier3: {
+                'roc_nation': { id: 'roc_nation', name: 'Roc Nation', tier: 3, prestige: 0.7 },
+                'motown': { id: 'motown', name: 'Motown Records', tier: 3, prestige: 0.7 }
+            }
+        };
     }
     
     // Low-level database operations
     putData(storeName, data) {
+        if (this.useLocalStorageFallback) {
+            return this.localStoragePut(storeName, data);
+        }
+        
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
@@ -329,8 +375,12 @@ export class DataManager {
             request.onerror = () => reject(request.error);
         });
     }
-    
+
     getData(storeName, id) {
+        if (this.useLocalStorageFallback) {
+            return this.localStorageGet(storeName, id);
+        }
+        
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
@@ -340,8 +390,27 @@ export class DataManager {
             request.onerror = () => reject(request.error);
         });
     }
-    
-    getAllData(storeName) {
+
+    // LocalStorage fallback methods
+    localStoragePut(storeName, data) {
+        try {
+            const key = `${this.dbName}_${storeName}_${data.id}`;
+            localStorage.setItem(key, JSON.stringify(data));
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    localStorageGet(storeName, id) {
+        try {
+            const key = `${this.dbName}_${storeName}_${id}`;
+            const data = localStorage.getItem(key);
+            return Promise.resolve(data ? JSON.parse(data) : null);
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }    getAllData(storeName) {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);

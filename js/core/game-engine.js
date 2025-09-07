@@ -56,7 +56,11 @@ export class RisingStarGame {
             this.startGameLoop();
             
             console.log('✅ Jogo inicializado com sucesso');
-            this.showCharacterCreation();
+            
+            // Aguardar um pouco para que a animação de loading seja vista
+            setTimeout(() => {
+                this.showCharacterCreation();
+            }, 2000);
             
         } catch (error) {
             console.error('❌ Erro ao inicializar o jogo:', error);
