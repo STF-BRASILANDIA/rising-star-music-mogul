@@ -399,14 +399,22 @@
                 </div>
 
                 <div class="profile-form">
+                    <!-- Nome do Personagem -->
                     <div class="form-section">
                         <label class="form-label">Nome do Personagem:</label>
                         <div class="name-inputs">
-                            <input type="text" id="firstName" placeholder="Primeiro Nome" class="name-input">
-                            <input type="text" id="lastName" placeholder="Sobrenome" class="name-input">
+                            <input type="text" id="firstName" placeholder="Primeiro Nome" class="name-input" required>
+                            <input type="text" id="lastName" placeholder="Sobrenome" class="name-input" required>
                         </div>
                     </div>
 
+                    <!-- Nome Artístico (OBRIGATÓRIO) -->
+                    <div class="form-section">
+                        <label class="form-label">Nome Artístico:</label>
+                        <input type="text" id="artistName" placeholder="Digite seu Nome Artístico" class="artist-input" required>
+                    </div>
+
+                    <!-- Localização -->
                     <div class="form-section">
                         <label class="form-label">Localização:</label>
                         <div class="location-selector">
@@ -417,28 +425,29 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-section">
-                            <label class="form-label">Idade:</label>
-                            <div class="age-selector">
-                                <button class="nav-arrow left" id="agePrev">‹</button>
-                                <span class="age-display" id="ageDisplay">18 anos</span>
-                                <button class="nav-arrow right" id="ageNext">›</button>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <label class="form-label">Sexo:</label>
-                            <div class="sex-buttons">
-                                <button class="sex-btn active" data-sex="male">Masculino</button>
-                                <button class="sex-btn" data-sex="female">Feminino</button>
-                            </div>
+                    <!-- Idade (card largo) -->
+                    <div class="form-section">
+                        <label class="form-label">Idade:</label>
+                        <div class="age-selector">
+                            <button class="nav-arrow left" id="agePrev">‹</button>
+                            <span class="age-display" id="ageDisplay">18</span>
+                            <button class="nav-arrow right" id="ageNext">›</button>
                         </div>
                     </div>
 
+                    <!-- Sexo (card largo) -->
                     <div class="form-section">
-                        <label class="form-label">Gênero:</label>
-                        <select class="genre-select" id="genreSelect">
+                        <label class="form-label">Sexo:</label>
+                        <div class="sex-buttons">
+                            <button class="sex-btn active" data-sex="male">Masculino</button>
+                            <button class="sex-btn" data-sex="female">Feminino</button>
+                        </div>
+                    </div>
+
+                    <!-- Gênero Musical -->
+                    <div class="form-section">
+                        <label class="form-label">Gênero Musical:</label>
+                        <select class="genre-select" id="genreSelect" required>
                             <option value="afrobeat">Afrobeat</option>
                             <option value="alternative-country">Alternative Country</option>
                             <option value="alternative-metal">Alternative Metal</option>
@@ -487,11 +496,7 @@
                         </select>
                     </div>
 
-                    <div class="form-section">
-                        <label class="form-label">Nome da Banda:</label>
-                        <input type="text" id="bandName" placeholder="Digite o Nome da Sua Banda" class="band-input">
-                    </div>
-
+                    <!-- Função/Papel -->
                     <div class="form-section">
                         <label class="form-label">Função:</label>
                         <div class="role-selector">
@@ -501,9 +506,16 @@
                             <button class="nav-arrow right" id="roleNext">›</button>
                         </div>
                     </div>
-                </div>
 
-                <button class="continue-btn" id="profileContinue">Continuar</button>
+                    <!-- Nome da Banda (OPCIONAL) + Botão -->
+                    <div class="bottom-section">
+                        <div class="form-section optional band-section">
+                            <label class="form-label">Nome da Banda <span class="optional-text">(opcional)</span>:</label>
+                            <input type="text" id="bandName" placeholder="Nome da Banda" class="band-input">
+                        </div>
+                        <button class="continue-btn" id="profileContinue">Continuar</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Step 2: Background Story -->
