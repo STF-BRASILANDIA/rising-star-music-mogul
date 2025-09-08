@@ -521,50 +521,52 @@
             <!-- Step 2: Background Story -->
             <div id="background-step" class="creation-step" style="display: none;">
                 <div class="step-header">
-                    <button class="back-btn" id="backgroundBack">Voltar</button>
                     <h1 class="step-title">História de Fundo</h1>
                 </div>
 
-                <div class="background-content">
-                    <div class="background-selector">
-                        <label class="form-label">Selecionar</label>
-                        <div class="background-dropdown">
-                            <button class="dropdown-btn" id="backgroundDropdown">
-                                <span id="selectedBackground">Desconhecido (Artista)</span>
-                                <span class="dropdown-arrow">▼</span>
-                            </button>
-                            <div class="dropdown-menu" id="backgroundMenu" style="display: none;">
-                                <div class="dropdown-item" data-background="unknown">Desconhecido (Artista)</div>
-                                <div class="dropdown-item" data-background="rising">Estrela em Ascensão</div>
-                                <div class="dropdown-item" data-background="veteran">Músico Veterano</div>
-                                <div class="dropdown-item" data-background="producer">Produtor Virou Artista</div>
-                                <div class="dropdown-item" data-background="social">Estrela das Redes Sociais</div>
-                                <div class="dropdown-item" data-background="legacy">Legado Musical</div>
+                <div class="profile-content">
+                    <!-- Seleção de História -->
+                    <div class="form-section">
+                        <label class="form-label">Selecionar:</label>
+                        <div class="background-selector">
+                            <button class="nav-arrow left" id="backgroundPrev">‹</button>
+                            <span class="background-display" id="backgroundDisplay">Best Friend</span>
+                            <span class="counter">1/9</span>
+                            <button class="nav-arrow right" id="backgroundNext">›</button>
+                        </div>
+                    </div>
+
+                    <!-- Descrição da História -->
+                    <div class="form-section">
+                        <div class="background-description" id="backgroundDescription">
+                            <p>Você e seu melhor amigo decidiram tentar fazer sucesso na indústria musical. Vocês não têm certeza de como vai ser, mas já estão ouvindo coisas boas de amigos e família.</p>
+                        </div>
+                    </div>
+
+                    <!-- Estatísticas -->
+                    <div class="form-section">
+                        <div class="background-stats">
+                            <div class="stat-row">
+                                <span class="stat-label">Starting Label</span>
+                                <span class="stat-value" id="startingLabel">Unsigned</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Starting Home</span>
+                                <span class="stat-value" id="startingHome">Loft</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Starting Cash</span>
+                                <span class="stat-value" id="startingCash">$15,000</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="background-description" id="backgroundDescription">
-                        <p>Você é praticamente desconhecido na indústria musical. Tem pouco dinheiro e um grande sonho.</p>
-                    </div>
-
-                    <div class="background-stats">
-                        <div class="stat-row">
-                            <span class="stat-label">Starting Label</span>
-                            <span class="stat-value" id="startingLabel">Unsigned</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Starting Home</span>
-                            <span class="stat-value" id="startingHome">Studio</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Starting Cash</span>
-                            <span class="stat-value" id="startingCash">$3,000</span>
-                        </div>
+                    <!-- Botões Voltar e Continue -->
+                    <div class="bottom-section background-buttons">
+                        <button class="back-btn" id="backgroundBack">Voltar</button>
+                        <button class="continue-btn" id="backgroundContinue">Continuar</button>
                     </div>
                 </div>
-
-                <button class="continue-btn" id="backgroundContinue">Continue</button>
             </div>
 
             <!-- Step 3: Skills -->

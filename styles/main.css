@@ -160,6 +160,8 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.step-header {
     display: flex;
     align-items: center;
     position: relative;
@@ -173,33 +175,52 @@
 .back-btn {
     background: 
         linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.15) 0%, 
-            rgba(255, 255, 255, 0.1) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+            rgba(200, 200, 200, 0.9) 0%, 
+            rgba(180, 180, 180, 0.85) 25%,
+            rgba(160, 160, 160, 0.8) 50%,
+            rgba(200, 200, 200, 0.9) 100%);
+    border: 2px solid rgba(200, 200, 200, 0.8);
     border-radius: 12px;
-    color: white;
-    padding: 10px 16px;
+    padding: 12px 16px;
+    color: #1a1a2e;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    margin: 0;
+    min-width: 90px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
     box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 6px 20px rgba(200, 200, 200, 0.4),
+        0 0 30px rgba(180, 180, 180, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: 
+        0 1px 2px rgba(255, 255, 255, 0.3);
+    position: relative;
+    height: fit-content;
+    overflow: hidden;
 }
 
 .back-btn:hover {
     background: 
         linear-gradient(135deg, 
-            rgba(255, 255, 255, 0.25) 0%, 
-            rgba(255, 255, 255, 0.15) 100%);
-    transform: translateY(-2px);
+            rgba(220, 220, 220, 0.95) 0%, 
+            rgba(200, 200, 200, 0.9) 25%,
+            rgba(180, 180, 180, 0.85) 50%,
+            rgba(220, 220, 220, 0.95) 100%);
+    border-color: rgba(220, 220, 220, 1);
     box-shadow: 
-        0 6px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 20px 60px rgba(200, 200, 200, 0.6),
+        0 0 100px rgba(180, 180, 180, 0.5),
+        0 0 140px rgba(160, 160, 160, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 
+        0 1px 4px rgba(255, 255, 255, 0.4),
+        0 0 15px rgba(200, 200, 200, 0.7);
+    transform: translateY(-4px) scale(1.03);
+    color: #0f1419;
 }
 
 .step-title {
@@ -495,6 +516,8 @@
     font-weight: 600;
     text-align: center;
 }
+
+.age-display, .role-display, .location-display {
     font-weight: 600;
     flex: 1;
     text-align: center;
@@ -606,6 +629,21 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+/* Genre Select Options */
+.genre-select option {
+    background: rgba(20, 30, 50, 0.95);
+    color: white;
+    padding: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.genre-select option:hover {
+    background: rgba(0, 122, 255, 0.8);
+    color: white;
+}
+
 .band-input {
     background: 
         linear-gradient(135deg, 
@@ -637,103 +675,186 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* Background Step - Enhanced */
-.background-content {
-    flex: 1;
-    padding: 25px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    background: 
-        linear-gradient(180deg, 
-            rgba(255, 255, 255, 0.02) 0%,
-            transparent 100%);
-}
-
+/* Background Step - Enhanced to match Profile Style */
 .background-selector {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.background-dropdown {
-    position: relative;
-}
-
-.dropdown-btn {
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
     background: 
         linear-gradient(135deg, 
             rgba(0, 122, 255, 0.9) 0%, 
             rgba(30, 144, 255, 0.85) 100%);
     border: 1px solid rgba(0, 122, 255, 0.8);
     border-radius: 12px;
-    padding: 14px 16px;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
+    padding: 16px;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
     box-shadow: 
         0 4px 12px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.dropdown-btn:hover {
-    border-color: rgba(0, 122, 255, 1);
-    box-shadow: 
-        0 6px 16px rgba(0, 0, 0, 0.3),
-        0 0 20px rgba(0, 122, 255, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #333;
-    border-radius: 8px;
-    margin-top: 4px;
-    z-index: 10;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.dropdown-item {
-    padding: 12px;
+.background-display {
     color: white;
-    cursor: pointer;
-    border-bottom: 1px solid #444;
-}
-
-.dropdown-item:hover {
-    background: #444;
-}
-
-.dropdown-item:last-child {
-    border-bottom: none;
+    font-weight: 600;
+    font-size: 16px;
+    min-width: 180px;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .background-description {
-    background: #333;
-    border-radius: 8px;
-    padding: 20px;
-    min-height: 120px;
+    background: rgba(20, 30, 50, 0.95);
+    border: 1px solid rgba(0, 122, 255, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+    min-height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .background-description p {
-    color: white;
+    color: rgba(255, 255, 255, 0.95);
     text-align: center;
-    line-height: 1.5;
+    line-height: 1.6;
+    font-size: 15px;
+    font-weight: 400;
     margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.background-stats {
+    background: rgba(20, 30, 50, 0.95);
+    border: 1px solid rgba(0, 122, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.stat-value {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Espaçamento aumentado entre cards para Background Story */
+#background-step .form-section {
+    margin-bottom: 40px; /* Aumentado de 32px para 40px */
+}
+
+#background-step .form-section:last-of-type {
+    margin-bottom: 50px; /* Aumentado de 40px para 50px */
+}
+
+/* Espaçamento lateral mais generoso */
+#background-step .background-selector,
+#background-step .background-description,
+#background-step .background-stats {
+    margin-left: 20px;  /* Aumentado de 16px para 20px */
+    margin-right: 20px; /* Aumentado de 16px para 20px */
+    padding: 24px;      /* Padding interno aumentado */
+}
+
+/* Padding interno aumentado */
+#background-step .profile-content {
+    padding: 30px 20px; /* Aumentado padding vertical */
+}
+
+/* Layout dos botões Voltar e Continuar na parte inferior */
+.background-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.background-buttons .back-btn {
+    background: 
+        linear-gradient(135deg, 
+            rgba(200, 200, 200, 0.9) 0%, 
+            rgba(180, 180, 180, 0.85) 25%,
+            rgba(160, 160, 160, 0.8) 50%,
+            rgba(200, 200, 200, 0.9) 100%);
+    border: 2px solid rgba(200, 200, 200, 0.8);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #1a1a2e;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 0;
+    min-width: 90px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 6px 20px rgba(200, 200, 200, 0.4),
+        0 0 30px rgba(180, 180, 180, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: 
+        0 1px 2px rgba(255, 255, 255, 0.3);
+    position: relative;
+    height: fit-content;
+    align-self: flex-end;
+    overflow: hidden;
+    flex: 1;
+    max-width: 140px;
+}
+
+.background-buttons .back-btn:hover {
+    background: 
+        linear-gradient(135deg, 
+            rgba(220, 220, 220, 0.95) 0%, 
+            rgba(200, 200, 200, 0.9) 25%,
+            rgba(180, 180, 180, 0.85) 50%,
+            rgba(220, 220, 220, 0.95) 100%);
+    border-color: rgba(220, 220, 220, 1);
+    box-shadow: 
+        0 20px 60px rgba(200, 200, 200, 0.6),
+        0 0 100px rgba(180, 180, 180, 0.5),
+        0 0 140px rgba(160, 160, 160, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 
+        0 1px 4px rgba(255, 255, 255, 0.4),
+        0 0 15px rgba(200, 200, 200, 0.7);
+    transform: translateY(-4px) scale(1.03);
+    color: #0f1419;
+}
+
+.background-buttons .continue-btn {
+    flex: 1;
+    max-width: 140px;
 }
 
 .background-stats {
@@ -939,7 +1060,6 @@
     position: relative;
     height: fit-content;
     align-self: flex-end;
-}
     overflow: hidden;
 }
 
@@ -1046,6 +1166,55 @@
     .profile-form {
         padding: 15px;
         gap: 18px;
+    }
+    
+    /* Melhor espaçamento lateral para todos os elementos */
+    .creation-step {
+        padding: 0 16px;
+    }
+    
+    /* Form sections com melhor espaçamento */
+    .form-section {
+        margin: 0 8px 24px 8px;
+    }
+    
+    /* Cards e componentes com margem lateral */
+    .background-selector,
+    .background-description,
+    .background-stats,
+    .age-selector,
+    .location-selector,
+    .role-selector,
+    .sex-buttons,
+    .genre-select {
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+    
+    /* Botões da background story */
+    .background-buttons {
+        margin: 40px 8px 0 8px;
+        gap: 12px;
+    }
+    
+    /* Background Story - espaçamento específico para mobile */
+    #background-step .background-selector,
+    #background-step .background-description,
+    #background-step .background-stats {
+        margin-left: 20px !important;
+        margin-right: 20px !important;
+        padding: 28px !important;
+    }
+    
+    #background-step .form-section {
+        margin-bottom: 48px !important;
+    }
+    
+    .background-buttons .back-btn,
+    .background-buttons .continue-btn {
+        padding: 12px 16px;
+        font-size: 15px;
+        min-height: 48px;
     }
     
     .name-inputs {
@@ -1217,7 +1386,7 @@
 
 .info-section {
     border: 2px solid var(--warning-color);
-    background: linear-gradient(135deg, var(--warning-color)10, var(--bg-secondary));
+    background: linear-gradient(135deg, var(--warning-color), var(--bg-secondary));
 }
 
 .info-section p {
