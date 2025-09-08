@@ -5,6 +5,17 @@
 
 import { RisingStarGame } from './core/game-engine.js';
 
+// Debug commands - available in console
+window.debugGame = function() {
+    console.log('🔍 Debug Game State:');
+    console.log('- Game exists:', !!window.game);
+    console.log('- Game state:', window.game?.gameState);
+    console.log('- Player exists:', !!window.game?.gameData?.player);
+    console.log('- Player data:', window.game?.gameData?.player);
+    console.log('- Interface Manager:', !!window.game?.systems?.interfaceManager);
+    console.log('- Main Menu:', !!window.game?.systems?.mainMenu);
+};
+
 // Global game instance
 let game = null;
 
@@ -344,6 +355,39 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     
     console.log('🔧 Development helpers loaded. Type "dev" in console for available commands.');
 }
+
+// Avatar change functionality for game
+function initGameAvatarChange() {
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    const gamePhotoUpload = document.getElementById('gamePhotoUpload');
+    
+    if (changeAvatarBtn && gamePhotoUpload) {
+        changeAvatarBtn.addEventListener('click', () => {
+            gamePhotoUpload.click();
+        });
+        
+        gamePhotoUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                console.log('📸 Foto selecionada - funcionalidade será implementada');
+                // TODO: Implementar novo sistema de avatar quando character creator for recriado
+            }
+        });
+    }
+}
+
+function updateGameAvatar(avatarDataUrl) {
+    const headerAvatar = document.getElementById('headerAvatar');
+    if (headerAvatar && avatarDataUrl) {
+        headerAvatar.src = avatarDataUrl;
+        headerAvatar.style.display = 'block';
+    }
+}
+
+// Initialize avatar change functionality when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initGameAvatarChange();
+});
 
 // Export for use in other modules
 export { game };

@@ -2,22 +2,24 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta name="theme-color" content="#FF6B35">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Rising Star: Music Mogul</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>Rising Star: Music Mogul v2.0</title>
     <meta name="description" content="Simulação de carreira musical com IA dinâmica">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="assets/icons/favicon.png">
     <link rel="apple-touch-icon" href="assets/icons/favicon.png">
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/components.css">
-    <link rel="stylesheet" href="styles/responsive.css">
+    <link rel="stylesheet" href="styles/main.css?v=1.5.0">
+    <link rel="stylesheet" href="styles/components.css?v=1.5.0">
+    <link rel="stylesheet" href="styles/responsive.css?v=1.5.0">
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
+    <div id="loadingScreen" class="loading-screen" style="display: none;">
         <div class="loading-content">
             <div class="logo">
                 <h1>Rising Star</h1>
@@ -31,72 +33,59 @@
     </div>
 
     <!-- Main Menu Screen -->
-    <div id="mainMenu" class="screen" style="display: none;">
-        <div class="menu-container">
-            <div class="menu-header">
-                <div class="logo-large">
-                    <h1>Rising Star</h1>
-                    <p>Music Mogul</p>
-                    <span class="version">v1.0</span>
-                </div>
-                <p class="tagline">Construa seu império musical</p>
+    <div id="mainMenu" class="screen main-menu" style="display: block;">
+        <!-- Holofotes extras -->
+        <div class="spotlight-right"></div>
+        
+        <div class="game-logo">
+            <img src="https://i.imgur.com/k2nahrL.png" 
+                 alt="Rising Star: Music Mogul" 
+                 class="logo-image" 
+                 referrerpolicy="no-referrer"
+                 onerror="this.src='https://imgur.com/k2nahrL.png'; this.onerror=null;"
+                 onload="console.log('✅ Logo carregado com sucesso!')">
+        </div>
+
+        <!-- Reflexo do chão -->
+        <div class="floor-reflection"></div>
+
+        <div class="menu-buttons">
+            <div class="main-actions">
+                <button class="menu-btn new-game" id="newGameBtn">
+                    🎵 Novo Jogo
+                </button>
+
+                <button class="menu-btn" id="loadGameBtn">
+                    💾 Carregar Jogo
+                </button>
             </div>
 
-            <div class="menu-content">
-                <div class="menu-section main-actions">
-                    <button class="menu-btn primary" id="newGameBtn">
-                        <span class="btn-icon">🎵</span>
-                        <div class="btn-content">
-                            <h3>Novo Jogo</h3>
-                            <p>Comece sua jornada musical</p>
-                        </div>
-                    </button>
+            <div class="secondary-actions">
+                <button class="menu-btn" id="settingsBtn">
+                    ⚙️ Configurações
+                </button>
 
-                    <button class="menu-btn" id="loadGameBtn">
-                        <span class="btn-icon">💾</span>
-                        <div class="btn-content">
-                            <h3>Carregar Jogo</h3>
-                            <p>Continue de onde parou</p>
-                        </div>
-                    </button>
-                </div>
+                <button class="menu-btn" id="storageInfoBtn">
+                    💾 Armazenamento Local
+                </button>
 
-                <div class="menu-section secondary-actions">
-                    <button class="menu-btn small" id="settingsBtn">
-                        <span class="btn-icon">⚙️</span>
-                        <span>Configurações</span>
-                    </button>
+                <button class="menu-btn" id="helpBtn">
+                    ❓ Como Jogar
+                </button>
 
-                    <button class="menu-btn small" id="creditsBtn">
-                        <span class="btn-icon">👥</span>
-                        <span>Créditos</span>
-                    </button>
-
-                    <button class="menu-btn small" id="helpBtn">
-                        <span class="btn-icon">❓</span>
-                        <span>Como Jogar</span>
-                    </button>
-                </div>
-
-                <div class="saved-games" id="savedGamesList" style="display: none;">
-                    <h3>Jogos Salvos</h3>
-                    <div class="saves-container" id="savesContainer">
-                        <!-- Saves will be populated by JS -->
-                    </div>
-                    <button class="menu-btn small back-btn" id="backToMenuBtn">
-                        <span class="btn-icon">←</span>
-                        <span>Voltar</span>
-                    </button>
-                </div>
+                <button class="menu-btn" id="creditsBtn">
+                    👥 Créditos
+                </button>
             </div>
+        </div>
 
-            <div class="menu-footer">
-                <div class="sync-status" id="syncStatus">
-                    <span class="status-indicator offline" id="statusIndicator">⚪</span>
-                    <span class="status-text" id="statusText">Verificando conexão...</span>
-                </div>
-                <p>© 2025 Rising Star Studios | Versão Beta</p>
-            </div>
+        <div class="sync-status disconnected" id="syncStatus">
+            <div class="status-dot"></div>
+            <span id="statusText">Offline</span>
+        </div>
+
+        <div class="game-version">
+            v1.0.0 Beta
         </div>
     </div>
 
@@ -108,25 +97,6 @@
                 <button class="close-btn" id="closeSettingsBtn">×</button>
             </div>
             <div class="modal-body">
-                <div class="settings-section">
-                    <h3>Audio</h3>
-                    <div class="setting-item">
-                        <label for="masterVolume">Volume Geral</label>
-                        <input type="range" id="masterVolume" min="0" max="100" value="75">
-                        <span class="volume-value">75%</span>
-                    </div>
-                    <div class="setting-item">
-                        <label for="musicVolume">Música</label>
-                        <input type="range" id="musicVolume" min="0" max="100" value="60">
-                        <span class="volume-value">60%</span>
-                    </div>
-                    <div class="setting-item">
-                        <label for="sfxVolume">Efeitos Sonoros</label>
-                        <input type="range" id="sfxVolume" min="0" max="100" value="80">
-                        <span class="volume-value">80%</span>
-                    </div>
-                </div>
-
                 <div class="settings-section">
                     <h3>Interface</h3>
                     <div class="setting-item">
@@ -160,12 +130,35 @@
                         </label>
                     </div>
                     <div class="setting-item">
-                        <label for="difficulty">Dificuldade</label>
-                        <select id="difficulty">
-                            <option value="easy">Fácil</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="hard">Difícil</option>
+                        <label for="autoSaveInterval">Intervalo de Auto-Save</label>
+                        <select id="autoSaveInterval">
+                            <option value="1">1 minuto</option>
+                            <option value="2" selected>2 minutos</option>
+                            <option value="5">5 minutos</option>
+                            <option value="10">10 minutos</option>
                         </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="fastModeEnabled">
+                            Modo Rápido (acelera tempo do jogo)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Dados</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="cloudSyncEnabled">
+                            Sincronização na Nuvem (futuro)
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="analyticsEnabled" checked>
+                            Permitir Estatísticas Anônimas
+                        </label>
                     </div>
                 </div>
             </div>
@@ -176,588 +169,527 @@
         </div>
     </div>
 
-    <!-- Character Creation -->
-    <div id="characterCreation" class="screen" style="display: none;">
-        <div class="creation-container">
-            <h1>Crie Seu Artista</h1>
-            
-            <div class="creation-tabs">
-                <button class="tab-button active" data-tab="basic">Básico</button>
-                <button class="tab-button" data-tab="appearance">Aparência</button>
-                <button class="tab-button" data-tab="career">Carreira</button>
-                <button class="tab-button" data-tab="personality">Personalidade</button>
+    <!-- Load Game Modal -->
+    <div id="loadGameModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Carregar Jogo</h2>
+                <button class="close-btn" id="closeLoadGameBtn">×</button>
             </div>
-
-            <div class="tab-content active" id="basic-tab">
-                <div class="form-group">
-                    <label for="artistName">Nome Artístico</label>
-                    <input type="text" id="artistName" placeholder="Digite seu nome artístico">
+            <div class="modal-body">
+                <div class="saves-container" id="savesContainer">
+                    <!-- Saves will be populated by JS -->
                 </div>
-                <div class="form-group">
-                    <label for="realName">Nome Real</label>
-                    <input type="text" id="realName" placeholder="Digite seu nome real">
-                </div>
-                <div class="form-group">
-                    <label for="age">Idade</label>
-                    <input type="number" id="age" min="16" max="45" value="20">
-                </div>
-                <div class="form-group">
-                    <label for="gender">Gênero</label>
-                    <select id="gender">
-                        <option value="male">Masculino</option>
-                        <option value="female">Feminino</option>
-                        <option value="non-binary">Não-binário</option>
-                    </select>
+                <div class="empty-saves" id="emptySaves" style="display: none;">
+                    <p>Nenhum jogo salvo encontrado.</p>
+                    <p>Comece um novo jogo para criar seu primeiro save!</p>
                 </div>
             </div>
-
-            <div class="tab-content" id="appearance-tab">
-                <div class="appearance-editor">
-                    <div class="avatar-preview">
-                        <div class="avatar-container">
-                            <div id="avatarPreview" class="avatar-placeholder">👤</div>
-                        </div>
-                    </div>
-                    <div class="appearance-options">
-                        <div class="option-group">
-                            <label>Estilo de Cabelo</label>
-                            <div class="option-grid" data-option="hair">
-                                <button class="option-btn" data-value="1">Curto</button>
-                                <button class="option-btn" data-value="2">Longo</button>
-                                <button class="option-btn" data-value="3">Médio</button>
-                                <button class="option-btn" data-value="4">Careca</button>
-                            </div>
-                        </div>
-                        <div class="option-group">
-                            <label>Cor do Cabelo</label>
-                            <div class="color-palette" data-option="hairColor">
-                                <button class="color-btn" data-value="black" style="background: #000"></button>
-                                <button class="color-btn" data-value="brown" style="background: #8B4513"></button>
-                                <button class="color-btn" data-value="blonde" style="background: #FFD700"></button>
-                                <button class="color-btn" data-value="red" style="background: #DC143C"></button>
-                                <button class="color-btn" data-value="blue" style="background: #0066FF"></button>
-                                <button class="color-btn" data-value="pink" style="background: #FF69B4"></button>
-                            </div>
-                        </div>
-                        <div class="option-group">
-                            <label>Tatuagens</label>
-                            <div class="option-grid" data-option="tattoos">
-                                <button class="option-btn" data-value="none">Nenhuma</button>
-                                <button class="option-btn" data-value="arms">Braços</button>
-                                <button class="option-btn" data-value="neck">Pescoço</button>
-                                <button class="option-btn" data-value="face">Rosto</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="career-tab">
-                <div class="career-choice">
-                    <h3>Escolha seu Caminho Musical</h3>
-                    <div class="career-options">
-                        <div class="career-option" data-career="solo">
-                            <div class="career-icon">🎤</div>
-                            <h4>Artista Solo</h4>
-                            <p>Comece sua jornada como um artista independente</p>
-                            <ul>
-                                <li>+ Liberdade criativa total</li>
-                                <li>+ Controle financeiro</li>
-                                <li>- Mais desafios iniciais</li>
-                            </ul>
-                        </div>
-                        <div class="career-option" data-career="band">
-                            <div class="career-icon">🎸</div>
-                            <h4>Banda</h4>
-                            <p>Forme ou junte-se a uma banda</p>
-                            <ul>
-                                <li>+ Apoio dos membros</li>
-                                <li>+ Criatividade colaborativa</li>
-                                <li>- Divisão de lucros</li>
-                            </ul>
-                        </div>
-                        <div class="career-option" data-career="producer">
-                            <div class="career-icon">🎧</div>
-                            <h4>Produtor</h4>
-                            <p>Trabalhe por trás das câmeras</p>
-                            <ul>
-                                <li>+ Renda mais estável</li>
-                                <li>+ Networking facilitado</li>
-                                <li>- Menor fama pessoal</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="genre-selection">
-                    <h3>Gênero Musical Principal</h3>
-                    <div class="genre-grid">
-                        <button class="genre-btn" data-genre="pop">Pop</button>
-                        <button class="genre-btn" data-genre="rock">Rock</button>
-                        <button class="genre-btn" data-genre="hip-hop">Hip-Hop</button>
-                        <button class="genre-btn" data-genre="rnb">R&B</button>
-                        <button class="genre-btn" data-genre="electronic">Eletrônica</button>
-                        <button class="genre-btn" data-genre="country">Country</button>
-                        <button class="genre-btn" data-genre="alternative">Alternativo</button>
-                        <button class="genre-btn" data-genre="indie">Indie</button>
-                        <button class="genre-btn" data-genre="reggae">Reggae</button>
-                        <button class="genre-btn" data-genre="latin">Latino</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="personality-tab">
-                <div class="personality-selection">
-                    <h3>Personalidade do Artista</h3>
-                    <p>Sua personalidade influenciará eventos, oportunidades e interações</p>
-                    
-                    <div class="personality-traits">
-                        <div class="trait-category">
-                            <h4>Atitude Principal</h4>
-                            <div class="trait-options">
-                                <label class="trait-option">
-                                    <input type="radio" name="mainTrait" value="charismatic">
-                                    <span class="trait-card">
-                                        <strong>Carismático</strong>
-                                        <p>Facilita networking e colaborações</p>
-                                    </span>
-                                </label>
-                                <label class="trait-option">
-                                    <input type="radio" name="mainTrait" value="perfectionist">
-                                    <span class="trait-card">
-                                        <strong>Perfeccionista</strong>
-                                        <p>Melhora qualidade musical, mas pode causar atrasos</p>
-                                    </span>
-                                </label>
-                                <label class="trait-option">
-                                    <input type="radio" name="mainTrait" value="rebel">
-                                    <span class="trait-card">
-                                        <strong>Rebelde</strong>
-                                        <p>Atrai fãs fiéis, mas pode gerar polêmicas</p>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="trait-category">
-                            <h4>Características Secundárias</h4>
-                            <div class="secondary-traits">
-                                <label><input type="checkbox" value="ambitious"> Ambicioso</label>
-                                <label><input type="checkbox" value="creative"> Criativo</label>
-                                <label><input type="checkbox" value="business-minded"> Mente Empresarial</label>
-                                <label><input type="checkbox" value="social"> Social</label>
-                                <label><input type="checkbox" value="controversial"> Controverso</label>
-                                <label><input type="checkbox" value="workaholic"> Workaholic</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="creation-actions">
-                <button id="prevTab" class="btn-secondary">Anterior</button>
-                <button id="nextTab" class="btn-primary">Próximo</button>
-                <button id="startGame" class="btn-primary" style="display: none;">Começar Jornada</button>
+            <div class="modal-footer">
+                <button class="btn secondary" id="closeLoadGameFooterBtn">Fechar</button>
             </div>
         </div>
     </div>
 
-    <!-- Main Game Interface -->
-    <div id="gameInterface" class="screen" style="display: none;">
-        <!-- Header -->
-        <header class="game-header">
-            <div class="header-left">
-                <div class="artist-info">
-                    <img id="headerAvatar" src="" alt="Avatar" class="header-avatar">
-                    <div class="artist-details">
-                        <h2 id="headerArtistName"></h2>
-                        <p id="headerCareerPhase"></p>
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Como Jogar</h2>
+                <button class="close-btn" id="closeHelpBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3>🎯 Objetivo do Jogo</h3>
+                    <p>Torne-se uma estrela da música! Comece como um artista desconhecido e construa seu império musical através de decisões estratégicas, criatividade e networking.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🎵 Criando Músicas</h3>
+                    <ul>
+                        <li><strong>Estúdio:</strong> Grave suas faixas no estúdio</li>
+                        <li><strong>Qualidade:</strong> Invista em equipamentos melhores para maior qualidade</li>
+                        <li><strong>Gêneros:</strong> Experimente diferentes gêneros musicais</li>
+                        <li><strong>Colaborações:</strong> Trabalhe com outros artistas para expandir seu alcance</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>💰 Gerenciamento Financeiro</h3>
+                    <ul>
+                        <li><strong>Receitas:</strong> Ganhe dinheiro através de streams, vendas e shows</li>
+                        <li><strong>Investimentos:</strong> Gaste sabiamente em marketing e equipamentos</li>
+                        <li><strong>Contratos:</strong> Negocie contratos vantajosos com gravadoras</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>⭐ Construindo Fama</h3>
+                    <ul>
+                        <li><strong>Marketing:</strong> Promova suas músicas nas redes sociais</li>
+                        <li><strong>Shows:</strong> Faça apresentações para ganhar fãs</li>
+                        <li><strong>Mídia:</strong> Gerencie sua imagem pública</li>
+                        <li><strong>Tendências:</strong> Acompanhe e adapte-se às tendências musicais</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🎮 Dicas para Iniciantes</h3>
+                    <ul>
+                        <li>Comece focando em um gênero musical específico</li>
+                        <li>Invista em equipamentos básicos antes de gastar com marketing</li>
+                        <li>Observe as tendências do mercado para criar músicas populares</li>
+                        <li>Construa relacionamentos com outros artistas e produtores</li>
+                        <li>Salve seu progresso regularmente</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary" id="closeHelpFooterBtn">Entendido!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits Modal -->
+    <div id="creditsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Créditos</h2>
+                <button class="close-btn" id="closeCreditsBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="credits-section">
+                    <h3>🎮 Desenvolvimento</h3>
+                    <div class="credit-item">
+                        <strong>Conceito e Design:</strong>
+                        <p>Rising Star: Music Mogul</p>
                     </div>
+                    <div class="credit-item">
+                        <strong>Programação:</strong>
+                        <p>Engine JavaScript/HTML5 personalizada</p>
+                    </div>
+                    <div class="credit-item">
+                        <strong>Interface:</strong>
+                        <p>Design responsivo com efeitos cinematográficos</p>
+                    </div>
+                </div>
+
+                <div class="credits-section">
+                    <h3>🎨 Arte e Design</h3>
+                    <div class="credit-item">
+                        <strong>Logo e Identidade Visual:</strong>
+                        <p>Design original com holofotes cinematográficos</p>
+                    </div>
+                    <div class="credit-item">
+                        <strong>Efeitos Visuais:</strong>
+                        <p>Sistema de iluminação dinâmica CSS3</p>
+                    </div>
+                </div>
+
+                <div class="credits-section">
+                    <h3>🤖 Tecnologia</h3>
+                    <div class="credit-item">
+                        <strong>IA de Simulação:</strong>
+                        <p>Sistema avançado de simulação da indústria musical</p>
+                    </div>
+                    <div class="credit-item">
+                        <strong>Engine de Dados:</strong>
+                        <p>Gerenciamento local e em nuvem</p>
+                    </div>
+                </div>
+
+                <div class="credits-section">
+                    <h3>🎵 Inspiração Musical</h3>
+                    <div class="credit-item">
+                        <strong>Baseado em:</strong>
+                        <p>Histórias reais da indústria musical e mecânicas de jogos de simulação clássicos</p>
+                    </div>
+                </div>
+
+                <div class="credits-section">
+                    <h3>🙏 Agradecimentos Especiais</h3>
+                    <div class="credit-item">
+                        <p>À comunidade de desenvolvedores indie e a todos os músicos que inspiraram este projeto.</p>
+                    </div>
+                </div>
+
+                <div class="version-info">
+                    <p><strong>Versão:</strong> 1.0.0 Beta</p>
+                    <p><strong>Build:</strong> 2025.01</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary" id="closeCreditsFooterBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Storage Info Modal -->
+    <div id="storageModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Informações de Armazenamento</h2>
+                <button class="close-btn" id="closeStorageBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="storage-section">
+                    <h3>💾 Armazenamento Local</h3>
+                    <div class="storage-info">
+                        <div class="storage-item">
+                            <span class="storage-label">Espaço Usado:</span>
+                            <span class="storage-value" id="usedStorage">Calculando...</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">Espaço Disponível:</span>
+                            <span class="storage-value" id="availableStorage">Calculando...</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">Total de Saves:</span>
+                            <span class="storage-value" id="totalSaves">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="storage-section">
+                    <h3>🔄 Sincronização</h3>
+                    <div class="sync-info">
+                        <div class="sync-status" id="modalSyncStatus">
+                            <span class="status-indicator offline"></span>
+                            <span>Modo Offline</span>
+                        </div>
+                        <p class="sync-description">
+                            Seus dados são salvos localmente no seu dispositivo. 
+                            A sincronização em nuvem estará disponível em futuras atualizações.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="storage-section">
+                    <h3>⚠️ Gerenciamento de Dados</h3>
+                    <div class="data-management">
+                        <button class="btn secondary" id="exportDataBtn">
+                            📤 Exportar Dados
+                        </button>
+                        <button class="btn secondary" id="importDataBtn">
+                            📥 Importar Dados
+                        </button>
+                        <button class="btn danger" id="clearDataBtn">
+                            🗑️ Limpar Todos os Dados
+                        </button>
+                    </div>
+                    <p class="warning-text">
+                        ⚠️ Limpar dados remove permanentemente todos os saves e configurações.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary" id="closeStorageFooterBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Creation Screen -->
+    <div id="characterCreation" class="screen" style="display: none;">
+        <div class="creation-container">
+            <!-- Step 1: Profile -->
+            <div id="profile-step" class="creation-step">
+                <div class="step-header">
+                    <button class="back-btn" id="backBtn">Back</button>
+                    <h1 class="step-title">Profile</h1>
+                </div>
+
+                <div class="profile-form">
+                    <div class="form-section">
+                        <label class="form-label">Character Name:</label>
+                        <div class="name-inputs">
+                            <input type="text" id="firstName" placeholder="First Name" class="name-input">
+                            <input type="text" id="lastName" placeholder="Last Name" class="name-input">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Location:</label>
+                        <div class="location-selector">
+                            <button class="nav-arrow left" id="locationPrev">‹</button>
+                            <span class="location-display" id="locationDisplay">USA</span>
+                            <span class="counter">1/9</span>
+                            <button class="nav-arrow right" id="locationNext">›</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-section">
+                            <label class="form-label">Age:</label>
+                            <div class="age-selector">
+                                <button class="nav-arrow left" id="agePrev">‹</button>
+                                <span class="age-display" id="ageDisplay">18</span>
+                                <button class="nav-arrow right" id="ageNext">›</button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">Sex:</label>
+                            <div class="sex-buttons">
+                                <button class="sex-btn active" data-sex="male">Male</button>
+                                <button class="sex-btn" data-sex="female">Female</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Genre:</label>
+                        <select class="genre-select" id="genreSelect">
+                            <option value="pop">Pop</option>
+                            <option value="rock">Rock</option>
+                            <option value="hip-hop">Hip-Hop</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="r&b">R&B</option>
+                            <option value="country">Country</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="reggae">Reggae</option>
+                        </select>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Band Name:</label>
+                        <input type="text" id="bandName" placeholder="Enter Your Band Name" class="band-input">
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">Role:</label>
+                        <div class="role-selector">
+                            <button class="nav-arrow left" id="rolePrev">‹</button>
+                            <span class="role-display" id="roleDisplay">Singer</span>
+                            <span class="counter">1/11</span>
+                            <button class="nav-arrow right" id="roleNext">›</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="continue-btn" id="profileContinue">Continue</button>
+            </div>
+
+            <!-- Step 2: Background Story -->
+            <div id="background-step" class="creation-step" style="display: none;">
+                <div class="step-header">
+                    <button class="back-btn" id="backgroundBack">Back</button>
+                    <h1 class="step-title">Background Story</h1>
+                </div>
+
+                <div class="background-content">
+                    <div class="background-selector">
+                        <label class="form-label">Select</label>
+                        <div class="background-dropdown">
+                            <button class="dropdown-btn" id="backgroundDropdown">
+                                <span id="selectedBackground">Unknown (Artist)</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="dropdown-menu" id="backgroundMenu" style="display: none;">
+                                <div class="dropdown-item" data-background="unknown">Unknown (Artist)</div>
+                                <div class="dropdown-item" data-background="rising">Rising Star</div>
+                                <div class="dropdown-item" data-background="veteran">Veteran Musician</div>
+                                <div class="dropdown-item" data-background="producer">Producer Turned Artist</div>
+                                <div class="dropdown-item" data-background="social">Social Media Star</div>
+                                <div class="dropdown-item" data-background="legacy">Music Legacy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="background-description" id="backgroundDescription">
+                        <p>You're a virtual unknown in the music industry. You have a little bit of money and a big dream.</p>
+                    </div>
+
+                    <div class="background-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Starting Label</span>
+                            <span class="stat-value" id="startingLabel">Unsigned</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Starting Home</span>
+                            <span class="stat-value" id="startingHome">Studio</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Starting Cash</span>
+                            <span class="stat-value" id="startingCash">$3,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="continue-btn" id="backgroundContinue">Continue</button>
+            </div>
+
+            <!-- Step 3: Skills -->
+            <div id="skills-step" class="creation-step" style="display: none;">
+                <div class="step-header">
+                    <button class="back-btn" id="skillsBack">Back</button>
+                    <h1 class="step-title">Band Members</h1>
+                </div>
+
+                <div class="skills-content">
+                    <div class="character-info">
+                        <div class="character-avatar">
+                            <div class="avatar-placeholder"></div>
+                        </div>
+                        <div class="character-details">
+                            <h3 id="characterName">Character Name</h3>
+                            <p id="characterRole">Singer</p>
+                            <div class="chemistry-bar">
+                                <span class="chemistry-label">Chemistry</span>
+                                <div class="chemistry-progress">
+                                    <div class="chemistry-fill"></div>
+                                </div>
+                                <span class="chemistry-percent">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="points-available">
+                        <span class="points-label">Points Available:</span>
+                        <span class="points-value" id="pointsAvailable">0</span>
+                    </div>
+
+                    <div class="skills-list">
+                        <div class="skill-item">
+                            <span class="skill-name">Singing</span>
+                            <span class="skill-value" id="singingValue">60</span>
+                            <button class="skill-btn minus" data-skill="singing">−</button>
+                            <button class="skill-btn plus" data-skill="singing">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Rapping</span>
+                            <span class="skill-value" id="rappingValue">60</span>
+                            <button class="skill-btn minus" data-skill="rapping">−</button>
+                            <button class="skill-btn plus" data-skill="rapping">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Dancing</span>
+                            <span class="skill-value" id="dancingValue">15</span>
+                            <button class="skill-btn minus" data-skill="dancing">−</button>
+                            <button class="skill-btn plus" data-skill="dancing">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Screaming</span>
+                            <span class="skill-value" id="screamingValue">0</span>
+                            <button class="skill-btn minus" data-skill="screaming">−</button>
+                            <button class="skill-btn plus" data-skill="screaming">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Live</span>
+                            <span class="skill-value" id="liveValue">20</span>
+                            <button class="skill-btn minus" data-skill="live">−</button>
+                            <button class="skill-btn plus" data-skill="live">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Songwriting</span>
+                            <span class="skill-value" id="songwritingValue">60</span>
+                            <button class="skill-btn minus" data-skill="songwriting">−</button>
+                            <button class="skill-btn plus" data-skill="songwriting">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Producing</span>
+                            <span class="skill-value" id="producingValue">40</span>
+                            <button class="skill-btn minus" data-skill="producing">−</button>
+                            <button class="skill-btn plus" data-skill="producing">+</button>
+                        </div>
+
+                        <div class="skill-item">
+                            <span class="skill-name">Commercial</span>
+                            <span class="skill-value" id="commercialValue">30</span>
+                            <button class="skill-btn minus" data-skill="commercial">−</button>
+                            <button class="skill-btn plus" data-skill="commercial">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="continue-btn" id="startGameFinal">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Temporary Game Dashboard -->
+    <div id="gameInterface" class="screen" style="display: none;">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>🎵 Rising Star Dashboard</h1>
+                <div class="player-info">
+                    <span class="player-name" id="playerDisplayName">Nome do Artista</span>
+                    <span class="player-money" id="playerDisplayMoney">$0</span>
                 </div>
             </div>
             
-            <div class="header-center">
-                <div class="game-date">
-                    <span id="currentDate"></span>
+            <div class="dashboard-content">
+                <div class="stats-section">
+                    <h2>📊 Suas Estatísticas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-icon">🎤</span>
+                            <span class="stat-label">Vocal</span>
+                            <span class="stat-value" id="vocalStat">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">✍️</span>
+                            <span class="stat-label">Composição</span>
+                            <span class="stat-value" id="compositionStat">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🎭</span>
+                            <span class="stat-label">Performance</span>
+                            <span class="stat-value" id="performanceStat">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🎛️</span>
+                            <span class="stat-label">Produção</span>
+                            <span class="stat-value" id="productionStat">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">💼</span>
+                            <span class="stat-label">Negócios</span>
+                            <span class="stat-value" id="businessStat">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="actions-section">
+                    <h2>🎯 Ações Disponíveis</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn" id="createMusicBtn">
+                            🎵 Criar Música
+                        </button>
+                        <button class="action-btn" id="viewStatsBtn">
+                            📈 Ver Estatísticas
+                        </button>
+                        <button class="action-btn" id="saveGameBtn">
+                            💾 Salvar Jogo
+                        </button>
+                        <button class="action-btn" id="backToMenuBtn">
+                            🏠 Voltar ao Menu
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h2>ℹ️ Sistema Temporário</h2>
+                    <p>Este é um dashboard temporário para testar a criação de personagem. 
+                       O sistema completo será implementado nas próximas fases!</p>
                 </div>
             </div>
-
-            <div class="header-right">
-                <div class="resources">
-                    <div class="resource" title="Dinheiro">
-                        <span class="resource-icon">💰</span>
-                        <span id="money">$0</span>
-                    </div>
-                    <div class="resource" title="Criatividade">
-                        <span class="resource-icon">🎨</span>
-                        <span id="creativity">100</span>
-                    </div>
-                    <div class="resource" title="Energia">
-                        <span class="resource-icon">⚡</span>
-                        <span id="energy">100</span>
-                    </div>
-                    <div class="resource" title="Moral">
-                        <span class="resource-icon">😊</span>
-                        <span id="morale">100</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="main-nav">
-            <button class="nav-btn active" data-section="dashboard">Dashboard</button>
-            <button class="nav-btn" data-section="studio">Estúdio</button>
-            <button class="nav-btn" data-section="career">Carreira</button>
-            <button class="nav-btn" data-section="social">Social</button>
-            <button class="nav-btn" data-section="industry">Indústria</button>
-            <button class="nav-btn" data-section="analytics">Analytics</button>
-        </nav>
-
-        <!-- Game Sections -->
-        <main class="game-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard-section" class="game-section active">
-                <div class="dashboard-grid">
-                    <div class="dashboard-card recent-activity">
-                        <h3>Atividade Recente</h3>
-                        <div id="recentActivities" class="activity-feed">
-                            <!-- Activities will be populated by JS -->
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card quick-stats">
-                        <h3>Estatísticas Rápidas</h3>
-                        <div class="stats-grid">
-                            <div class="stat">
-                                <span class="stat-label">Fãs Totais</span>
-                                <span id="totalFans" class="stat-value">0</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Streams Mensais</span>
-                                <span id="monthlyStreams" class="stat-value">0</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Posição Chart</span>
-                                <span id="chartPosition" class="stat-value">-</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Reputação</span>
-                                <span id="reputation" class="stat-value">50</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card current-projects">
-                        <h3>Projetos Atuais</h3>
-                        <div id="currentProjects" class="projects-list">
-                            <!-- Projects will be populated by JS -->
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card industry-news">
-                        <h3>Notícias da Indústria</h3>
-                        <div id="industryNews" class="news-feed">
-                            <!-- News will be populated by JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Studio Section -->
-            <section id="studio-section" class="game-section">
-                <div class="studio-interface">
-                    <div class="studio-sidebar">
-                        <h3>Estúdio de Gravação</h3>
-                        <div class="studio-options">
-                            <button class="studio-btn" data-action="create-song">
-                                <span class="btn-icon">🎵</span>
-                                Criar Música
-                            </button>
-                            <button class="studio-btn" data-action="record-album">
-                                <span class="btn-icon">💿</span>
-                                Gravar Álbum
-                            </button>
-                            <button class="studio-btn" data-action="create-video">
-                                <span class="btn-icon">🎬</span>
-                                Criar Videoclipe
-                            </button>
-                            <button class="studio-btn" data-action="collaborate">
-                                <span class="btn-icon">🤝</span>
-                                Colaborar
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="studio-main">
-                        <div id="songCreation" class="studio-panel">
-                            <h3>Criação de Música</h3>
-                            <form id="songCreationForm">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="songTitle">Título da Música</label>
-                                        <input type="text" id="songTitle" placeholder="Digite o título">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="songGenre">Gênero</label>
-                                        <select id="songGenre">
-                                            <option value="pop">Pop</option>
-                                            <option value="rock">Rock</option>
-                                            <option value="hip-hop">Hip-Hop</option>
-                                            <option value="rnb">R&B</option>
-                                            <option value="electronic">Eletrônica</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="songTheme">Tema da Letra</label>
-                                    <select id="songTheme">
-                                        <option value="love">Amor</option>
-                                        <option value="breakup">Término</option>
-                                        <option value="party">Festa</option>
-                                        <option value="social">Social/Político</option>
-                                        <option value="personal">Pessoal</option>
-                                        <option value="motivational">Motivacional</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="songMood">Mood</label>
-                                    <div class="mood-selector">
-                                        <button type="button" class="mood-btn" data-mood="happy">😊 Feliz</button>
-                                        <button type="button" class="mood-btn" data-mood="sad">😢 Triste</button>
-                                        <button type="button" class="mood-btn" data-mood="angry">😠 Raiva</button>
-                                        <button type="button" class="mood-btn" data-mood="energetic">⚡ Energético</button>
-                                        <button type="button" class="mood-btn" data-mood="romantic">💕 Romântico</button>
-                                        <button type="button" class="mood-btn" data-mood="chill">😎 Relaxado</button>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="productionQuality">Qualidade de Produção</label>
-                                    <div class="quality-slider">
-                                        <input type="range" id="productionQuality" min="1" max="10" value="5">
-                                        <div class="quality-labels">
-                                            <span>Básica</span>
-                                            <span>Profissional</span>
-                                            <span>Premium</span>
-                                        </div>
-                                    </div>
-                                    <p class="quality-cost">Custo estimado: <span id="productionCost">$5,000</span></p>
-                                </div>
-
-                                <button type="submit" class="btn-primary">Criar Música</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Career Section -->
-            <section id="career-section" class="game-section">
-                <div class="career-interface">
-                    <div class="career-tabs">
-                        <button class="career-tab active" data-tab="contracts">Contratos</button>
-                        <button class="career-tab" data-tab="opportunities">Oportunidades</button>
-                        <button class="career-tab" data-tab="achievements">Conquistas</button>
-                        <button class="career-tab" data-tab="discography">Discografia</button>
-                    </div>
-
-                    <div class="career-content">
-                        <div id="contracts-tab" class="career-tab-content active">
-                            <h3>Contratos e Gravadoras</h3>
-                            <div id="currentContract" class="contract-info">
-                                <p>Você é atualmente um artista independente</p>
-                            </div>
-                            <div id="labelOffers" class="label-offers">
-                                <!-- Label offers will be populated by JS -->
-                            </div>
-                        </div>
-
-                        <div id="opportunities-tab" class="career-tab-content">
-                            <h3>Oportunidades de Carreira</h3>
-                            <div id="careerOpportunities" class="opportunities-list">
-                                <!-- Opportunities will be populated by JS -->
-                            </div>
-                        </div>
-
-                        <div id="achievements-tab" class="career-tab-content">
-                            <h3>Conquistas e Prêmios</h3>
-                            <div id="achievementsList" class="achievements-grid">
-                                <!-- Achievements will be populated by JS -->
-                            </div>
-                        </div>
-
-                        <div id="discography-tab" class="career-tab-content">
-                            <h3>Sua Discografia</h3>
-                            <div id="discographyList" class="discography-grid">
-                                <!-- Discography will be populated by JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Social Section -->
-            <section id="social-section" class="game-section">
-                <div class="social-interface">
-                    <div class="social-tabs">
-                        <button class="social-tab active" data-tab="feed">Feed</button>
-                        <button class="social-tab" data-tab="fans">Fãs</button>
-                        <button class="social-tab" data-tab="artists">Artistas</button>
-                        <button class="social-tab" data-tab="post">Postar</button>
-                    </div>
-
-                    <div class="social-content">
-                        <div id="feed-tab" class="social-tab-content active">
-                            <div class="social-feed">
-                                <div id="socialFeed" class="feed-container">
-                                    <!-- Social feed will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="fans-tab" class="social-tab-content">
-                            <div class="fans-analytics">
-                                <div class="fan-stats">
-                                    <div class="stat-card">
-                                        <h4>Total de Fãs</h4>
-                                        <span id="totalFanCount" class="big-number">0</span>
-                                    </div>
-                                    <div class="stat-card">
-                                        <h4>Crescimento Mensal</h4>
-                                        <span id="fanGrowth" class="big-number">+0</span>
-                                    </div>
-                                </div>
-                                <div id="fanDemographics" class="demographics-chart">
-                                    <!-- Demographics chart will be rendered here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="artists-tab" class="social-tab-content">
-                            <div class="artists-network">
-                                <h3>Rede de Artistas</h3>
-                                <div id="artistsNetwork" class="artists-grid">
-                                    <!-- Artists network will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="post-tab" class="social-tab-content">
-                            <div class="create-post">
-                                <h3>Criar Post</h3>
-                                <form id="socialPostForm">
-                                    <div class="form-group">
-                                        <label for="postType">Tipo de Post</label>
-                                        <select id="postType">
-                                            <option value="announcement">Anúncio</option>
-                                            <option value="behind-scenes">Bastidores</option>
-                                            <option value="personal">Pessoal</option>
-                                            <option value="promotional">Promocional</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="postContent">Conteúdo</label>
-                                        <textarea id="postContent" placeholder="O que você quer compartilhar?"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn-primary">Publicar</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Industry Section -->
-            <section id="industry-section" class="game-section">
-                <div class="industry-interface">
-                    <div class="industry-tabs">
-                        <button class="industry-tab active" data-tab="charts">Charts</button>
-                        <button class="industry-tab" data-tab="news">Notícias</button>
-                        <button class="industry-tab" data-tab="trends">Tendências</button>
-                        <button class="industry-tab" data-tab="events">Eventos</button>
-                    </div>
-
-                    <div class="industry-content">
-                        <div id="charts-tab" class="industry-tab-content active">
-                            <div class="charts-section">
-                                <h3>Paradas Musicais</h3>
-                                <div class="chart-selector">
-                                    <button class="chart-btn active" data-chart="global">Global</button>
-                                    <button class="chart-btn" data-chart="genre">Por Gênero</button>
-                                    <button class="chart-btn" data-chart="streaming">Streaming</button>
-                                </div>
-                                <div id="musicCharts" class="charts-container">
-                                    <!-- Charts will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="news-tab" class="industry-tab-content">
-                            <div class="industry-news">
-                                <h3>Notícias da Indústria Musical</h3>
-                                <div id="industryNewsContent" class="news-container">
-                                    <!-- Industry news will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="trends-tab" class="industry-tab-content">
-                            <div class="trends-analysis">
-                                <h3>Análise de Tendências</h3>
-                                <div id="trendsContent" class="trends-container">
-                                    <!-- Trends analysis will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="events-tab" class="industry-tab-content">
-                            <div class="events-calendar">
-                                <h3>Eventos e Premiações</h3>
-                                <div id="eventsContent" class="events-container">
-                                    <!-- Events will be populated by JS -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Analytics Section -->
-            <section id="analytics-section" class="game-section">
-                <div class="analytics-interface">
-                    <h3>Analytics Detalhados</h3>
-                    <div class="analytics-grid">
-                        <div class="analytics-card">
-                            <h4>Performance de Streams</h4>
-                            <canvas id="streamsChart"></canvas>
-                        </div>
-                        <div class="analytics-card">
-                            <h4>Crescimento de Fãs</h4>
-                            <canvas id="fansChart"></canvas>
-                        </div>
-                        <div class="analytics-card">
-                            <h4>Receita por Fonte</h4>
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                        <div class="analytics-card">
-                            <h4>Performance por Gênero</h4>
-                            <canvas id="genreChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+        </div>
     </div>
 
     <!-- Game Scripts -->
-    <script type="module" src="js/core/game-engine.js"></script>
-    <script type="module" src="js/core/ai-simulation.js"></script>
-    <script type="module" src="js/core/data-manager.js"></script>
-    <script type="module" src="js/ui/character-creator.js"></script>
-    <script type="module" src="js/ui/interface-manager.js"></script>
-    <script type="module" src="js/main.js"></script>
+    <!-- Atualizado para versão que contém getSettings/saveSettings -->
+    <script type="module" src="js/core/game-engine.js?v=1.5.0"></script>
+    <script type="module" src="js/core/ai-simulation.js?v=1.3.5"></script>
+    <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
+    <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
+    <script type="module" src="js/ui/character-creator-mobile.js?v=2.0.0"></script>
+    <script src="test-character-creator.js"></script>
+    <script type="module" src="js/main.js?v=1.5.0"></script>
 </body>
 </html>

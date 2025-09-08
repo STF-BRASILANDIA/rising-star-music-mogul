@@ -3,15 +3,17 @@
  * Sistema de persistência de dados usando IndexedDB com sincronização Firebase
  */
 
-import { FirebaseManager } from './firebase-manager.js';
+// TEMPORARIAMENTE DESABILITADO: import { FirebaseManager } from './firebase-manager.js';
 
 export class DataManager {
     constructor() {
+        console.log('🏗️ Construindo DataManager...');
         this.dbName = 'RisingStarDB';
         this.dbVersion = 1;
         this.db = null;
-        this.useLocalStorageFallback = false;
-        this.firebaseManager = new FirebaseManager();
+        this.useLocalStorageFallback = true; // Continuar usando localStorage
+        this.firebaseManager = null; // Será ativado quando o usuário quiser sync
+        console.log('💾 Usando localStorage + Firebase opcional');
         this.stores = {
             gameData: 'gameData',
             playerData: 'playerData',
@@ -559,7 +561,10 @@ export class DataManager {
         try {
             let localSaves = [];
             
+            console.log('📁 Carregando saves...');
+            
             if (this.useLocalStorageFallback) {
+                console.log('📁 Usando localStorage...');
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
                     if (key && key.startsWith('risingstar_save_')) {
@@ -596,7 +601,7 @@ export class DataManager {
             
             // Get cloud saves
             let cloudSaves = [];
-            if (this.firebaseManager.isAvailable()) {
+            if (this.firebaseManager && this.firebaseManager.isAvailable()) {
                 try {
                     cloudSaves = await this.firebaseManager.getSavedGamesFromCloud();
                 } catch (error) {
@@ -684,7 +689,7 @@ export class DataManager {
             }
             
             // Sync to cloud if available
-            if (this.firebaseManager.isAvailable()) {
+            if (this.firebaseManager && this.firebaseManager.isAvailable()) {
                 try {
                     await this.firebaseManager.saveGameToCloud(
                         saveData.id, 
@@ -728,7 +733,7 @@ export class DataManager {
     
     // Firebase Sync Methods
     async syncAllData() {
-        if (!this.firebaseManager.isAvailable()) {
+        if (!this.firebaseManager || !this.firebaseManager.isAvailable()) {
             console.log('⚠️ Firebase não disponível para sincronização');
             return { success: false, message: 'Firebase offline' };
         }
@@ -794,6 +799,9 @@ export class DataManager {
     
     async downloadCloudSave(saveId) {
         try {
+            if (!this.firebaseManager) {
+                throw new Error('Firebase não disponível');
+            }
             const cloudData = await this.firebaseManager.loadGameFromCloud(saveId);
             if (!cloudData) {
                 throw new Error('Save não encontrado na nuvem');
@@ -822,6 +830,35 @@ export class DataManager {
     }
     
     getFirebaseStatus() {
-        return this.firebaseManager.getStatus();
+        return this.firebaseManager ? this.firebaseManager.getStatus() : { 
+            connected: false, 
+            authenticated: false, 
+            error: 'Firebase desabilitado' 
+        };
+    }
+
+    // Auto-save functionality
+    startAutoSave(intervalMinutes = 5) {
+        console.log(`🔄 Auto-save iniciado (${intervalMinutes} minutos)`);
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+        }
+        
+        this.autoSaveInterval = setInterval(async () => {
+            try {
+                console.log('💾 Auto-save executando...');
+                // Auto-save será implementado quando tivermos o sistema de jogo rodando
+            } catch (error) {
+                console.warn('Erro no auto-save:', error);
+            }
+        }, intervalMinutes * 60 * 1000);
+    }
+
+    stopAutoSave() {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+            console.log('🛑 Auto-save parado');
+        }
     }
 }

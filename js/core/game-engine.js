@@ -5,7 +5,7 @@
 
 import { AISimulation } from './ai-simulation.js';
 import { DataManager } from './data-manager.js';
-import { CharacterCreator } from '../ui/character-creator.js';
+import { MusicCreation } from './music-creation.js';
 import { InterfaceManager } from '../ui/interface-manager.js';
 import { MainMenu } from '../ui/main-menu.js';
 
@@ -20,7 +20,7 @@ export class RisingStarGame {
         this.systems = {
             dataManager: null,
             aiSimulation: null,
-            characterCreator: null,
+            characterCreator: null, // REATIVADO
             interfaceManager: null,
             mainMenu: null,
             musicCreation: null,
@@ -79,8 +79,14 @@ export class RisingStarGame {
         // Inicializar sistema de IA
         this.systems.aiSimulation = new AISimulation(this);
         
-        // Inicializar outros sistemas básicos
+        // Inicializar sistema de criação musical
+        this.systems.musicCreation = new MusicCreation(this);
+        console.log('✅ MusicCreation inicializado');
+        
+        // Importar e inicializar sistema de criação de personagem
+        const { CharacterCreator } = await import('../ui/character-creator-mobile.js');
         this.systems.characterCreator = new CharacterCreator(this);
+        window.characterCreator = this.systems.characterCreator;
         console.log('✅ CharacterCreator inicializado');
         
         this.systems.interfaceManager = new InterfaceManager(this);
@@ -156,11 +162,22 @@ export class RisingStarGame {
         const gameTimeElapsed = (deltaTime * this.gameSpeed) / 1000;
         this.advanceGameTime(gameTimeElapsed);
         
-        // Atualizar sistemas
-        this.systems.aiSimulation.update(deltaTime);
-        this.systems.industrySimulation.update(deltaTime);
-        this.systems.socialSystem.update(deltaTime);
-        this.systems.interfaceManager.update(deltaTime);
+        // Atualizar sistemas (apenas os que existem)
+        if (this.systems.aiSimulation) {
+            this.systems.aiSimulation.update(deltaTime);
+        }
+        
+        if (this.systems.musicCreation) {
+            this.systems.musicCreation.update(deltaTime);
+        }
+        
+        if (this.systems.interfaceManager) {
+            this.systems.interfaceManager.update(deltaTime);
+        }
+        
+        // TODO: Implementar estes sistemas
+        // this.systems.industrySimulation.update(deltaTime);
+        // this.systems.socialSystem.update(deltaTime);
         
         // Processar eventos pendentes
         this.processEvents();
@@ -180,13 +197,17 @@ export class RisingStarGame {
         
         // Eventos semanais (toda sexta-feira)
         if (dayOfWeek === 5) {
-            this.systems.industrySimulation.generateWeeklyCharts();
+            // TODO: Implementar sistema de charts
+            console.log('📊 Gerando charts semanais...');
+            // this.systems.industrySimulation.generateWeeklyCharts();
         }
         
         // Eventos mensais (dia 1)
         if (dayOfMonth === 1) {
-            this.systems.aiSimulation.generateMonthlyTrends();
-            this.systems.careerManagement.processMonthlyEarnings();
+            // TODO: Implementar sistemas mensais
+            console.log('📅 Processando eventos mensais...');
+            // this.systems.aiSimulation.generateMonthlyTrends();
+            // this.systems.careerManagement.processMonthlyEarnings();
         }
     }
     
@@ -198,25 +219,51 @@ export class RisingStarGame {
     }
     
     handleGameEvent(event) {
+        console.log('🎮 Processando evento:', event.type);
+        
         switch (event.type) {
             case 'song_released':
-                this.systems.industrySimulation.processSongRelease(event.data);
+                // TODO: Implementar processamento de lançamento
+                console.log('🎵 Música lançada:', event.data?.title || 'Sem título');
+                // this.systems.industrySimulation.processSongRelease(event.data);
                 break;
                 
             case 'collaboration_offer':
-                this.systems.interfaceManager.showCollaborationOffer(event.data);
+                if (this.systems.interfaceManager && this.systems.interfaceManager.showNotification) {
+                    this.systems.interfaceManager.showNotification({
+                        type: 'collaboration',
+                        title: 'Oferta de Colaboração!',
+                        message: `${event.data?.artist || 'Artista'} quer colaborar com você!`,
+                        data: event.data
+                    });
+                } else {
+                    console.log('🤝 Oferta de colaboração de:', event.data?.artist);
+                }
                 break;
                 
             case 'label_interest':
-                this.systems.careerManagement.processLabelInterest(event.data);
+                console.log('🏢 Interesse de gravadora:', event.data?.labelName || 'Gravadora');
+                // TODO: Implementar sistema de gravadoras
+                // this.systems.careerManagement.processLabelInterest(event.data);
                 break;
                 
             case 'media_attention':
-                this.systems.socialSystem.processMediaAttention(event.data);
+                console.log('📺 Atenção da mídia:', event.data?.outlet || 'Mídia');
+                // TODO: Implementar sistema social
+                // this.systems.socialSystem.processMediaAttention(event.data);
                 break;
                 
             case 'award_nomination':
-                this.systems.interfaceManager.showAwardNomination(event.data);
+                if (this.systems.interfaceManager && this.systems.interfaceManager.showNotification) {
+                    this.systems.interfaceManager.showNotification({
+                        type: 'award',
+                        title: 'Indicação para Prêmio!',
+                        message: `Você foi indicado para ${event.data?.award || 'um prêmio'}!`,
+                        data: event.data
+                    });
+                } else {
+                    console.log('🏆 Indicação para prêmio:', event.data?.award);
+                }
                 break;
                 
             default:
@@ -240,28 +287,79 @@ export class RisingStarGame {
     }
     
     showCharacterCreation() {
-        this.gameState = 'character_creation';
-        this.systems.mainMenu.hide();
+        console.log('🎭 Mostrando criação de personagem...');
+        
+        if (!this.systems.characterCreator) {
+            console.error('❌ CharacterCreator não inicializado!');
+            return;
+        }
+        
+        // Esconder menu principal
+        if (this.systems.mainMenu) {
+            this.systems.mainMenu.hide();
+        }
+        
+        // Mostrar criação de personagem
         this.systems.characterCreator.show();
     }
     
     startGame(playerData) {
+        console.log('🎮 Iniciando jogo para:', playerData.name || playerData.artistName);
         this.gameState = 'playing';
-        this.gameData.player = playerData;
         
-        // Inicializar player no mundo
-        this.systems.aiSimulation.initializePlayer(playerData);
-        this.systems.careerManagement.initializeCareer(playerData);
+        // Adicionar dados padrão ao player
+        this.gameData.player = {
+            ...playerData,
+            money: playerData.money || 10000, // $10k inicial
+            energy: playerData.energy || 100,
+            creativity: playerData.creativity || 100,
+            mood: playerData.mood || 75,
+            skills: {
+                songwriting: playerData.skills?.songwriting || 50,
+                production: playerData.skills?.production || 45,
+                performance: playerData.skills?.performance || 40,
+                marketing: playerData.skills?.marketing || 30,
+                networking: playerData.skills?.networking || 35
+            },
+            stats: {
+                totalSongs: 0,
+                totalStreams: 0,
+                totalRevenue: 0,
+                fans: 100 // Começar com 100 fãs
+            },
+            discography: [],
+            studioEquipment: 'basic',
+            achievements: []
+        };
+        
+        // Inicializar player no mundo (apenas sistemas que existem)
+        if (this.systems.aiSimulation && this.systems.aiSimulation.initializePlayer) {
+            this.systems.aiSimulation.initializePlayer(this.gameData.player);
+        }
+        
+        // TODO: Implementar sistema de carreira
+        // this.systems.careerManagement.initializeCareer(playerData);
         
         // Esconder telas anteriores e mostrar interface principal
-        this.systems.mainMenu.hide();
-        this.systems.characterCreator.hide();
-        this.systems.interfaceManager.showMainInterface();
+        if (this.systems.mainMenu) {
+            this.systems.mainMenu.hide();
+        }
+        
+        if (this.systems.characterCreator) {
+            this.systems.characterCreator.hide();
+        }
+        if (this.systems.interfaceManager) {
+            this.systems.interfaceManager.showMainInterface();
+        }
         
         // Gerar eventos iniciais
-        this.systems.aiSimulation.generateInitialEvents();
+        if (this.systems.aiSimulation && this.systems.aiSimulation.generateInitialEvents) {
+            this.systems.aiSimulation.generateInitialEvents();
+        }
         
-        console.log('🎮 Jogo iniciado para:', playerData.artistName);
+        console.log('✅ Jogo iniciado com sucesso!');
+        console.log('💰 Dinheiro inicial:', this.gameData.player.money);
+    console.log('� Habilidades:', this.gameData.player.skills);
     }
     
     pauseGame() {
@@ -292,10 +390,12 @@ export class RisingStarGame {
             news: this.gameData.news,
             trends: this.gameData.trends,
             systemStates: {
-                aiSimulation: this.systems.aiSimulation.getState(),
-                careerManagement: this.systems.careerManagement.getState(),
-                socialSystem: this.systems.socialSystem.getState(),
-                industrySimulation: this.systems.industrySimulation.getState()
+                aiSimulation: this.systems.aiSimulation?.getState ? this.systems.aiSimulation.getState() : null,
+                musicCreation: this.systems.musicCreation?.getState ? this.systems.musicCreation.getState() : null,
+                // TODO: Implementar estes sistemas
+                careerManagement: null, // this.systems.careerManagement.getState(),
+                socialSystem: null, // this.systems.socialSystem.getState(),
+                industrySimulation: null // this.systems.industrySimulation.getState()
             }
         };
         
@@ -391,6 +491,63 @@ export class RisingStarGame {
         document.body.appendChild(errorDiv);
     }
     
+    // ===== MÉTODOS DE MÚSICA =====
+    
+    // Criar nova música
+    createSong(songData) {
+        if (!this.systems.musicCreation) {
+            console.error('Sistema de música não inicializado');
+            return null;
+        }
+        return this.systems.musicCreation.createSong(songData);
+    }
+    
+    // Obter música atual em produção
+    getCurrentSong() {
+        if (!this.systems.musicCreation) return null;
+        return this.systems.musicCreation.getCurrentSong();
+    }
+    
+    // Obter todas as músicas do player
+    getPlayerSongs() {
+        if (!this.systems.musicCreation) return [];
+        return this.systems.musicCreation.getPlayerSongs();
+    }
+    
+    // Lançar música
+    releaseSong(songId) {
+        if (!this.systems.musicCreation) return false;
+        return this.systems.musicCreation.releaseSong(songId);
+    }
+    
+    // Verificar se player tem dinheiro suficiente
+    canAfford(amount) {
+        return this.gameData.player && this.gameData.player.money >= amount;
+    }
+    
+    // Gastar dinheiro
+    spendMoney(amount, reason = '') {
+        if (!this.gameData.player || this.gameData.player.money < amount) {
+            console.warn('Dinheiro insuficiente:', amount);
+            return false;
+        }
+        
+        this.gameData.player.money -= amount;
+        console.log(`💸 Gastou $${amount}${reason ? ' em ' + reason : ''}`);
+        return true;
+    }
+    
+    // Ganhar dinheiro
+    earnMoney(amount, source = '') {
+        if (!this.gameData.player) return false;
+        
+        this.gameData.player.money += amount;
+        console.log(`💰 Ganhou $${amount}${source ? ' de ' + source : ''}`);
+        return true;
+    }
+    
+    // ===== FIM MÉTODOS DE MÚSICA =====
+    
     // Métodos utilitários
     getFormattedDate() {
         return this.currentDate.toLocaleDateString('pt-BR', {
@@ -476,16 +633,62 @@ export class RisingStarGame {
         
         // Update auto-save based on settings
         if (settings.autoSaveEnabled && !this.autoSaveInterval) {
-            this.systems.dataManager.startAutoSave(2); // Auto-save every 2 minutes
+            const interval = settings.autoSaveInterval || 2; // Default 2 minutes
+            this.systems.dataManager.startAutoSave(interval);
         } else if (!settings.autoSaveEnabled && this.autoSaveInterval) {
             this.systems.dataManager.stopAutoSave();
         }
         
-        // Apply difficulty settings
+        // Apply game speed if fast mode is enabled
+        if (settings.fastModeEnabled) {
+            this.gameSpeed = 2.0; // 2x speed
+        } else {
+            this.gameSpeed = 1.0; // Normal speed
+        }
+        
+        // Difficulty is always normal (removed difficulty setting)
         if (this.systems.aiSimulation) {
-            this.systems.aiSimulation.setDifficulty(settings.difficulty);
+            this.systems.aiSimulation.setDifficulty('normal');
         }
         
         console.log('⚙️ Configurações aplicadas:', settings);
+    }
+
+    // ================= SETTINGS / STATS STUBS =================
+    getSettings() {
+        return this.settings || {};
+    }
+
+    saveSettings(settings) {
+        this.applySettings(settings);
+        try {
+            // Persist basic settings via DataManager if available
+            if (this.systems.dataManager?.saveSetting) {
+                Object.entries(settings).forEach(([k,v]) => {
+                    this.systems.dataManager.saveSetting(k, v);
+                });
+            } else {
+                localStorage.setItem('risingstar_game_settings', JSON.stringify(settings));
+            }
+            console.log('💾 Configurações de jogo salvas');
+        } catch (err) {
+            console.warn('Falha ao salvar configurações:', err);
+        }
+    }
+
+    // Recent activities placeholder (to be replaced with real event log later)
+    getRecentActivities(limit = 5) {
+        if (!this._activityLog) this._activityLog = [];
+        return this._activityLog.slice(-limit).reverse();
+    }
+
+    // Quick stats placeholder (derived later from real systems)
+    getQuickStats() {
+        return {
+            todayEarnings: 0,
+            weeklyStreams: 0,
+            newFans: 0,
+            currentTrend: 'N/A'
+        };
     }
 }
