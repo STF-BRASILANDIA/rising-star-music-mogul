@@ -84,7 +84,7 @@ export class RisingStarGame {
         console.log('✅ MusicCreation inicializado');
         
         // Importar e inicializar sistema de criação de personagem
-        const { CharacterCreator } = await import('../ui/character-creator-mobile.js');
+        const { CharacterCreator } = await import('../ui/character-creator.js');
         this.systems.characterCreator = new CharacterCreator(this);
         window.characterCreator = this.systems.characterCreator;
         console.log('✅ CharacterCreator inicializado');
