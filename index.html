@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <meta name="theme-color" content="#FF6B35">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">            <!-- Step 1: Profile -->
+            <div id="profile-step" class="creation-step">
+                <div class="step-header">
+                    <button class="back-btn" id="profileBack">Voltar</button>
+                    <h1 class="step-title">Perfil</h1>
+                </div><meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     <title>Rising Star: Music Mogul v2.0</title>
     <meta name="description" content="Simulação de carreira musical com IA dinâmica">
@@ -400,18 +404,18 @@
 
                 <div class="profile-form">
                     <div class="form-section">
-                        <label class="form-label">Character Name:</label>
+                        <label class="form-label">Nome do Personagem:</label>
                         <div class="name-inputs">
-                            <input type="text" id="firstName" placeholder="First Name" class="name-input">
-                            <input type="text" id="lastName" placeholder="Last Name" class="name-input">
+                            <input type="text" id="firstName" placeholder="Primeiro Nome" class="name-input">
+                            <input type="text" id="lastName" placeholder="Sobrenome" class="name-input">
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <label class="form-label">Location:</label>
+                        <label class="form-label">Localização:</label>
                         <div class="location-selector">
                             <button class="nav-arrow left" id="locationPrev">‹</button>
-                            <span class="location-display" id="locationDisplay">USA</span>
+                            <span class="location-display" id="locationDisplay">Estados Unidos</span>
                             <span class="counter">1/9</span>
                             <button class="nav-arrow right" id="locationNext">›</button>
                         </div>
@@ -419,84 +423,121 @@
 
                     <div class="form-row">
                         <div class="form-section">
-                            <label class="form-label">Age:</label>
+                            <label class="form-label">Idade:</label>
                             <div class="age-selector">
                                 <button class="nav-arrow left" id="agePrev">‹</button>
-                                <span class="age-display" id="ageDisplay">18</span>
+                                <span class="age-display" id="ageDisplay">18 anos</span>
                                 <button class="nav-arrow right" id="ageNext">›</button>
                             </div>
                         </div>
 
                         <div class="form-section">
-                            <label class="form-label">Sex:</label>
+                            <label class="form-label">Sexo:</label>
                             <div class="sex-buttons">
-                                <button class="sex-btn active" data-sex="male">Male</button>
-                                <button class="sex-btn" data-sex="female">Female</button>
+                                <button class="sex-btn active" data-sex="male">Masculino</button>
+                                <button class="sex-btn" data-sex="female">Feminino</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <label class="form-label">Genre:</label>
+                        <label class="form-label">Gênero:</label>
                         <select class="genre-select" id="genreSelect">
-                            <option value="pop">Pop</option>
-                            <option value="rock">Rock</option>
-                            <option value="hip-hop">Hip-Hop</option>
-                            <option value="electronic">Electronic</option>
-                            <option value="r&b">R&B</option>
+                            <option value="afrobeat">Afrobeat</option>
+                            <option value="alternative-country">Alternative Country</option>
+                            <option value="alternative-metal">Alternative Metal</option>
+                            <option value="alternative-pop">Alternative Pop</option>
+                            <option value="alternative-rap">Alternative Rap</option>
+                            <option value="alternative-rock">Alternative Rock</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="art-rock">Art Rock</option>
+                            <option value="blues">Blues</option>
+                            <option value="brazilian-funk">Brazilian Funk</option>
+                            <option value="christian">Christian</option>
+                            <option value="classical">Classical</option>
                             <option value="country">Country</option>
+                            <option value="dance-pop">Dance Pop</option>
+                            <option value="edm">EDM</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="electronica">Electronica</option>
+                            <option value="folk">Folk</option>
+                            <option value="gangsta-rap">Gangsta Rap</option>
+                            <option value="gospel">Gospel</option>
+                            <option value="hard-rock">Hard Rock</option>
+                            <option value="house">House</option>
+                            <option value="indie-pop">Indie Pop</option>
+                            <option value="indie-rock">Indie Rock</option>
+                            <option value="jpop">J-Pop</option>
                             <option value="jazz">Jazz</option>
+                            <option value="kpop">K-Pop</option>
+                            <option value="latin-pop">Latin Pop</option>
+                            <option value="latin-rap">Latin Rap</option>
+                            <option value="metal">Metal</option>
+                            <option value="pop">Pop</option>
+                            <option value="pop-country">Pop Country</option>
+                            <option value="pop-punk">Pop Punk</option>
+                            <option value="pop-rap">Pop Rap</option>
+                            <option value="pop-rnb">Pop/R&B</option>
+                            <option value="progressive-rock">Progressive Rock</option>
+                            <option value="punk-rock">Punk Rock</option>
+                            <option value="rnb" selected>R&B</option>
+                            <option value="rap">Rap</option>
                             <option value="reggae">Reggae</option>
+                            <option value="rock">Rock</option>
+                            <option value="soft-rock">Soft Rock</option>
+                            <option value="soul">Soul</option>
+                            <option value="techno">Techno</option>
+                            <option value="teen-pop">Teen Pop</option>
                         </select>
                     </div>
 
                     <div class="form-section">
-                        <label class="form-label">Band Name:</label>
-                        <input type="text" id="bandName" placeholder="Enter Your Band Name" class="band-input">
+                        <label class="form-label">Nome da Banda:</label>
+                        <input type="text" id="bandName" placeholder="Digite o Nome da Sua Banda" class="band-input">
                     </div>
 
                     <div class="form-section">
-                        <label class="form-label">Role:</label>
+                        <label class="form-label">Função:</label>
                         <div class="role-selector">
                             <button class="nav-arrow left" id="rolePrev">‹</button>
-                            <span class="role-display" id="roleDisplay">Singer</span>
-                            <span class="counter">1/11</span>
+                            <span class="role-display" id="roleDisplay">Cantor(a)</span>
+                            <span class="counter">1/6</span>
                             <button class="nav-arrow right" id="roleNext">›</button>
                         </div>
                     </div>
                 </div>
 
-                <button class="continue-btn" id="profileContinue">Continue</button>
+                <button class="continue-btn" id="profileContinue">Continuar</button>
             </div>
 
             <!-- Step 2: Background Story -->
             <div id="background-step" class="creation-step" style="display: none;">
                 <div class="step-header">
-                    <button class="back-btn" id="backgroundBack">Back</button>
-                    <h1 class="step-title">Background Story</h1>
+                    <button class="back-btn" id="backgroundBack">Voltar</button>
+                    <h1 class="step-title">História de Fundo</h1>
                 </div>
 
                 <div class="background-content">
                     <div class="background-selector">
-                        <label class="form-label">Select</label>
+                        <label class="form-label">Selecionar</label>
                         <div class="background-dropdown">
                             <button class="dropdown-btn" id="backgroundDropdown">
-                                <span id="selectedBackground">Unknown (Artist)</span>
+                                <span id="selectedBackground">Desconhecido (Artista)</span>
                                 <span class="dropdown-arrow">▼</span>
                             </button>
                             <div class="dropdown-menu" id="backgroundMenu" style="display: none;">
-                                <div class="dropdown-item" data-background="unknown">Unknown (Artist)</div>
-                                <div class="dropdown-item" data-background="rising">Rising Star</div>
-                                <div class="dropdown-item" data-background="veteran">Veteran Musician</div>
-                                <div class="dropdown-item" data-background="producer">Producer Turned Artist</div>
-                                <div class="dropdown-item" data-background="social">Social Media Star</div>
-                                <div class="dropdown-item" data-background="legacy">Music Legacy</div>
+                                <div class="dropdown-item" data-background="unknown">Desconhecido (Artista)</div>
+                                <div class="dropdown-item" data-background="rising">Estrela em Ascensão</div>
+                                <div class="dropdown-item" data-background="veteran">Músico Veterano</div>
+                                <div class="dropdown-item" data-background="producer">Produtor Virou Artista</div>
+                                <div class="dropdown-item" data-background="social">Estrela das Redes Sociais</div>
+                                <div class="dropdown-item" data-background="legacy">Legado Musical</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="background-description" id="backgroundDescription">
-                        <p>You're a virtual unknown in the music industry. You have a little bit of money and a big dream.</p>
+                        <p>Você é praticamente desconhecido na indústria musical. Tem pouco dinheiro e um grande sonho.</p>
                     </div>
 
                     <div class="background-stats">
@@ -521,8 +562,8 @@
             <!-- Step 3: Skills -->
             <div id="skills-step" class="creation-step" style="display: none;">
                 <div class="step-header">
-                    <button class="back-btn" id="skillsBack">Back</button>
-                    <h1 class="step-title">Band Members</h1>
+                    <button class="back-btn" id="skillsBack">Voltar</button>
+                    <h1 class="step-title">Habilidades</h1>
                 </div>
 
                 <div class="skills-content">
@@ -531,10 +572,10 @@
                             <div class="avatar-placeholder"></div>
                         </div>
                         <div class="character-details">
-                            <h3 id="characterName">Character Name</h3>
-                            <p id="characterRole">Singer</p>
+                            <h3 id="characterName">Nome do Personagem</h3>
+                            <p id="characterRole">Cantor(a)</p>
                             <div class="chemistry-bar">
-                                <span class="chemistry-label">Chemistry</span>
+                                <span class="chemistry-label">Química</span>
                                 <div class="chemistry-progress">
                                     <div class="chemistry-fill"></div>
                                 </div>
@@ -544,62 +585,62 @@
                     </div>
 
                     <div class="points-available">
-                        <span class="points-label">Points Available:</span>
+                        <span class="points-label">Pontos Disponíveis:</span>
                         <span class="points-value" id="pointsAvailable">0</span>
                     </div>
 
                     <div class="skills-list">
                         <div class="skill-item">
-                            <span class="skill-name">Singing</span>
+                            <span class="skill-name">Canto</span>
                             <span class="skill-value" id="singingValue">60</span>
                             <button class="skill-btn minus" data-skill="singing">−</button>
                             <button class="skill-btn plus" data-skill="singing">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Rapping</span>
+                            <span class="skill-name">Rap</span>
                             <span class="skill-value" id="rappingValue">60</span>
                             <button class="skill-btn minus" data-skill="rapping">−</button>
                             <button class="skill-btn plus" data-skill="rapping">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Dancing</span>
+                            <span class="skill-name">Dança</span>
                             <span class="skill-value" id="dancingValue">15</span>
                             <button class="skill-btn minus" data-skill="dancing">−</button>
                             <button class="skill-btn plus" data-skill="dancing">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Screaming</span>
+                            <span class="skill-name">Vocal Extremo</span>
                             <span class="skill-value" id="screamingValue">0</span>
                             <button class="skill-btn minus" data-skill="screaming">−</button>
                             <button class="skill-btn plus" data-skill="screaming">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Live</span>
+                            <span class="skill-name">Performance Ao Vivo</span>
                             <span class="skill-value" id="liveValue">20</span>
                             <button class="skill-btn minus" data-skill="live">−</button>
                             <button class="skill-btn plus" data-skill="live">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Songwriting</span>
+                            <span class="skill-name">Composição</span>
                             <span class="skill-value" id="songwritingValue">60</span>
                             <button class="skill-btn minus" data-skill="songwriting">−</button>
                             <button class="skill-btn plus" data-skill="songwriting">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Producing</span>
+                            <span class="skill-name">Produção</span>
                             <span class="skill-value" id="producingValue">40</span>
                             <button class="skill-btn minus" data-skill="producing">−</button>
                             <button class="skill-btn plus" data-skill="producing">+</button>
                         </div>
 
                         <div class="skill-item">
-                            <span class="skill-name">Commercial</span>
+                            <span class="skill-name">Comercial</span>
                             <span class="skill-value" id="commercialValue">30</span>
                             <button class="skill-btn minus" data-skill="commercial">−</button>
                             <button class="skill-btn plus" data-skill="commercial">+</button>
@@ -607,7 +648,7 @@
                     </div>
                 </div>
 
-                <button class="continue-btn" id="startGameFinal">Start Game</button>
+                <button class="continue-btn" id="startGameFinal">Começar Jogo</button>
             </div>
         </div>
     </div>
