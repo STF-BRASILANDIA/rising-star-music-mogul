@@ -1046,6 +1046,51 @@
                 }, 1000);
             });
         }
+        
+        // DEBUG: Add global click listener to track ALL clicks
+        document.addEventListener('click', function(e) {
+            console.log('🖱️ GLOBAL CLICK DEBUG:', {
+                target: e.target,
+                tagName: e.target.tagName,
+                className: e.target.className,
+                id: e.target.id,
+                onclick: e.target.onclick ? 'HAS ONCLICK' : 'NO ONCLICK',
+                timestamp: new Date().toISOString()
+            });
+        }, true);
+        
+        // DEBUG: Add touch listener for mobile debugging
+        document.addEventListener('touchstart', function(e) {
+            console.log('📱 TOUCH START DEBUG:', {
+                target: e.target,
+                tagName: e.target.tagName,
+                className: e.target.className,
+                id: e.target.id,
+                touches: e.touches.length,
+                timestamp: new Date().toISOString()
+            });
+        }, true);
+        
+        // DEBUG: Monitor for any JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('❌ JAVASCRIPT ERROR:', {
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                colno: e.colno,
+                error: e.error,
+                timestamp: new Date().toISOString()
+            });
+        });
+        
+        // DEBUG: Monitor for unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('❌ UNHANDLED PROMISE REJECTION:', {
+                reason: e.reason,
+                promise: e.promise,
+                timestamp: new Date().toISOString()
+            });
+        });
     </script>
 </body>
 </html>

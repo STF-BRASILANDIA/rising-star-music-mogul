@@ -7,6 +7,11 @@
 
 export class CharacterCreator {
     constructor(gameEngine) {
+        console.log('🎯 CharacterCreator constructor called!', {
+            gameEngine: gameEngine,
+            timestamp: new Date().toISOString()
+        });
+        
         this.gameEngine = gameEngine;
         this.currentStep = 1; // Start at step 1 (Profile)
         this.maxSteps = 3; // Profile, Background, Skills
@@ -134,9 +139,18 @@ export class CharacterCreator {
     }
     
     show() {
-        console.log('🎭 CharacterCreator.show() called');
+        console.log('🔥 CharacterCreator.show() called!', {
+            currentStep: this.currentStep,
+            initialized: this.initialized,
+            timestamp: new Date().toISOString()
+        });
+        
         const element = document.getElementById('characterCreation');
-        console.log('📋 CharacterCreation element:', element);
+        console.log('📋 CharacterCreation element found:', {
+            element: element,
+            display: element ? element.style.display : 'NOT FOUND',
+            classes: element ? element.className : 'NOT FOUND'
+        });
         
         if (element) {
             // FORCE DISPLAY WITH MAXIMUM PRIORITY
@@ -214,22 +228,42 @@ export class CharacterCreator {
         console.log(`🔍 Found ${continueButtons.length} continue buttons:`, continueButtons);
         
         // Back buttons - DIRECT binding
-        document.querySelectorAll('.back-btn').forEach(btn => {
+        document.querySelectorAll('.back-btn').forEach((btn, index) => {
             btn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('⬅️ Back button clicked');
-                this.previousStep();
+                try {
+                    console.log('🔥 BACK BUTTON clicked!', {
+                        buttonIndex: index,
+                        currentStep: this.currentStep,
+                        event: e,
+                        target: e.target
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.previousStep();
+                    console.log('✅ Back button processed successfully');
+                } catch (error) {
+                    console.error('❌ ERROR in back button:', error);
+                }
             };
         });
         
         // Continue buttons - DIRECT binding
-        continueButtons.forEach(btn => {
+        continueButtons.forEach((btn, index) => {
             btn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('➡️ Continue button clicked');
-                this.nextStep();
+                try {
+                    console.log('🔥 CONTINUE BUTTON clicked!', {
+                        buttonIndex: index,
+                        currentStep: this.currentStep,
+                        event: e,
+                        target: e.target
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.nextStep();
+                    console.log('✅ Continue button processed successfully');
+                } catch (error) {
+                    console.error('❌ ERROR in continue button:', error);
+                }
             };
         });
         console.log(`✅ Setup complete for ${continueButtons.length} continue buttons`);
@@ -264,10 +298,21 @@ export class CharacterCreator {
             
             // DIRECT event binding
             btn.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log(`🚻 Sex button clicked: "${sexValue}" from button ${index}`);
-                this.selectSex(sexValue);
+                try {
+                    console.log('🔥 SEX BUTTON clicked!', {
+                        sexValue: sexValue,
+                        buttonIndex: index,
+                        buttonText: btn.textContent.trim(),
+                        event: e,
+                        target: e.target
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.selectSex(sexValue);
+                    console.log('✅ Sex button processed successfully');
+                } catch (error) {
+                    console.error('❌ ERROR in sex button:', error);
+                }
             };
             
             console.log(`✅ Sex button ${index} setup complete`);
@@ -451,19 +496,39 @@ export class CharacterCreator {
             
             // DIRECT event binding - no mobile wrapper
             locationLeftArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('⬅️ Location PREV clicked');
-                this.currentLocationIndex = (this.currentLocationIndex - 1 + this.locations.length) % this.locations.length;
-                updateLocationDisplay();
+                try {
+                    console.log('🔥 Location LEFT ARROW clicked!', {
+                        currentIndex: this.currentLocationIndex,
+                        locationsLength: this.locations.length,
+                        event: e,
+                        target: e.target
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.currentLocationIndex = (this.currentLocationIndex - 1 + this.locations.length) % this.locations.length;
+                    updateLocationDisplay();
+                    console.log('✅ Location LEFT arrow processed successfully');
+                } catch (error) {
+                    console.error('❌ ERROR in location LEFT arrow:', error);
+                }
             };
             
             locationRightArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('➡️ Location NEXT clicked');
-                this.currentLocationIndex = (this.currentLocationIndex + 1) % this.locations.length;
-                updateLocationDisplay();
+                try {
+                    console.log('🔥 Location RIGHT ARROW clicked!', {
+                        currentIndex: this.currentLocationIndex,
+                        locationsLength: this.locations.length,
+                        event: e,
+                        target: e.target
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.currentLocationIndex = (this.currentLocationIndex + 1) % this.locations.length;
+                    updateLocationDisplay();
+                    console.log('✅ Location RIGHT arrow processed successfully');
+                } catch (error) {
+                    console.error('❌ ERROR in location RIGHT arrow:', error);
+                }
             };
             
             // Initialize display
@@ -700,17 +765,39 @@ export class CharacterCreator {
             if (minusBtn && plusBtn && skillName) {
                 // DIRECT event binding
                 minusBtn.onclick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log(`➖ Minus skill clicked: ${skillName}`);
-                    this.decreaseSkill(skillName);
+                    try {
+                        console.log('🔥 SKILL MINUS clicked!', {
+                            skillName: skillName,
+                            currentValue: this.character.skills[skillName],
+                            availablePoints: this.availablePoints,
+                            event: e,
+                            target: e.target
+                        });
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.decreaseSkill(skillName);
+                        console.log('✅ Skill minus processed successfully');
+                    } catch (error) {
+                        console.error('❌ ERROR in skill minus:', error);
+                    }
                 };
                 
                 plusBtn.onclick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log(`➕ Plus skill clicked: ${skillName}`);
-                    this.increaseSkill(skillName);
+                    try {
+                        console.log('🔥 SKILL PLUS clicked!', {
+                            skillName: skillName,
+                            currentValue: this.character.skills[skillName],
+                            availablePoints: this.availablePoints,
+                            event: e,
+                            target: e.target
+                        });
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.increaseSkill(skillName);
+                        console.log('✅ Skill plus processed successfully');
+                    } catch (error) {
+                        console.error('❌ ERROR in skill plus:', error);
+                    }
                 };
                 
                 console.log(`🎮 Skills controls setup for: ${skillName}`);
