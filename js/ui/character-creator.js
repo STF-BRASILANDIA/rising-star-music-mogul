@@ -10,22 +10,16 @@ export class CharacterCreator {
         this.gameEngine = gameEngine;
         this.currentStep = 1; // Start at step 1 (Profile)
         this.maxSteps = 3; // Profile, Background, Skills
-        // Pontos iniciais para distribuir - 100 pontos totais, 6 usados (1 em cada talento artístico), 94 disponíveis
+        // 100 pontos totais para distribuir
         this.availablePoints = 100;
         
         // Initialize notification system
         this.initNotificationSystem();
         
-        // TESTE IMEDIATO DE NOTIFICAÇÃO
-        setTimeout(() => {
-            console.log('🧪 Testing notification system...');
-            this.showNotification('TESTE: Sistema inicializado!', 'info', 5000);
-        }, 1000);
-        
         this.locations = ['Estados Unidos', 'Canadá', 'América Latina', 'Reino Unido', 'Europa', 'África', 'Coreia do Sul', 'Japão', 'Oceania'];
         this.roles = ['Cantor(a)', 'Rapper', 'Guitarrista', 'Baterista', 'Tecladista', 'DJ'];
         
-        // Histórias de fundo atualizadas
+        // Background stories
         this.backgroundStories = [
             {
                 id: 'bestFriend',
@@ -188,52 +182,28 @@ export class CharacterCreator {
         console.log('✅ Character creator components setup complete');
     }
     
-    // Função para adicionar eventos compatíveis com mobile (touch + click)
+    // SIMPLIFIED mobile compatible event system
     addMobileCompatibleEvent(element, callback) {
         if (!element) {
             console.log('⚠️ addMobileCompatibleEvent: element is null');
             return;
         }
         
-        let touchHandled = false;
-        let clickTimeout = null;
+        console.log('🔧 Adding SIMPLIFIED mobile event to:', element.className || element.tagName);
         
-        console.log('🔧 Adding mobile compatible event to:', element.className || element.tagName);
-        
-        // Evento de toque (mobile)
-        element.addEventListener('touchstart', (e) => {
-            touchHandled = true;
+        // SINGLE unified event handler
+        const handleEvent = (e) => {
+            console.log('� Event triggered:', e.type, 'on:', element.className || element.tagName);
             e.preventDefault();
-            console.log('👆 Touch event triggered on:', element.className || element.tagName);
-            
-            // Clear any pending click
-            if (clickTimeout) {
-                clearTimeout(clickTimeout);
-                clickTimeout = null;
-            }
-            
+            e.stopPropagation();
             callback();
-        }, { passive: false });
+        };
         
-        // Evento de clique (desktop + fallback)
-        element.addEventListener('click', (e) => {
-            console.log('🖱️ Click event triggered on:', element.className || element.tagName, 'touchHandled:', touchHandled);
-            
-            if (!touchHandled) {
-                e.preventDefault();
-                callback();
-            }
-            
-            // Reset touch flag after a delay
-            clickTimeout = setTimeout(() => {
-                touchHandled = false;
-            }, 300);
-        });
+        // Add both events with same handler
+        element.addEventListener('click', handleEvent);
+        element.addEventListener('touchstart', handleEvent, { passive: false });
         
-        // Reset flag após um tempo
-        element.addEventListener('touchend', () => {
-            setTimeout(() => { touchHandled = false; }, 300);
-        });
+        console.log('✅ SIMPLIFIED mobile events added');
     }
     
     bindEvents() {
@@ -356,25 +326,13 @@ export class CharacterCreator {
     showStep(stepNumber) {
         console.log(`🎯 Showing step ${stepNumber}`);
         
-        // CRITICAL: Ensure character creation container is ALWAYS visible
+        // FORCE character creation container to be visible
         const characterCreation = document.getElementById('characterCreation');
         if (characterCreation) {
             characterCreation.style.display = 'flex';
             characterCreation.style.visibility = 'visible';
             characterCreation.style.opacity = '1';
-            
-            // CONTROLA SCROLL APENAS PARA SKILLS (STEP 3)
-            if (stepNumber === 3) {
-                characterCreation.classList.add('skills-active');
-                console.log(`🔧 ADDED skills-active class for scroll`);
-            } else {
-                characterCreation.classList.remove('skills-active');
-                console.log(`🔧 REMOVED skills-active class - no scroll`);
-            }
-            
-            console.log(`🔧 FORCED character creation container to be visible`);
-        } else {
-            console.error('❌ CHARACTER CREATION CONTAINER NOT FOUND!');
+            console.log(`🔧 Character creation container forced visible`);
         }
         
         // Map step numbers to step IDs
@@ -385,43 +343,18 @@ export class CharacterCreator {
         };
         
         // Hide all steps
-        const allSteps = document.querySelectorAll('.creation-step');
-        console.log(`📋 Found ${allSteps.length} creation steps`);
-        allSteps.forEach(step => {
+        document.querySelectorAll('.creation-step').forEach(step => {
             step.style.display = 'none';
-            console.log(`🔄 Hiding step:`, step.id);
         });
         
         // Show current step
         const stepId = stepIds[stepNumber];
         const currentStepElement = document.getElementById(stepId);
-        console.log(`📋 Step ${stepNumber} (${stepId}) element:`, currentStepElement);
         if (currentStepElement) {
             currentStepElement.style.display = 'flex';
             currentStepElement.style.visibility = 'visible';
             currentStepElement.style.opacity = '1';
-            console.log(`✅ Step ${stepNumber} display set to flex with full visibility`);
-            
-            // Force visibility check
-            setTimeout(() => {
-                const computedStyle = window.getComputedStyle(currentStepElement);
-                console.log(`🔍 Step ${stepNumber} computed display:`, computedStyle.display);
-                console.log(`🔍 Step ${stepNumber} visibility:`, computedStyle.visibility);
-                console.log(`🔍 Step ${stepNumber} opacity:`, computedStyle.opacity);
-                
-                // Check container as well
-                const containerStyle = window.getComputedStyle(characterCreation);
-                console.log(`🔍 Container computed display:`, containerStyle.display);
-                console.log(`🔍 Container visibility:`, containerStyle.visibility);
-                console.log(`🔍 Container opacity:`, containerStyle.opacity);
-                
-                // Check if any content is visible
-                const skillsContent = currentStepElement.querySelector('.skills-content');
-                if (skillsContent) {
-                    console.log(`🔍 Skills content found:`, skillsContent);
-                    console.log(`🔍 Skills content display:`, window.getComputedStyle(skillsContent).display);
-                }
-            }, 100);
+            console.log(`✅ Step ${stepNumber} displayed`);
         } else {
             console.error(`❌ Step ${stepNumber} (${stepId}) element not found!`);
         }
@@ -429,29 +362,9 @@ export class CharacterCreator {
         this.currentStep = stepNumber;
         this.updateNavigationButtons();
         
-        // Update specific step content
+        // Update character info for step 3
         if (stepNumber === 3) {
-            console.log('🛡️ STEP 3 PROTECTION ACTIVATED');
-            console.log('🛡️ Stack trace for step 3 display:', new Error().stack);
-            
-            // CRITICAL: Block ALL validateCurrentStep calls for next 500ms
-            const originalValidate = this.validateCurrentStep;
-            this.validateCurrentStep = () => {
-                console.log('🚫 validateCurrentStep() BLOCKED for step 3');
-                console.log('🚫 Stack trace:', new Error().stack);
-                return false; // Always false for step 3
-            };
-            
-            // Update character info now that buttons are properly configured
-            console.log('📊 Updating character info for step 3');
             this.updateCharacterInfo();
-            console.log('📊 Character info updated - buttons should be configured for manual interaction');
-            
-            // Restore function after delay, but with step 3 protection
-            setTimeout(() => {
-                this.validateCurrentStep = originalValidate;
-                console.log('🔄 validateCurrentStep restored with step 3 protection');
-            }, 500);
         }
     }
     
@@ -463,40 +376,37 @@ export class CharacterCreator {
             btn.style.display = this.currentStep === 1 ? 'none' : 'flex';
         });
         
-        // Update continue buttons with CLEAR event handling
+        // Update continue buttons with SIMPLIFIED event handling
         document.querySelectorAll('.continue-btn').forEach((btn, index) => {
             console.log(`🔧 Configuring continue button ${index} for step ${this.currentStep}`);
             
-            // COMPLETELY CLEAR all existing handlers
-            btn.onclick = null;
-            btn.removeEventListener('click', this.nextStep);
-            btn.removeEventListener('click', this.startGame);
+            // REMOVE all existing event listeners completely
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
             
             if (this.currentStep === 3) {
-                console.log('🛑 STEP 3 BUTTON PROTECTION: Setting up manual start game');
-                btn.textContent = 'Começar Jogo';
+                console.log('🛑 STEP 3: Setting up start game button');
+                newBtn.textContent = 'Começar Jogo';
                 
-                // Create a CLEAN click handler for step 3
-                btn.onclick = (e) => {
-                    console.log('🎯 Manual "Começar Jogo" button clicked - step 3');
-                    console.log('🎯 Event details:', e);
-                    console.log('🎯 Button element:', btn);
+                // SINGLE event handler for step 3
+                newBtn.addEventListener('click', (e) => {
+                    console.log('🎯 Start Game button clicked');
                     e.preventDefault();
                     e.stopPropagation();
                     this.startGame();
-                };
-                console.log('✅ Step 3 button configured for MANUAL interaction');
+                });
+                console.log('✅ Step 3 button configured');
             } else {
                 console.log(`🔧 Setting up continue button for step ${this.currentStep}`);
-                btn.textContent = 'Continuar';
+                newBtn.textContent = 'Continuar';
                 
-                // Create a CLEAN click handler for steps 1-2
-                btn.onclick = (e) => {
+                // SINGLE event handler for steps 1-2
+                newBtn.addEventListener('click', (e) => {
                     console.log(`➡️ Continue button clicked for step ${this.currentStep}`);
                     e.preventDefault();
                     e.stopPropagation();
                     this.nextStep();
-                };
+                });
                 console.log(`✅ Step ${this.currentStep} button configured`);
             }
         });
@@ -917,50 +827,22 @@ export class CharacterCreator {
     nextStep() {
         console.log(`🚀 nextStep called - current step: ${this.currentStep}`);
         
-        // ABSOLUTE BLOCK: NEVER allow progression FROM step 3
+        // SIMPLIFIED: Block step 3 progression completely
         if (this.currentStep === 3) {
-            console.log('🛑 STEP 3 DETECTED - COMPLETELY BLOCKED');
-            console.log('⛔ nextStep() is DISABLED for skills step');
-            console.log('🎯 User MUST click "Começar Jogo" button manually');
-            return; // TOTAL BLOCK - no progression possible
-        }
-        
-        // SPECIAL HANDLING: When moving TO step 3 (skills), don't auto-validate
-        if (this.currentStep === 2) {
-            // Validate current step (2) first
-            const isValid = this.validateCurrentStep();
-            console.log(`📝 Step 2 validation result: ${isValid}`);
-            
-            if (isValid) {
-                this.currentStep = 3;
-                console.log(`✅ Moving to skills step ${this.currentStep} WITHOUT auto-validation`);
-                this.showStep(this.currentStep);
-                console.log('🎯 REACHED STEP 3 - All auto-progression now DISABLED');
-                // DO NOT call validateCurrentStep for step 3 - user must manually start game
-                return;
-            } else {
-                console.log(`❌ Step 2 validation failed, staying on step ${this.currentStep}`);
-                return;
-            }
-        }
-        
-        // For steps 1 -> 2, normal validation
-        if (this.currentStep === 1) {
-            const isValid = this.validateCurrentStep();
-            console.log(`📝 Step 1 validation result: ${isValid}`);
-            
-            if (isValid) {
-                this.currentStep = 2;
-                console.log(`✅ Moving to step ${this.currentStep}`);
-                this.showStep(this.currentStep);
-            } else {
-                console.log(`❌ Validation failed, staying on step ${this.currentStep}`);
-            }
+            console.log('🛑 Step 3 - Use "Começar Jogo" button');
+            this.showNotification('Use o botão "Começar Jogo" para iniciar!', 'info');
             return;
         }
         
-        // Should not reach here for step 3
-        console.log(`⚠️ Unexpected nextStep call for step ${this.currentStep}`);
+        // SIMPLIFIED: Normal progression for steps 1 & 2
+        const isValid = this.validateCurrentStep();
+        if (isValid && this.currentStep < this.maxSteps) {
+            this.currentStep++;
+            console.log(`✅ Moving to step ${this.currentStep}`);
+            this.showStep(this.currentStep);
+        } else if (!isValid) {
+            console.log(`❌ Step ${this.currentStep} validation failed`);
+        }
     }
     
     previousStep() {
@@ -975,61 +857,33 @@ export class CharacterCreator {
         // GLOBAL PROTECTION: ABSOLUTELY NEVER auto-validate step 3
         if (this.currentStep === 3) {
             console.log('🛑 GLOBAL PROTECTION: BLOCKING step 3 auto-validation');
-            console.log('🛑 Stack trace for blocked validation:', new Error().stack);
             console.log('⛔ Step 3 validation is COMPLETELY DISABLED');
             console.log('🎯 User must manually click "Começar Jogo" button');
             return false; // ALWAYS false for step 3
         }
         
+        // FORCE DOM synchronization before validation
+        this.syncCharacterWithDOM();
+        
         switch (this.currentStep) {
             case 1: // Profile
                 console.log('📝 Checking profile fields...');
-                
-                // BUGFIX: Get current values from DOM in case events didn't fire
-                const firstNameInput = document.getElementById('firstName');
-                const lastNameInput = document.getElementById('lastName');
-                const artistNameInput = document.getElementById('artistName');
-                const genreSelectInput = document.getElementById('genreSelect');
-                const bandNameInput = document.getElementById('bandName');
-                
-                if (firstNameInput) {
-                    this.character.firstName = firstNameInput.value;
-                    console.log('🔧 Updated firstName from DOM:', this.character.firstName);
-                }
-                if (lastNameInput) {
-                    this.character.lastName = lastNameInput.value;
-                    console.log('🔧 Updated lastName from DOM:', this.character.lastName);
-                }
-                if (artistNameInput) {
-                    this.character.artistName = artistNameInput.value;
-                    console.log('🔧 Updated artistName from DOM:', this.character.artistName);
-                }
-                if (genreSelectInput && genreSelectInput.value !== '') {
-                    this.character.genre = genreSelectInput.value;
-                    console.log('🔧 Updated genre from DOM:', this.character.genre);
-                }
-                if (bandNameInput) {
-                    this.character.bandName = bandNameInput.value;
-                    console.log('🔧 Updated bandName from DOM:', this.character.bandName);
-                }
-                
                 console.log('firstName:', this.character.firstName);
                 console.log('lastName:', this.character.lastName);
                 console.log('artistName:', this.character.artistName);
                 console.log('genre:', this.character.genre);
-                console.log('bandName:', this.character.bandName);
                 
-                if (!this.character.firstName.trim()) {
+                if (!this.character.firstName?.trim()) {
                     console.log('❌ First name validation failed');
                     this.showNotification('Por favor, insira seu primeiro nome.', 'warning');
                     return false;
                 }
-                if (!this.character.lastName.trim()) {
+                if (!this.character.lastName?.trim()) {
                     console.log('❌ Last name validation failed');
                     this.showNotification('Por favor, insira seu sobrenome.', 'warning');
                     return false;
                 }
-                if (!this.character.artistName.trim()) {
+                if (!this.character.artistName?.trim()) {
                     console.log('❌ Artist name validation failed');
                     this.showNotification('Por favor, insira seu nome artístico.', 'warning');
                     return false;
@@ -1044,38 +898,6 @@ export class CharacterCreator {
                 
             case 2: // Background
                 console.log('🎭 Checking background...');
-                
-                // BUGFIX: Get current value from DOM in case events didn't fire
-                const backgroundSelectInput = document.getElementById('backgroundSelect');
-                if (backgroundSelectInput && backgroundSelectInput.value !== '') {
-                    console.log('🔧 Found background selection in DOM:', backgroundSelectInput.value);
-                    const backgroundIndex = parseInt(backgroundSelectInput.value);
-                    const background = this.backgroundStories[backgroundIndex];
-                    if (background) {
-                        this.character.backgroundStory = background;
-                        this.character.backgroundBonuses = background.stats;
-                        console.log('🔧 Updated backgroundStory from DOM:', this.character.backgroundStory.name);
-                    }
-                }
-                
-                // BUGFIX: Also check for location/role/age from DOM
-                const locationDisplay = document.querySelector('.location-display');
-                const roleDisplay = document.querySelector('.role-display');
-                const ageDisplay = document.querySelector('.age-display');
-                
-                if (locationDisplay && locationDisplay.textContent && locationDisplay.textContent !== 'Selecione') {
-                    this.character.location = locationDisplay.textContent;
-                    console.log('🔧 Updated location from DOM:', this.character.location);
-                }
-                if (roleDisplay && roleDisplay.textContent && roleDisplay.textContent !== 'Selecione') {
-                    this.character.role = roleDisplay.textContent;
-                    console.log('🔧 Updated role from DOM:', this.character.role);
-                }
-                if (ageDisplay && ageDisplay.textContent && !isNaN(parseInt(ageDisplay.textContent))) {
-                    this.character.age = parseInt(ageDisplay.textContent);
-                    console.log('🔧 Updated age from DOM:', this.character.age);
-                }
-                
                 console.log('backgroundStory:', this.character.backgroundStory);
                 console.log('location:', this.character.location);
                 console.log('role:', this.character.role);
@@ -1108,6 +930,65 @@ export class CharacterCreator {
                 console.log('✅ Default validation passed');
                 return true;
         }
+    }
+    
+    // NEW METHOD: Force DOM synchronization
+    syncCharacterWithDOM() {
+        console.log('🔄 Syncing character with DOM...');
+        
+        // Profile fields
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const artistNameInput = document.getElementById('artistName');
+        const genreSelectInput = document.getElementById('genreSelect');
+        const bandNameInput = document.getElementById('bandName');
+        
+        if (firstNameInput?.value) {
+            this.character.firstName = firstNameInput.value;
+        }
+        if (lastNameInput?.value) {
+            this.character.lastName = lastNameInput.value;
+        }
+        if (artistNameInput?.value) {
+            this.character.artistName = artistNameInput.value;
+        }
+        if (genreSelectInput?.value) {
+            this.character.genre = genreSelectInput.value;
+        }
+        if (bandNameInput?.value) {
+            this.character.bandName = bandNameInput.value;
+        }
+        
+        // Background fields
+        const backgroundSelectInput = document.getElementById('backgroundSelect');
+        if (backgroundSelectInput?.value) {
+            const backgroundIndex = parseInt(backgroundSelectInput.value);
+            const background = this.backgroundStories[backgroundIndex];
+            if (background) {
+                this.character.backgroundStory = background;
+                this.character.backgroundBonuses = background.stats;
+            }
+        }
+        
+        // Display values (location, role, age)
+        const locationDisplay = document.querySelector('.location-display');
+        const roleDisplay = document.querySelector('.role-display');
+        const ageDisplay = document.querySelector('.age-display');
+        
+        if (locationDisplay?.textContent && !locationDisplay.textContent.includes('Selecione')) {
+            this.character.location = locationDisplay.textContent;
+        }
+        if (roleDisplay?.textContent && !roleDisplay.textContent.includes('Selecione')) {
+            this.character.role = roleDisplay.textContent;
+        }
+        if (ageDisplay?.textContent) {
+            const ageMatch = ageDisplay.textContent.match(/(\d+)/);
+            if (ageMatch) {
+                this.character.age = parseInt(ageMatch[1]);
+            }
+        }
+        
+        console.log('✅ DOM sync completed');
     }
     
     startGame() {

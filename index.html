@@ -595,7 +595,7 @@
                     display: none !important;
                 }
                 
-                /* CSS MOBILE TOUCH FIX */
+                /* ENHANCED MOBILE TOUCH FIX - HIGHER Z-INDEX */
                 button, .sex-btn, .continue-btn, .back-btn, .skill-btn, .nav-arrow {
                     -webkit-touch-callout: none !important;
                     -webkit-user-select: none !important;
@@ -605,22 +605,33 @@
                     cursor: pointer !important;
                     pointer-events: auto !important;
                     position: relative !important;
-                    z-index: 10 !important;
+                    z-index: 100 !important; /* INCREASED from 10 to 100 */
+                    border: none !important;
+                    outline: none !important;
+                }
+                
+                /* SPECIFIC HIGH Z-INDEX for critical buttons */
+                .nav-arrow, .sex-btn, .skill-btn {
+                    z-index: 200 !important; /* EVEN HIGHER for interactive buttons */
+                    background: rgba(255,255,255,0.1) !important;
+                    backdrop-filter: blur(5px) !important;
                 }
                 
                 /* Efeitos de toque para mobile */
-                button:active, .sex-btn:active, .continue-btn:active, .back-btn:active, .skill-btn:active {
-                    transform: scale(0.98) !important;
+                button:active, .sex-btn:active, .continue-btn:active, .back-btn:active, .skill-btn:active, .nav-arrow:active {
+                    transform: scale(0.95) !important;
                     transition: transform 0.1s ease !important;
+                    background: rgba(255,255,255,0.2) !important;
                 }
                 
                 /* Garantir que botões sejam clicáveis no mobile */
                 @media (max-width: 768px) {
-                    button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
-                        min-height: 44px !important;
-                        min-width: 44px !important;
+                    button, .sex-btn, .continue-btn, .back-btn, .skill-btn, .nav-arrow {
+                        min-height: 48px !important; /* INCREASED from 44px */
+                        min-width: 48px !important;
                         position: relative !important;
-                        z-index: 10 !important;
+                        z-index: 300 !important; /* MAXIMUM z-index for mobile */
+                        margin: 2px !important; /* Add space to prevent overlap */
                     }
                     
                     /* GitHub Pages mobile fix */
@@ -628,12 +639,19 @@
                         pointer-events: auto !important;
                         -webkit-user-select: none !important;
                         user-select: none !important;
+                        z-index: 100 !important;
                     }
                 }
                 
                 /* GitHub Pages specific fixes */
                 * {
                     -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+                }
+                
+                /* FORCE clickable areas */
+                .skill-controls, .sex-buttons, .age-selector, .location-selector, .role-selector {
+                    position: relative !important;
+                    z-index: 50 !important;
                 }
             </style>
 
@@ -909,7 +927,7 @@
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
-    <script type="module" src="js/ui/character-creator.js?v=2.1.0"></script>
+    <script type="module" src="js/ui/character-creator.js?v=3.0.0"></script>
     
     <!-- Initialize Character Creator globally -->
     <script type="module">
