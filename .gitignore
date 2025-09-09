@@ -19,7 +19,7 @@ config/
 database/
 docs/
 src/
-ui/
+# ui/ # REMOVIDO - estava bloqueando js/ui/
 
 # Arquivos Python antigos
 auto_demo.py
