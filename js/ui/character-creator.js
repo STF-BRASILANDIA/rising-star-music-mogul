@@ -846,6 +846,8 @@ export class CharacterCreator {
                 const firstNameInput = document.getElementById('firstName');
                 const lastNameInput = document.getElementById('lastName');
                 const artistNameInput = document.getElementById('artistName');
+                const genreSelectInput = document.getElementById('genreSelect');
+                const bandNameInput = document.getElementById('bandName');
                 
                 if (firstNameInput) {
                     this.character.firstName = firstNameInput.value;
@@ -859,10 +861,20 @@ export class CharacterCreator {
                     this.character.artistName = artistNameInput.value;
                     console.log('🔧 Updated artistName from DOM:', this.character.artistName);
                 }
+                if (genreSelectInput && genreSelectInput.value !== '') {
+                    this.character.genre = genreSelectInput.value;
+                    console.log('🔧 Updated genre from DOM:', this.character.genre);
+                }
+                if (bandNameInput) {
+                    this.character.bandName = bandNameInput.value;
+                    console.log('🔧 Updated bandName from DOM:', this.character.bandName);
+                }
                 
                 console.log('firstName:', this.character.firstName);
                 console.log('lastName:', this.character.lastName);
                 console.log('artistName:', this.character.artistName);
+                console.log('genre:', this.character.genre);
+                console.log('bandName:', this.character.bandName);
                 
                 if (!this.character.firstName.trim()) {
                     console.log('❌ First name validation failed');
@@ -879,11 +891,30 @@ export class CharacterCreator {
                     this.showNotification('Por favor, insira seu nome artístico.', 'warning');
                     return false;
                 }
+                if (!this.character.genre) {
+                    console.log('❌ Genre validation failed');
+                    this.showNotification('Por favor, selecione um gênero musical.', 'warning');
+                    return false;
+                }
                 console.log('✅ Profile validation passed');
                 return true;
                 
             case 2: // Background
                 console.log('🎭 Checking background...');
+                
+                // BUGFIX: Get current value from DOM in case events didn't fire
+                const backgroundSelectInput = document.getElementById('backgroundSelect');
+                if (backgroundSelectInput && backgroundSelectInput.value !== '') {
+                    console.log('🔧 Found background selection in DOM:', backgroundSelectInput.value);
+                    const backgroundIndex = parseInt(backgroundSelectInput.value);
+                    const background = this.backgroundStories[backgroundIndex];
+                    if (background) {
+                        this.character.backgroundStory = background;
+                        this.character.backgroundBonuses = background.stats;
+                        console.log('🔧 Updated backgroundStory from DOM:', this.character.backgroundStory.name);
+                    }
+                }
+                
                 console.log('backgroundStory:', this.character.backgroundStory);
                 
                 if (!this.character.backgroundStory) {
