@@ -190,24 +190,44 @@ export class CharacterCreator {
     
     // Função para adicionar eventos compatíveis com mobile (touch + click)
     addMobileCompatibleEvent(element, callback) {
-        if (!element) return;
+        if (!element) {
+            console.log('⚠️ addMobileCompatibleEvent: element is null');
+            return;
+        }
         
         let touchHandled = false;
+        let clickTimeout = null;
+        
+        console.log('🔧 Adding mobile compatible event to:', element.className || element.tagName);
         
         // Evento de toque (mobile)
         element.addEventListener('touchstart', (e) => {
             touchHandled = true;
             e.preventDefault();
+            console.log('👆 Touch event triggered on:', element.className || element.tagName);
+            
+            // Clear any pending click
+            if (clickTimeout) {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+            }
+            
             callback();
         }, { passive: false });
         
         // Evento de clique (desktop + fallback)
         element.addEventListener('click', (e) => {
+            console.log('🖱️ Click event triggered on:', element.className || element.tagName, 'touchHandled:', touchHandled);
+            
             if (!touchHandled) {
                 e.preventDefault();
                 callback();
             }
-            touchHandled = false;
+            
+            // Reset touch flag after a delay
+            clickTimeout = setTimeout(() => {
+                touchHandled = false;
+            }, 300);
         });
         
         // Reset flag após um tempo
@@ -246,9 +266,34 @@ export class CharacterCreator {
         }
         
         // Sex buttons
-        document.querySelectorAll('.sex-btn').forEach(btn => {
-            this.addMobileCompatibleEvent(btn, (e) => this.selectSex(btn.dataset.sex));
+        console.log('🚻 Setting up sex buttons...');
+        const sexButtons = document.querySelectorAll('.sex-btn');
+        console.log('🚻 Found', sexButtons.length, 'sex buttons');
+        
+        if (sexButtons.length === 0) {
+            console.error('❌ No sex buttons found! Check HTML structure.');
+        }
+        
+        sexButtons.forEach((btn, index) => {
+            const sexValue = btn.dataset.sex;
+            console.log(`🚻 Setting up sex button ${index}: "${sexValue}" (${btn.textContent.trim()})`);
+            
+            if (!sexValue) {
+                console.error(`❌ Sex button ${index} missing data-sex attribute!`);
+                return;
+            }
+            
+            this.addMobileCompatibleEvent(btn, (e) => {
+                console.log(`🚻 Sex button clicked: "${sexValue}" from button ${index}`);
+                e.preventDefault();
+                e.stopPropagation();
+                this.selectSex(sexValue);
+            });
+            
+            console.log(`✅ Sex button ${index} setup complete`);
         });
+        
+        console.log('✅ Sex buttons setup completed');
         
         // Genre select
         const genreSelect = document.getElementById('genreSelect');
@@ -458,101 +503,199 @@ export class CharacterCreator {
     }
     
     setupLocationSelector() {
+        console.log('🗺️ Setting up location selector...');
+        
         const locationDisplay = document.querySelector('.location-display');
-        const locationLeftArrow = document.querySelector('.location-selector .nav-arrow:first-child');
-        const locationRightArrow = document.querySelector('.location-selector .nav-arrow:last-child');
+        const locationLeftArrow = document.getElementById('locationPrev');
+        const locationRightArrow = document.getElementById('locationNext');
         const locationCounter = document.querySelector('.location-selector .counter');
+        
+        console.log('🔍 Location selector elements found:');
+        console.log('  locationDisplay:', locationDisplay);
+        console.log('  locationLeftArrow:', locationLeftArrow);
+        console.log('  locationRightArrow:', locationRightArrow);
+        console.log('  locationCounter:', locationCounter);
+        
+        if (!this.locations || this.locations.length === 0) {
+            console.error('❌ No locations available!');
+            return;
+        }
         
         let currentLocationIndex = 0;
         
         if (locationDisplay && locationLeftArrow && locationRightArrow && locationCounter) {
             const updateLocationDisplay = () => {
-                locationDisplay.textContent = this.locations[currentLocationIndex];
+                const newLocation = this.locations[currentLocationIndex];
+                locationDisplay.textContent = newLocation;
                 locationCounter.textContent = `${currentLocationIndex + 1}/${this.locations.length}`;
-                this.character.location = this.locations[currentLocationIndex];
+                this.character.location = newLocation;
+                console.log('📍 Location updated to:', newLocation, 'Index:', currentLocationIndex);
             };
             
-            locationLeftArrow && this.addMobileCompatibleEvent(locationLeftArrow, () => {
+            // Left arrow - Previous location
+            this.addMobileCompatibleEvent(locationLeftArrow, () => {
+                console.log('⬅️ Location left arrow clicked, current index:', currentLocationIndex);
                 currentLocationIndex = (currentLocationIndex - 1 + this.locations.length) % this.locations.length;
+                console.log('⬅️ New location index:', currentLocationIndex);
                 updateLocationDisplay();
             });
             
-            locationRightArrow && this.addMobileCompatibleEvent(locationRightArrow, () => {
+            // Right arrow - Next location
+            this.addMobileCompatibleEvent(locationRightArrow, () => {
+                console.log('➡️ Location right arrow clicked, current index:', currentLocationIndex);
                 currentLocationIndex = (currentLocationIndex + 1) % this.locations.length;
+                console.log('➡️ New location index:', currentLocationIndex);
                 updateLocationDisplay();
             });
             
+            // Initialize display
             updateLocationDisplay();
+            console.log('✅ Location selector setup complete');
+        } else {
+            console.error('❌ Location selector elements not found:');
+            console.error('  locationDisplay:', !!locationDisplay);
+            console.error('  locationLeftArrow:', !!locationLeftArrow);
+            console.error('  locationRightArrow:', !!locationRightArrow);
+            console.error('  locationCounter:', !!locationCounter);
         }
     }
     
     setupRoleSelector() {
+        console.log('🎭 Setting up role selector...');
+        
         const roleDisplay = document.querySelector('.role-display');
-        const roleLeftArrow = document.querySelector('.role-selector .nav-arrow:first-child');
-        const roleRightArrow = document.querySelector('.role-selector .nav-arrow:last-child');
+        const roleLeftArrow = document.getElementById('rolePrev');
+        const roleRightArrow = document.getElementById('roleNext');
         const roleCounter = document.querySelector('.role-selector .counter');
+        
+        console.log('🔍 Role selector elements found:');
+        console.log('  roleDisplay:', roleDisplay);
+        console.log('  roleLeftArrow:', roleLeftArrow);
+        console.log('  roleRightArrow:', roleRightArrow);
+        console.log('  roleCounter:', roleCounter);
+        
+        if (!this.roles || this.roles.length === 0) {
+            console.error('❌ No roles available!');
+            return;
+        }
         
         let currentRoleIndex = 0;
         
         if (roleDisplay && roleLeftArrow && roleRightArrow && roleCounter) {
             const updateRoleDisplay = () => {
-                roleDisplay.textContent = this.roles[currentRoleIndex];
+                const newRole = this.roles[currentRoleIndex];
+                roleDisplay.textContent = newRole;
                 roleCounter.textContent = `${currentRoleIndex + 1}/${this.roles.length}`;
-                this.character.role = this.roles[currentRoleIndex];
+                this.character.role = newRole;
+                console.log('🎭 Role updated to:', newRole, 'Index:', currentRoleIndex);
             };
             
-            roleLeftArrow && this.addMobileCompatibleEvent(roleLeftArrow, () => {
+            // Left arrow - Previous role
+            this.addMobileCompatibleEvent(roleLeftArrow, () => {
+                console.log('⬅️ Role left arrow clicked, current index:', currentRoleIndex);
                 currentRoleIndex = (currentRoleIndex - 1 + this.roles.length) % this.roles.length;
+                console.log('⬅️ New role index:', currentRoleIndex);
                 updateRoleDisplay();
             });
             
-            roleRightArrow && this.addMobileCompatibleEvent(roleRightArrow, () => {
+            // Right arrow - Next role
+            this.addMobileCompatibleEvent(roleRightArrow, () => {
+                console.log('➡️ Role right arrow clicked, current index:', currentRoleIndex);
                 currentRoleIndex = (currentRoleIndex + 1) % this.roles.length;
+                console.log('➡️ New role index:', currentRoleIndex);
                 updateRoleDisplay();
             });
             
+            // Initialize display
             updateRoleDisplay();
+            console.log('✅ Role selector setup complete');
+        } else {
+            console.error('❌ Role selector elements not found:');
+            console.error('  roleDisplay:', !!roleDisplay);
+            console.error('  roleLeftArrow:', !!roleLeftArrow);
+            console.error('  roleRightArrow:', !!roleRightArrow);
+            console.error('  roleCounter:', !!roleCounter);
         }
     }
     
     setupAgeSelector() {
+        console.log('🎂 Setting up age selector...');
+        
         const ageDisplay = document.querySelector('.age-display');
-        const ageLeftArrow = document.querySelector('.age-selector .nav-arrow:first-child');
-        const ageRightArrow = document.querySelector('.age-selector .nav-arrow:last-child');
+        const ageLeftArrow = document.getElementById('agePrev');
+        const ageRightArrow = document.getElementById('ageNext');
+        
+        console.log('🔍 Age selector elements found:');
+        console.log('  ageDisplay:', ageDisplay);
+        console.log('  ageLeftArrow:', ageLeftArrow);
+        console.log('  ageRightArrow:', ageRightArrow);
         
         if (ageDisplay && ageLeftArrow && ageRightArrow) {
             const updateAgeDisplay = () => {
                 ageDisplay.textContent = this.character.age + ' anos';
+                console.log('📅 Age updated to:', this.character.age, 'anos');
             };
             
-            ageLeftArrow && this.addMobileCompatibleEvent(ageLeftArrow, () => {
+            // Left arrow - Decrease age
+            this.addMobileCompatibleEvent(ageLeftArrow, () => {
+                console.log('⬅️ Age left arrow clicked, current age:', this.character.age);
                 if (this.character.age > 14) {
                     this.character.age--;
+                    console.log('⬅️ New age:', this.character.age);
                     updateAgeDisplay();
+                } else {
+                    console.log('⛔ Age limit reached (minimum 14)');
                 }
             });
             
-            ageRightArrow && this.addMobileCompatibleEvent(ageRightArrow, () => {
+            // Right arrow - Increase age
+            this.addMobileCompatibleEvent(ageRightArrow, () => {
+                console.log('➡️ Age right arrow clicked, current age:', this.character.age);
                 if (this.character.age < 100) {
                     this.character.age++;
+                    console.log('➡️ New age:', this.character.age);
                     updateAgeDisplay();
+                } else {
+                    console.log('⛔ Age limit reached (maximum 100)');
                 }
             });
             
+            // Initialize display
             updateAgeDisplay();
+            console.log('✅ Age selector setup complete');
+        } else {
+            console.error('❌ Age selector elements not found:');
+            console.error('  ageDisplay:', !!ageDisplay);
+            console.error('  ageLeftArrow:', !!ageLeftArrow);
+            console.error('  ageRightArrow:', !!ageRightArrow);
         }
     }
     
     selectSex(sex) {
-        this.character.sex = sex;
+        console.log('🚻 selectSex called with:', sex);
+        console.log('🚻 Previous sex value:', this.character.sex);
         
-        // Update button states
-        document.querySelectorAll('.sex-btn').forEach(btn => {
+        this.character.sex = sex;
+        console.log('🚻 Sex updated to:', this.character.sex);
+        
+        // Update button states with improved logging
+        const sexButtons = document.querySelectorAll('.sex-btn');
+        console.log('🔍 Found', sexButtons.length, 'sex buttons');
+        
+        sexButtons.forEach((btn, index) => {
+            const btnSex = btn.dataset.sex;
+            console.log(`🔧 Processing button ${index}: dataset.sex="${btnSex}", target="${sex}"`);
+            
             btn.classList.remove('active');
-            if (btn.dataset.sex === sex) {
+            if (btnSex === sex) {
                 btn.classList.add('active');
+                console.log(`✅ Button ${index} activated for sex: ${sex}`);
+            } else {
+                console.log(`➖ Button ${index} deactivated (${btnSex} !== ${sex})`);
             }
         });
+        
+        console.log('✅ Sex selection completed:', this.character.sex);
     }
 
     initializeBackgroundDescription() {
@@ -915,11 +1058,47 @@ export class CharacterCreator {
                     }
                 }
                 
+                // BUGFIX: Also check for location/role/age from DOM
+                const locationDisplay = document.querySelector('.location-display');
+                const roleDisplay = document.querySelector('.role-display');
+                const ageDisplay = document.querySelector('.age-display');
+                
+                if (locationDisplay && locationDisplay.textContent && locationDisplay.textContent !== 'Selecione') {
+                    this.character.location = locationDisplay.textContent;
+                    console.log('🔧 Updated location from DOM:', this.character.location);
+                }
+                if (roleDisplay && roleDisplay.textContent && roleDisplay.textContent !== 'Selecione') {
+                    this.character.role = roleDisplay.textContent;
+                    console.log('🔧 Updated role from DOM:', this.character.role);
+                }
+                if (ageDisplay && ageDisplay.textContent && !isNaN(parseInt(ageDisplay.textContent))) {
+                    this.character.age = parseInt(ageDisplay.textContent);
+                    console.log('🔧 Updated age from DOM:', this.character.age);
+                }
+                
                 console.log('backgroundStory:', this.character.backgroundStory);
+                console.log('location:', this.character.location);
+                console.log('role:', this.character.role);
+                console.log('age:', this.character.age);
                 
                 if (!this.character.backgroundStory) {
                     console.log('❌ Background validation failed');
                     this.showNotification('Por favor, selecione uma história de fundo.', 'warning');
+                    return false;
+                }
+                if (!this.character.location) {
+                    console.log('❌ Location validation failed');
+                    this.showNotification('Por favor, selecione uma localização.', 'warning');
+                    return false;
+                }
+                if (!this.character.role) {
+                    console.log('❌ Role validation failed');
+                    this.showNotification('Por favor, selecione um papel na banda.', 'warning');
+                    return false;
+                }
+                if (!this.character.age) {
+                    console.log('❌ Age validation failed');
+                    this.showNotification('Por favor, selecione uma idade.', 'warning');
                     return false;
                 }
                 console.log('✅ Background validation passed');
