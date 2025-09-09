@@ -7,24 +7,28 @@
 
 export class CharacterCreator {
     constructor(gameEngine) {
-        console.log('🎯 CharacterCreator constructor called!', {
-            gameEngine: gameEngine,
-            timestamp: new Date().toISOString()
-        });
-        
         this.gameEngine = gameEngine;
         this.currentStep = 1; // Start at step 1 (Profile)
         this.maxSteps = 3; // Profile, Background, Skills
-        // 100 pontos totais para distribuir
+        // Pontos iniciais para distribuir - 100 pontos totais, 6 usados (1 em cada talento artístico), 94 disponíveis
         this.availablePoints = 100;
         
         // Initialize notification system
         this.initNotificationSystem();
         
+        // TESTE IMEDIATO DE NOTIFICAÇÃO
+        setTimeout(() => {
+            console.log('🧪 Testing notification system...');
+            this.showNotification('TESTE: Sistema inicializado!', 'info', 5000);
+        }, 1000);
+        
         this.locations = ['Estados Unidos', 'Canadá', 'América Latina', 'Reino Unido', 'Europa', 'África', 'Coreia do Sul', 'Japão', 'Oceania'];
         this.roles = ['Cantor(a)', 'Rapper', 'Guitarrista', 'Baterista', 'Tecladista', 'DJ'];
+    // Exposed indices to support delegation handlers
+    this.locationIndex = 0;
+    this.roleIndex = 0;
         
-        // Background stories
+        // Histórias de fundo atualizadas
         this.backgroundStories = [
             {
                 id: 'bestFriend',
@@ -92,6 +96,31 @@ export class CharacterCreator {
         ];
         
         this.init();
+        // If DOM already ready, proactively setup components to bind delegation
+        try {
+            if (document.readyState !== 'loading') {
+                console.log('ℹ️ DOM already ready in constructor - running setupComponents early');
+                if (!this.initialized) {
+                    this.setupComponents();
+                    this.initialized = true;
+                }
+            } else {
+                // Ensure setup runs once DOM is ready if show() isn't called immediately
+                document.addEventListener('DOMContentLoaded', () => {
+                    try {
+                        if (!this.initialized) {
+                            console.log('ℹ️ DOMContentLoaded - running setupComponents from constructor listener');
+                            this.setupComponents();
+                            this.initialized = true;
+                        }
+                    } catch (err) {
+                        console.warn('⚠️ Error running setupComponents on DOMContentLoaded:', err);
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn('⚠️ Error during constructor proactive setup:', err);
+        }
     }
     
     getDefaultCharacter() {
@@ -139,18 +168,9 @@ export class CharacterCreator {
     }
     
     show() {
-        console.log('🔥 CharacterCreator.show() called!', {
-            currentStep: this.currentStep,
-            initialized: this.initialized,
-            timestamp: new Date().toISOString()
-        });
-        
+        console.log('🎭 CharacterCreator.show() called');
         const element = document.getElementById('characterCreation');
-        console.log('📋 CharacterCreation element found:', {
-            element: element,
-            display: element ? element.style.display : 'NOT FOUND',
-            classes: element ? element.className : 'NOT FOUND'
-        });
+        console.log('📋 CharacterCreation element:', element);
         
         if (element) {
             // FORCE DISPLAY WITH MAXIMUM PRIORITY
@@ -196,150 +216,169 @@ export class CharacterCreator {
         console.log('✅ Character creator components setup complete');
     }
     
-    // SIMPLIFIED mobile compatible event system
+    // Função para adicionar eventos compatíveis com mobile (touch + click)
     addMobileCompatibleEvent(element, callback) {
-        if (!element) {
-            console.log('⚠️ addMobileCompatibleEvent: element is null');
-            return;
-        }
+        if (!element) return;
         
-        console.log('🔧 Adding SIMPLIFIED mobile event to:', element.className || element.tagName);
+        let touchHandled = false;
         
-        // SINGLE unified event handler
-        const handleEvent = (e) => {
-            console.log('� Event triggered:', e.type, 'on:', element.className || element.tagName);
+        // Evento de toque (mobile)
+        element.addEventListener('touchstart', (e) => {
+            touchHandled = true;
             e.preventDefault();
-            e.stopPropagation();
             callback();
-        };
+        }, { passive: false });
         
-        // Add both events with same handler
-        element.addEventListener('click', handleEvent);
-        element.addEventListener('touchstart', handleEvent, { passive: false });
+        // Evento de clique (desktop + fallback)
+        element.addEventListener('click', (e) => {
+            if (!touchHandled) {
+                e.preventDefault();
+                callback();
+            }
+            touchHandled = false;
+        });
         
-        console.log('✅ SIMPLIFIED mobile events added');
+        // Reset flag após um tempo
+        element.addEventListener('touchend', () => {
+            setTimeout(() => { touchHandled = false; }, 300);
+        });
     }
     
     bindEvents() {
         console.log('📋 Setting up character creator events...');
-        
-        // TEST: Check if DOM elements exist
-        const continueButtons = document.querySelectorAll('.continue-btn');
-        console.log(`🔍 Found ${continueButtons.length} continue buttons:`, continueButtons);
-        
-        // Back buttons - DIRECT binding
-        document.querySelectorAll('.back-btn').forEach((btn, index) => {
-            btn.onclick = (e) => {
-                try {
-                    console.log('🔥 BACK BUTTON clicked!', {
-                        buttonIndex: index,
-                        currentStep: this.currentStep,
-                        event: e,
-                        target: e.target
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.previousStep();
-                    console.log('✅ Back button processed successfully');
-                } catch (error) {
-                    console.error('❌ ERROR in back button:', error);
-                }
-            };
-        });
-        
-        // Continue buttons - DIRECT binding
-        continueButtons.forEach((btn, index) => {
-            btn.onclick = (e) => {
-                try {
-                    console.log('🔥 CONTINUE BUTTON clicked!', {
-                        buttonIndex: index,
-                        currentStep: this.currentStep,
-                        event: e,
-                        target: e.target
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.nextStep();
-                    console.log('✅ Continue button processed successfully');
-                } catch (error) {
-                    console.error('❌ ERROR in continue button:', error);
-                }
-            };
-        });
-        console.log(`✅ Setup complete for ${continueButtons.length} continue buttons`);
-        
-        // Start game button (skills step)
-        const startGameBtn = document.getElementById('startGameBtn');
-        if (startGameBtn) {
-            console.log('🔗 Binding start game button:', startGameBtn);
-            this.addMobileCompatibleEvent(startGameBtn, () => {
-                console.log('🎯 Start game button clicked via addEventListener');
-                this.startGame();
-            });
+        // Use event delegation on the stable container to avoid per-element handlers
+        const container = document.getElementById('characterCreation');
+        if (!container) {
+            console.warn('⚠️ characterCreation container not found for event delegation');
+            // Fallback to previous binding strategy for inputs and selects
+            const backgroundSelect = document.getElementById('backgroundSelect');
+            if (backgroundSelect) backgroundSelect.addEventListener('change', (e) => this.selectBackground(e.target.value));
+            this.bindInputEvents();
+            return;
         }
-        
-        // Sex buttons
-        console.log('🚻 Setting up sex buttons...');
-        const sexButtons = document.querySelectorAll('.sex-btn');
-        console.log('🚻 Found', sexButtons.length, 'sex buttons');
-        
-        if (sexButtons.length === 0) {
-            console.error('❌ No sex buttons found! Check HTML structure.');
-        }
-        
-        sexButtons.forEach((btn, index) => {
-            const sexValue = btn.dataset.sex;
-            console.log(`🚻 Setting up sex button ${index}: "${sexValue}" (${btn.textContent.trim()})`);
-            
-            if (!sexValue) {
-                console.error(`❌ Sex button ${index} missing data-sex attribute!`);
+
+        console.log('� Setting up delegated event handlers on #characterCreation');
+
+        // Touch->click suppression helper
+        let lastTouchTime = 0;
+
+        const delegatedHandler = (e) => {
+            // Suppress synthetic click after touch
+            if (e.type === 'click' && (Date.now() - lastTouchTime) < 500) return;
+            const target = e.target;
+            const btn = target.closest('.back-btn, .continue-btn, .sex-btn, .nav-arrow, .skill-plus, .skill-minus, .skill-btn, #startGameBtn');
+            if (!btn) return;
+
+            // Back
+            if (btn.closest && btn.closest('.back-btn')) {
+                e.preventDefault();
+                this.previousStep();
                 return;
             }
-            
-            // DIRECT event binding
-            btn.onclick = (e) => {
-                try {
-                    console.log('🔥 SEX BUTTON clicked!', {
-                        sexValue: sexValue,
-                        buttonIndex: index,
-                        buttonText: btn.textContent.trim(),
-                        event: e,
-                        target: e.target
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.selectSex(sexValue);
-                    console.log('✅ Sex button processed successfully');
-                } catch (error) {
-                    console.error('❌ ERROR in sex button:', error);
+
+            // Continue / Start
+            if (btn.classList && btn.classList.contains('continue-btn')) {
+                e.preventDefault();
+                if (this.currentStep === 3) {
+                    this.startGame();
+                } else {
+                    this.nextStep();
                 }
-            };
-            
-            console.log(`✅ Sex button ${index} setup complete`);
-        });
-        
-        console.log('✅ Sex buttons setup completed');
-        
-        // Genre select
-        const genreSelect = document.getElementById('genreSelect');
-        if (genreSelect) {
-            genreSelect.addEventListener('change', (e) => {
-                this.character.genre = e.target.value;
-            });
-        }
-        
-        // Background dropdown
+                return;
+            }
+
+            // Start game explicit button
+            if (btn.id === 'startGameBtn') {
+                e.preventDefault();
+                this.startGame();
+                return;
+            }
+
+            // Sex selection
+            const sexBtn = target.closest('.sex-btn');
+            if (sexBtn) {
+                e.preventDefault();
+                const sex = sexBtn.dataset && sexBtn.dataset.sex;
+                if (sex) this.selectSex(sex);
+                return;
+            }
+
+            // Navigation arrows (location/role/age)
+            const arrow = target.closest('.nav-arrow');
+            if (arrow) {
+                e.preventDefault();
+                // Determine which selector this arrow belongs to
+                const locationParent = arrow.closest('.location-selector');
+                const roleParent = arrow.closest('.role-selector');
+                const ageParent = arrow.closest('.age-selector');
+
+                const isLeft = (() => {
+                    const list = (arrow.parentNode || {}).querySelectorAll ? arrow.parentNode.querySelectorAll('.nav-arrow') : null;
+                    if (list && list.length >= 2) return list[0] === arrow;
+                    // Fallback: check for class
+                    return arrow.classList.contains('left');
+                })();
+
+                if (locationParent) {
+                    this.locationIndex = this.locationIndex || 0;
+                    if (isLeft) this.locationIndex = (this.locationIndex - 1 + this.locations.length) % this.locations.length;
+                    else this.locationIndex = (this.locationIndex + 1) % this.locations.length;
+                    const locationDisplay = locationParent.querySelector('.location-display');
+                    const locationCounter = locationParent.querySelector('.counter');
+                    if (locationDisplay) locationDisplay.textContent = this.locations[this.locationIndex];
+                    if (locationCounter) locationCounter.textContent = `${this.locationIndex + 1}/${this.locations.length}`;
+                    this.character.location = this.locations[this.locationIndex];
+                } else if (roleParent) {
+                    this.roleIndex = this.roleIndex || 0;
+                    if (isLeft) this.roleIndex = (this.roleIndex - 1 + this.roles.length) % this.roles.length;
+                    else this.roleIndex = (this.roleIndex + 1) % this.roles.length;
+                    const roleDisplay = roleParent.querySelector('.role-display');
+                    const roleCounter = roleParent.querySelector('.counter');
+                    if (roleDisplay) roleDisplay.textContent = this.roles[this.roleIndex];
+                    if (roleCounter) roleCounter.textContent = `${this.roleIndex + 1}/${this.roles.length}`;
+                    this.character.role = this.roles[this.roleIndex];
+                } else if (ageParent) {
+                    if (isLeft) {
+                        if (this.character.age > 14) this.character.age--;
+                    } else {
+                        if (this.character.age < 100) this.character.age++;
+                    }
+                    const ageDisplay = ageParent.querySelector('.age-display');
+                    if (ageDisplay) ageDisplay.textContent = this.character.age + ' anos';
+                }
+                return;
+            }
+
+            // Skill plus/minus
+            const plus = target.closest('.skill-plus, .skill-btn.plus');
+            const minus = target.closest('.skill-minus, .skill-btn.minus');
+            if (plus || minus) {
+                e.preventDefault();
+                const skillRow = (plus || minus).closest('[data-skill]');
+                if (!skillRow) return;
+                const skillName = skillRow.dataset.skill;
+                if (!skillName) return;
+                if (plus) this.increaseSkill(skillName);
+                if (minus) this.decreaseSkill(skillName);
+                return;
+            }
+        };
+
+        container.addEventListener('click', delegatedHandler);
+        container.addEventListener('touchstart', (e) => {
+            lastTouchTime = Date.now();
+            delegatedHandler(e);
+        }, { passive: false });
+
+        // Mark delegation bound so fallback bindings know not to attach
+        try { container.__characterCreatorDelegationBound = true; } catch (e) { /* ignore */ }
+
+        // Keep input bindings and background select
         const backgroundSelect = document.getElementById('backgroundSelect');
-        if (backgroundSelect) {
-            backgroundSelect.addEventListener('change', (e) => {
-                this.selectBackground(e.target.value);
-            });
-        }
-        
-        // Input fields
+        if (backgroundSelect) backgroundSelect.addEventListener('change', (e) => this.selectBackground(e.target.value));
         this.bindInputEvents();
-        
-        console.log('✅ Events bound successfully');
+
+        console.log('✅ Delegated events bound on container');
     }
     
     bindInputEvents() {
@@ -381,13 +420,25 @@ export class CharacterCreator {
     showStep(stepNumber) {
         console.log(`🎯 Showing step ${stepNumber}`);
         
-        // FORCE character creation container to be visible
+        // CRITICAL: Ensure character creation container is ALWAYS visible
         const characterCreation = document.getElementById('characterCreation');
         if (characterCreation) {
             characterCreation.style.display = 'flex';
             characterCreation.style.visibility = 'visible';
             characterCreation.style.opacity = '1';
-            console.log(`🔧 Character creation container forced visible`);
+            
+            // CONTROLA SCROLL APENAS PARA SKILLS (STEP 3)
+            if (stepNumber === 3) {
+                characterCreation.classList.add('skills-active');
+                console.log(`🔧 ADDED skills-active class for scroll`);
+            } else {
+                characterCreation.classList.remove('skills-active');
+                console.log(`🔧 REMOVED skills-active class - no scroll`);
+            }
+            
+            console.log(`🔧 FORCED character creation container to be visible`);
+        } else {
+            console.error('❌ CHARACTER CREATION CONTAINER NOT FOUND!');
         }
         
         // Map step numbers to step IDs
@@ -398,18 +449,43 @@ export class CharacterCreator {
         };
         
         // Hide all steps
-        document.querySelectorAll('.creation-step').forEach(step => {
+        const allSteps = document.querySelectorAll('.creation-step');
+        console.log(`📋 Found ${allSteps.length} creation steps`);
+        allSteps.forEach(step => {
             step.style.display = 'none';
+            console.log(`🔄 Hiding step:`, step.id);
         });
         
         // Show current step
         const stepId = stepIds[stepNumber];
         const currentStepElement = document.getElementById(stepId);
+        console.log(`📋 Step ${stepNumber} (${stepId}) element:`, currentStepElement);
         if (currentStepElement) {
             currentStepElement.style.display = 'flex';
             currentStepElement.style.visibility = 'visible';
             currentStepElement.style.opacity = '1';
-            console.log(`✅ Step ${stepNumber} displayed`);
+            console.log(`✅ Step ${stepNumber} display set to flex with full visibility`);
+            
+            // Force visibility check
+            setTimeout(() => {
+                const computedStyle = window.getComputedStyle(currentStepElement);
+                console.log(`🔍 Step ${stepNumber} computed display:`, computedStyle.display);
+                console.log(`🔍 Step ${stepNumber} visibility:`, computedStyle.visibility);
+                console.log(`🔍 Step ${stepNumber} opacity:`, computedStyle.opacity);
+                
+                // Check container as well
+                const containerStyle = window.getComputedStyle(characterCreation);
+                console.log(`🔍 Container computed display:`, containerStyle.display);
+                console.log(`🔍 Container visibility:`, containerStyle.visibility);
+                console.log(`🔍 Container opacity:`, containerStyle.opacity);
+                
+                // Check if any content is visible
+                const skillsContent = currentStepElement.querySelector('.skills-content');
+                if (skillsContent) {
+                    console.log(`🔍 Skills content found:`, skillsContent);
+                    console.log(`🔍 Skills content display:`, window.getComputedStyle(skillsContent).display);
+                }
+            }, 100);
         } else {
             console.error(`❌ Step ${stepNumber} (${stepId}) element not found!`);
         }
@@ -417,9 +493,29 @@ export class CharacterCreator {
         this.currentStep = stepNumber;
         this.updateNavigationButtons();
         
-        // Update character info for step 3
+        // Update specific step content
         if (stepNumber === 3) {
+            console.log('🛡️ STEP 3 PROTECTION ACTIVATED');
+            console.log('🛡️ Stack trace for step 3 display:', new Error().stack);
+            
+            // CRITICAL: Block ALL validateCurrentStep calls for next 500ms
+            const originalValidate = this.validateCurrentStep;
+            this.validateCurrentStep = () => {
+                console.log('🚫 validateCurrentStep() BLOCKED for step 3');
+                console.log('🚫 Stack trace:', new Error().stack);
+                return false; // Always false for step 3
+            };
+            
+            // Update character info now that buttons are properly configured
+            console.log('📊 Updating character info for step 3');
             this.updateCharacterInfo();
+            console.log('📊 Character info updated - buttons should be configured for manual interaction');
+            
+            // Restore function after delay, but with step 3 protection
+            setTimeout(() => {
+                this.validateCurrentStep = originalValidate;
+                console.log('🔄 validateCurrentStep restored with step 3 protection');
+            }, 500);
         }
     }
     
@@ -431,233 +527,141 @@ export class CharacterCreator {
             btn.style.display = this.currentStep === 1 ? 'none' : 'flex';
         });
         
-        // Update continue buttons with SIMPLIFIED event handling
+        // Update continue buttons with CLEAR event handling
         document.querySelectorAll('.continue-btn').forEach((btn, index) => {
             console.log(`🔧 Configuring continue button ${index} for step ${this.currentStep}`);
             
-            // REMOVE all existing event listeners completely
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
+            // COMPLETELY CLEAR all existing handlers
+            btn.onclick = null;
+            btn.removeEventListener('click', this.nextStep);
+            btn.removeEventListener('click', this.startGame);
             
             if (this.currentStep === 3) {
-                console.log('🛑 STEP 3: Setting up start game button');
-                newBtn.textContent = 'Começar Jogo';
+                console.log('🛑 STEP 3 BUTTON PROTECTION: Setting up manual start game');
+                btn.textContent = 'Começar Jogo';
                 
-                // SINGLE event handler for step 3
-                newBtn.addEventListener('click', (e) => {
-                    console.log('🎯 Start Game button clicked');
+                // Create a CLEAN click handler for step 3
+                btn.onclick = (e) => {
+                    console.log('🎯 Manual "Começar Jogo" button clicked - step 3');
+                    console.log('🎯 Event details:', e);
+                    console.log('🎯 Button element:', btn);
                     e.preventDefault();
                     e.stopPropagation();
                     this.startGame();
-                });
-                console.log('✅ Step 3 button configured');
+                };
+                console.log('✅ Step 3 button configured for MANUAL interaction');
             } else {
                 console.log(`🔧 Setting up continue button for step ${this.currentStep}`);
-                newBtn.textContent = 'Continuar';
+                btn.textContent = 'Continuar';
                 
-                // SINGLE event handler for steps 1-2
-                newBtn.addEventListener('click', (e) => {
+                // Create a CLEAN click handler for steps 1-2
+                btn.onclick = (e) => {
                     console.log(`➡️ Continue button clicked for step ${this.currentStep}`);
                     e.preventDefault();
                     e.stopPropagation();
                     this.nextStep();
-                });
+                };
                 console.log(`✅ Step ${this.currentStep} button configured`);
             }
         });
     }
     
     setupLocationSelector() {
-        console.log('🗺️ Setting up location selector...');
-        
         const locationDisplay = document.querySelector('.location-display');
-        const locationLeftArrow = document.getElementById('locationPrev');
-        const locationRightArrow = document.getElementById('locationNext');
+        const locationLeftArrow = document.querySelector('.location-selector .nav-arrow:first-child');
+        const locationRightArrow = document.querySelector('.location-selector .nav-arrow:last-child');
         const locationCounter = document.querySelector('.location-selector .counter');
         
-        if (!this.locations || this.locations.length === 0) {
-            console.error('❌ No locations available!');
-            return;
-        }
-        
-        // FORCE initialize current index
-        if (!this.currentLocationIndex) {
-            this.currentLocationIndex = 0;
-        }
+        let currentLocationIndex = 0;
         
         if (locationDisplay && locationLeftArrow && locationRightArrow && locationCounter) {
             const updateLocationDisplay = () => {
-                const newLocation = this.locations[this.currentLocationIndex];
-                locationDisplay.textContent = newLocation;
-                locationCounter.textContent = `${this.currentLocationIndex + 1}/${this.locations.length}`;
-                this.character.location = newLocation;
-                console.log('📍 Location updated to:', newLocation);
+                locationDisplay.textContent = this.locations[currentLocationIndex];
+                locationCounter.textContent = `${currentLocationIndex + 1}/${this.locations.length}`;
+                this.character.location = this.locations[currentLocationIndex];
             };
             
-            // DIRECT event binding - no mobile wrapper
-            locationLeftArrow.onclick = (e) => {
-                try {
-                    console.log('🔥 Location LEFT ARROW clicked!', {
-                        currentIndex: this.currentLocationIndex,
-                        locationsLength: this.locations.length,
-                        event: e,
-                        target: e.target
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.currentLocationIndex = (this.currentLocationIndex - 1 + this.locations.length) % this.locations.length;
-                    updateLocationDisplay();
-                    console.log('✅ Location LEFT arrow processed successfully');
-                } catch (error) {
-                    console.error('❌ ERROR in location LEFT arrow:', error);
-                }
-            };
+            locationLeftArrow && this.addMobileCompatibleEvent(locationLeftArrow, () => {
+                currentLocationIndex = (currentLocationIndex - 1 + this.locations.length) % this.locations.length;
+                updateLocationDisplay();
+            });
             
-            locationRightArrow.onclick = (e) => {
-                try {
-                    console.log('🔥 Location RIGHT ARROW clicked!', {
-                        currentIndex: this.currentLocationIndex,
-                        locationsLength: this.locations.length,
-                        event: e,
-                        target: e.target
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.currentLocationIndex = (this.currentLocationIndex + 1) % this.locations.length;
-                    updateLocationDisplay();
-                    console.log('✅ Location RIGHT arrow processed successfully');
-                } catch (error) {
-                    console.error('❌ ERROR in location RIGHT arrow:', error);
-                }
-            };
+            locationRightArrow && this.addMobileCompatibleEvent(locationRightArrow, () => {
+                currentLocationIndex = (currentLocationIndex + 1) % this.locations.length;
+                updateLocationDisplay();
+            });
             
-            // Initialize display
             updateLocationDisplay();
-            console.log('✅ Location selector setup complete');
-        } else {
-            console.error('❌ Location selector elements missing');
         }
     }
     
     setupRoleSelector() {
-        console.log('🎭 Setting up role selector...');
-        
         const roleDisplay = document.querySelector('.role-display');
-        const roleLeftArrow = document.getElementById('rolePrev');
-        const roleRightArrow = document.getElementById('roleNext');
+        const roleLeftArrow = document.querySelector('.role-selector .nav-arrow:first-child');
+        const roleRightArrow = document.querySelector('.role-selector .nav-arrow:last-child');
         const roleCounter = document.querySelector('.role-selector .counter');
         
-        if (!this.roles || this.roles.length === 0) {
-            console.error('❌ No roles available!');
-            return;
-        }
-        
-        // FORCE initialize current index
-        if (!this.currentRoleIndex) {
-            this.currentRoleIndex = 0;
-        }
+        let currentRoleIndex = 0;
         
         if (roleDisplay && roleLeftArrow && roleRightArrow && roleCounter) {
             const updateRoleDisplay = () => {
-                const newRole = this.roles[this.currentRoleIndex];
-                roleDisplay.textContent = newRole;
-                roleCounter.textContent = `${this.currentRoleIndex + 1}/${this.roles.length}`;
-                this.character.role = newRole;
-                console.log('🎭 Role updated to:', newRole);
+                roleDisplay.textContent = this.roles[currentRoleIndex];
+                roleCounter.textContent = `${currentRoleIndex + 1}/${this.roles.length}`;
+                this.character.role = this.roles[currentRoleIndex];
             };
             
-            // DIRECT event binding
-            roleLeftArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('⬅️ Role PREV clicked');
-                this.currentRoleIndex = (this.currentRoleIndex - 1 + this.roles.length) % this.roles.length;
+            roleLeftArrow && this.addMobileCompatibleEvent(roleLeftArrow, () => {
+                currentRoleIndex = (currentRoleIndex - 1 + this.roles.length) % this.roles.length;
                 updateRoleDisplay();
-            };
+            });
             
-            roleRightArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('➡️ Role NEXT clicked');
-                this.currentRoleIndex = (this.currentRoleIndex + 1) % this.roles.length;
+            roleRightArrow && this.addMobileCompatibleEvent(roleRightArrow, () => {
+                currentRoleIndex = (currentRoleIndex + 1) % this.roles.length;
                 updateRoleDisplay();
-            };
+            });
             
-            // Initialize display
             updateRoleDisplay();
-            console.log('✅ Role selector setup complete');
-        } else {
-            console.error('❌ Role selector elements missing');
         }
     }
     
     setupAgeSelector() {
-        console.log('🎂 Setting up age selector...');
-        
         const ageDisplay = document.querySelector('.age-display');
-        const ageLeftArrow = document.getElementById('agePrev');
-        const ageRightArrow = document.getElementById('ageNext');
+        const ageLeftArrow = document.querySelector('.age-selector .nav-arrow:first-child');
+        const ageRightArrow = document.querySelector('.age-selector .nav-arrow:last-child');
         
         if (ageDisplay && ageLeftArrow && ageRightArrow) {
             const updateAgeDisplay = () => {
                 ageDisplay.textContent = this.character.age + ' anos';
-                console.log('📅 Age updated to:', this.character.age);
             };
             
-            // DIRECT event binding
-            ageLeftArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('⬅️ Age PREV clicked');
+            ageLeftArrow && this.addMobileCompatibleEvent(ageLeftArrow, () => {
                 if (this.character.age > 14) {
                     this.character.age--;
                     updateAgeDisplay();
                 }
-            };
+            });
             
-            ageRightArrow.onclick = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('➡️ Age NEXT clicked');
+            ageRightArrow && this.addMobileCompatibleEvent(ageRightArrow, () => {
                 if (this.character.age < 100) {
                     this.character.age++;
                     updateAgeDisplay();
                 }
-            };
+            });
             
-            // Initialize display
             updateAgeDisplay();
-            console.log('✅ Age selector setup complete');
-        } else {
-            console.error('❌ Age selector elements missing');
         }
     }
     
     selectSex(sex) {
-        console.log('🚻 selectSex called with:', sex);
-        console.log('🚻 Previous sex value:', this.character.sex);
-        
         this.character.sex = sex;
-        console.log('🚻 Sex updated to:', this.character.sex);
         
-        // Update button states with improved logging
-        const sexButtons = document.querySelectorAll('.sex-btn');
-        console.log('🔍 Found', sexButtons.length, 'sex buttons');
-        
-        sexButtons.forEach((btn, index) => {
-            const btnSex = btn.dataset.sex;
-            console.log(`🔧 Processing button ${index}: dataset.sex="${btnSex}", target="${sex}"`);
-            
+        // Update button states
+        document.querySelectorAll('.sex-btn').forEach(btn => {
             btn.classList.remove('active');
-            if (btnSex === sex) {
+            if (btn.dataset.sex === sex) {
                 btn.classList.add('active');
-                console.log(`✅ Button ${index} activated for sex: ${sex}`);
-            } else {
-                console.log(`➖ Button ${index} deactivated (${btnSex} !== ${sex})`);
             }
         });
-        
-        console.log('✅ Sex selection completed:', this.character.sex);
     }
 
     initializeBackgroundDescription() {
@@ -763,43 +767,21 @@ export class CharacterCreator {
             const plusBtn = element.querySelector('.skill-btn.plus, .skill-plus');
             
             if (minusBtn && plusBtn && skillName) {
-                // DIRECT event binding
-                minusBtn.onclick = (e) => {
-                    try {
-                        console.log('🔥 SKILL MINUS clicked!', {
-                            skillName: skillName,
-                            currentValue: this.character.skills[skillName],
-                            availablePoints: this.availablePoints,
-                            event: e,
-                            target: e.target
-                        });
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.decreaseSkill(skillName);
-                        console.log('✅ Skill minus processed successfully');
-                    } catch (error) {
-                        console.error('❌ ERROR in skill minus:', error);
+                // Rely on event delegation (bound to container) instead of replacing nodes.
+                // Keep minimal direct handlers as fallback for environments where delegation isn't attached yet.
+                try {
+                    // Only add direct listeners if delegation not present
+                    const container = document.getElementById('characterCreation');
+                    const hasDelegation = container && container.__characterCreatorDelegationBound;
+                    if (!hasDelegation) {
+                        // Fallback binding
+                        minusBtn.addEventListener('click', () => this.decreaseSkill(skillName));
+                        plusBtn.addEventListener('click', () => this.increaseSkill(skillName));
                     }
-                };
-                
-                plusBtn.onclick = (e) => {
-                    try {
-                        console.log('🔥 SKILL PLUS clicked!', {
-                            skillName: skillName,
-                            currentValue: this.character.skills[skillName],
-                            availablePoints: this.availablePoints,
-                            event: e,
-                            target: e.target
-                        });
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.increaseSkill(skillName);
-                        console.log('✅ Skill plus processed successfully');
-                    } catch (error) {
-                        console.error('❌ ERROR in skill plus:', error);
-                    }
-                };
-                
+                } catch (err) {
+                    console.warn('⚠️ Error binding skill fallback handlers:', err);
+                }
+
                 console.log(`🎮 Skills controls setup for: ${skillName}`);
             }
         });
@@ -905,22 +887,50 @@ export class CharacterCreator {
     nextStep() {
         console.log(`🚀 nextStep called - current step: ${this.currentStep}`);
         
-        // SIMPLIFIED: Block step 3 progression completely
+        // ABSOLUTE BLOCK: NEVER allow progression FROM step 3
         if (this.currentStep === 3) {
-            console.log('🛑 Step 3 - Use "Começar Jogo" button');
-            this.showNotification('Use o botão "Começar Jogo" para iniciar!', 'info');
+            console.log('🛑 STEP 3 DETECTED - COMPLETELY BLOCKED');
+            console.log('⛔ nextStep() is DISABLED for skills step');
+            console.log('🎯 User MUST click "Começar Jogo" button manually');
+            return; // TOTAL BLOCK - no progression possible
+        }
+        
+        // SPECIAL HANDLING: When moving TO step 3 (skills), don't auto-validate
+        if (this.currentStep === 2) {
+            // Validate current step (2) first
+            const isValid = this.validateCurrentStep();
+            console.log(`📝 Step 2 validation result: ${isValid}`);
+            
+            if (isValid) {
+                this.currentStep = 3;
+                console.log(`✅ Moving to skills step ${this.currentStep} WITHOUT auto-validation`);
+                this.showStep(this.currentStep);
+                console.log('🎯 REACHED STEP 3 - All auto-progression now DISABLED');
+                // DO NOT call validateCurrentStep for step 3 - user must manually start game
+                return;
+            } else {
+                console.log(`❌ Step 2 validation failed, staying on step ${this.currentStep}`);
+                return;
+            }
+        }
+        
+        // For steps 1 -> 2, normal validation
+        if (this.currentStep === 1) {
+            const isValid = this.validateCurrentStep();
+            console.log(`📝 Step 1 validation result: ${isValid}`);
+            
+            if (isValid) {
+                this.currentStep = 2;
+                console.log(`✅ Moving to step ${this.currentStep}`);
+                this.showStep(this.currentStep);
+            } else {
+                console.log(`❌ Validation failed, staying on step ${this.currentStep}`);
+            }
             return;
         }
         
-        // SIMPLIFIED: Normal progression for steps 1 & 2
-        const isValid = this.validateCurrentStep();
-        if (isValid && this.currentStep < this.maxSteps) {
-            this.currentStep++;
-            console.log(`✅ Moving to step ${this.currentStep}`);
-            this.showStep(this.currentStep);
-        } else if (!isValid) {
-            console.log(`❌ Step ${this.currentStep} validation failed`);
-        }
+        // Should not reach here for step 3
+        console.log(`⚠️ Unexpected nextStep call for step ${this.currentStep}`);
     }
     
     previousStep() {
@@ -935,40 +945,51 @@ export class CharacterCreator {
         // GLOBAL PROTECTION: ABSOLUTELY NEVER auto-validate step 3
         if (this.currentStep === 3) {
             console.log('🛑 GLOBAL PROTECTION: BLOCKING step 3 auto-validation');
+            console.log('🛑 Stack trace for blocked validation:', new Error().stack);
             console.log('⛔ Step 3 validation is COMPLETELY DISABLED');
             console.log('🎯 User must manually click "Começar Jogo" button');
             return false; // ALWAYS false for step 3
         }
         
-        // FORCE DOM synchronization before validation
-        this.syncCharacterWithDOM();
-        
         switch (this.currentStep) {
             case 1: // Profile
                 console.log('📝 Checking profile fields...');
+                
+                // BUGFIX: Get current values from DOM in case events didn't fire
+                const firstNameInput = document.getElementById('firstName');
+                const lastNameInput = document.getElementById('lastName');
+                const artistNameInput = document.getElementById('artistName');
+                
+                if (firstNameInput) {
+                    this.character.firstName = firstNameInput.value;
+                    console.log('🔧 Updated firstName from DOM:', this.character.firstName);
+                }
+                if (lastNameInput) {
+                    this.character.lastName = lastNameInput.value;
+                    console.log('🔧 Updated lastName from DOM:', this.character.lastName);
+                }
+                if (artistNameInput) {
+                    this.character.artistName = artistNameInput.value;
+                    console.log('🔧 Updated artistName from DOM:', this.character.artistName);
+                }
+                
                 console.log('firstName:', this.character.firstName);
                 console.log('lastName:', this.character.lastName);
                 console.log('artistName:', this.character.artistName);
-                console.log('genre:', this.character.genre);
                 
-                if (!this.character.firstName?.trim()) {
+                if (!this.character.firstName.trim()) {
                     console.log('❌ First name validation failed');
                     this.showNotification('Por favor, insira seu primeiro nome.', 'warning');
                     return false;
                 }
-                if (!this.character.lastName?.trim()) {
+                if (!this.character.lastName.trim()) {
                     console.log('❌ Last name validation failed');
                     this.showNotification('Por favor, insira seu sobrenome.', 'warning');
                     return false;
                 }
-                if (!this.character.artistName?.trim()) {
+                if (!this.character.artistName.trim()) {
                     console.log('❌ Artist name validation failed');
                     this.showNotification('Por favor, insira seu nome artístico.', 'warning');
-                    return false;
-                }
-                if (!this.character.genre) {
-                    console.log('❌ Genre validation failed');
-                    this.showNotification('Por favor, selecione um gênero musical.', 'warning');
                     return false;
                 }
                 console.log('✅ Profile validation passed');
@@ -977,28 +998,10 @@ export class CharacterCreator {
             case 2: // Background
                 console.log('🎭 Checking background...');
                 console.log('backgroundStory:', this.character.backgroundStory);
-                console.log('location:', this.character.location);
-                console.log('role:', this.character.role);
-                console.log('age:', this.character.age);
                 
                 if (!this.character.backgroundStory) {
                     console.log('❌ Background validation failed');
                     this.showNotification('Por favor, selecione uma história de fundo.', 'warning');
-                    return false;
-                }
-                if (!this.character.location) {
-                    console.log('❌ Location validation failed');
-                    this.showNotification('Por favor, selecione uma localização.', 'warning');
-                    return false;
-                }
-                if (!this.character.role) {
-                    console.log('❌ Role validation failed');
-                    this.showNotification('Por favor, selecione um papel na banda.', 'warning');
-                    return false;
-                }
-                if (!this.character.age) {
-                    console.log('❌ Age validation failed');
-                    this.showNotification('Por favor, selecione uma idade.', 'warning');
                     return false;
                 }
                 console.log('✅ Background validation passed');
@@ -1008,65 +1011,6 @@ export class CharacterCreator {
                 console.log('✅ Default validation passed');
                 return true;
         }
-    }
-    
-    // NEW METHOD: Force DOM synchronization
-    syncCharacterWithDOM() {
-        console.log('🔄 Syncing character with DOM...');
-        
-        // Profile fields
-        const firstNameInput = document.getElementById('firstName');
-        const lastNameInput = document.getElementById('lastName');
-        const artistNameInput = document.getElementById('artistName');
-        const genreSelectInput = document.getElementById('genreSelect');
-        const bandNameInput = document.getElementById('bandName');
-        
-        if (firstNameInput?.value) {
-            this.character.firstName = firstNameInput.value;
-        }
-        if (lastNameInput?.value) {
-            this.character.lastName = lastNameInput.value;
-        }
-        if (artistNameInput?.value) {
-            this.character.artistName = artistNameInput.value;
-        }
-        if (genreSelectInput?.value) {
-            this.character.genre = genreSelectInput.value;
-        }
-        if (bandNameInput?.value) {
-            this.character.bandName = bandNameInput.value;
-        }
-        
-        // Background fields
-        const backgroundSelectInput = document.getElementById('backgroundSelect');
-        if (backgroundSelectInput?.value) {
-            const backgroundIndex = parseInt(backgroundSelectInput.value);
-            const background = this.backgroundStories[backgroundIndex];
-            if (background) {
-                this.character.backgroundStory = background;
-                this.character.backgroundBonuses = background.stats;
-            }
-        }
-        
-        // Display values (location, role, age)
-        const locationDisplay = document.querySelector('.location-display');
-        const roleDisplay = document.querySelector('.role-display');
-        const ageDisplay = document.querySelector('.age-display');
-        
-        if (locationDisplay?.textContent && !locationDisplay.textContent.includes('Selecione')) {
-            this.character.location = locationDisplay.textContent;
-        }
-        if (roleDisplay?.textContent && !roleDisplay.textContent.includes('Selecione')) {
-            this.character.role = roleDisplay.textContent;
-        }
-        if (ageDisplay?.textContent) {
-            const ageMatch = ageDisplay.textContent.match(/(\d+)/);
-            if (ageMatch) {
-                this.character.age = parseInt(ageMatch[1]);
-            }
-        }
-        
-        console.log('✅ DOM sync completed');
     }
     
     startGame() {
@@ -1207,29 +1151,7 @@ export class CharacterCreator {
     }
 }
 
-// For backwards compatibility, also make it available globally
+// For backwards compatibility, make the class available globally (no auto-instantiation)
 if (typeof window !== 'undefined') {
     window.CharacterCreator = CharacterCreator;
 }
-
-// Global initialization when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎭 CharacterCreator DOM ready - initializing...');
-    
-    // Wait for game engine to be available
-    const initCharacterCreator = () => {
-        console.log('🎭 Creating CharacterCreator instance...');
-        window.characterCreator = new CharacterCreator();
-        console.log('✅ CharacterCreator initialized globally as window.characterCreator');
-    };
-    
-    // Check if game engine exists, if not wait a bit
-    if (window.game && window.game.systems) {
-        initCharacterCreator();
-    } else {
-        console.log('⏳ Waiting for game engine...');
-        setTimeout(() => {
-            initCharacterCreator();
-        }, 500);
-    }
-});

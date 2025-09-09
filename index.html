@@ -8,46 +8,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <meta name="touch-action" content="manipulation">
     <title>Rising Star: Music Mogul v2.0</title>
     <meta name="description" content="Simulação de carreira musical com IA dinâmica">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="assets/icons/favicon.png">
     <link rel="apple-touch-icon" href="assets/icons/favicon.png">
-    <link rel="stylesheet" href="styles/main.css?v=3.1.0">
-    <link rel="stylesheet" href="styles/components.css?v=3.1.0">
-    <link rel="stylesheet" href="styles/responsive.css?v=3.1.0">
-    
-    <style>
-        /* MOBILE TOUCH FIXES */
-        .sex-btn, .continue-btn, .back-btn, 
-        .skill-btn, .skill-minus, .skill-plus,
-        .location-arrow, .age-arrow, .role-arrow,
-        #locationPrev, #locationNext, 
-        #agePrev, #ageNext,
-        #rolePrev, #roleNext {
-            touch-action: manipulation !important;
-            -webkit-touch-callout: none !important;
-            -webkit-user-select: none !important;
-            -khtml-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-        }
-        
-        /* Ensure buttons are tappable on mobile */
-        @media (max-width: 768px) {
-            .sex-btn, .continue-btn, .back-btn, 
-            .skill-btn, .skill-minus, .skill-plus,
-            .location-arrow, .age-arrow, .role-arrow {
-                min-height: 44px !important;
-                min-width: 44px !important;
-                padding: 12px !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css?v=3.0.0">
+    <link rel="stylesheet" href="styles/components.css?v=3.0.0">
+    <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -627,43 +595,29 @@
                     display: none !important;
                 }
                 
-                /* ENHANCED MOBILE TOUCH FIX - HIGHER Z-INDEX */
-                button, .sex-btn, .continue-btn, .back-btn, .skill-btn, .nav-arrow {
+                /* CSS MOBILE TOUCH FIX */
+                button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
                     -webkit-touch-callout: none !important;
                     -webkit-user-select: none !important;
                     user-select: none !important;
                     -webkit-tap-highlight-color: transparent !important;
                     touch-action: manipulation !important;
                     cursor: pointer !important;
-                    pointer-events: auto !important;
-                    position: relative !important;
-                    z-index: 100 !important; /* INCREASED from 10 to 100 */
-                    border: none !important;
-                    outline: none !important;
-                }
-                
-                /* SPECIFIC HIGH Z-INDEX for critical buttons */
-                .nav-arrow, .sex-btn, .skill-btn {
-                    z-index: 200 !important; /* EVEN HIGHER for interactive buttons */
-                    background: rgba(255,255,255,0.1) !important;
-                    backdrop-filter: blur(5px) !important;
                 }
                 
                 /* Efeitos de toque para mobile */
-                button:active, .sex-btn:active, .continue-btn:active, .back-btn:active, .skill-btn:active, .nav-arrow:active {
-                    transform: scale(0.95) !important;
+                button:active, .sex-btn:active, .continue-btn:active, .back-btn:active, .skill-btn:active {
+                    transform: scale(0.98) !important;
                     transition: transform 0.1s ease !important;
-                    background: rgba(255,255,255,0.2) !important;
                 }
                 
                 /* Garantir que botões sejam clicáveis no mobile */
                 @media (max-width: 768px) {
-                    button, .sex-btn, .continue-btn, .back-btn, .skill-btn, .nav-arrow {
-                        min-height: 48px !important; /* INCREASED from 44px */
-                        min-width: 48px !important;
+                    button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
+                        min-height: 44px !important;
+                        min-width: 44px !important;
                         position: relative !important;
-                        z-index: 300 !important; /* MAXIMUM z-index for mobile */
-                        margin: 2px !important; /* Add space to prevent overlap */
+                        z-index: 10 !important;
                     }
                     
                     /* GitHub Pages mobile fix */
@@ -671,19 +625,12 @@
                         pointer-events: auto !important;
                         -webkit-user-select: none !important;
                         user-select: none !important;
-                        z-index: 100 !important;
                     }
                 }
                 
                 /* GitHub Pages specific fixes */
                 * {
                     -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-                }
-                
-                /* FORCE clickable areas */
-                .skill-controls, .sex-buttons, .age-selector, .location-selector, .role-selector {
-                    position: relative !important;
-                    z-index: 50 !important;
                 }
             </style>
 
@@ -954,12 +901,11 @@
         </div>
     </div>
 
-    <script type="module" src="js/main.js?v=3.1.0"></script>
-    <script type="module" src="js/core/ai-simulation.js?v=3.1.0"></script>
-    <script type="module" src="js/core/data-manager.js?v=3.1.0"></script>
-    <script type="module" src="js/ui/interface-manager.js?v=3.1.0"></script>
-    <script type="module" src="js/ui/main-menu.js?v=3.1.0"></script>
-    <script type="module" src="js/ui/character-creator.js?v=3.1.0"></script>
+    <script type="module" src="js/main.js?v=1.5.0"></script>
+    <script type="module" src="js/core/ai-simulation.js?v=1.3.5"></script>
+    <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
+    <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
+    <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
     
     <!-- Initialize Character Creator globally -->
     <script type="module">
@@ -1007,14 +953,25 @@
                     
                     function initCharacterCreator() {
                         console.log('🎭 Initializing CharacterCreator...');
-                        window.characterCreator = new CharacterCreator();
-                        console.log('✅ Global CharacterCreator initialized:', window.characterCreator);
-                        
-                        // Test if it's working
-                        if (typeof window.characterCreator.show === 'function') {
-                            console.log('✅ CharacterCreator methods available');
-                        } else {
-                            console.error('❌ CharacterCreator methods not available');
+                        if (window.characterCreator) {
+                            console.log('ℹ️ CharacterCreator already initialized - skipping duplicate init:', window.characterCreator);
+                            return;
+                        }
+
+                        // Prefer passing existing game engine if available
+                        try {
+                            const engine = window.game || null;
+                            window.characterCreator = new CharacterCreator(engine);
+                            console.log('✅ Global CharacterCreator initialized:', window.characterCreator);
+
+                            // Test if it's working
+                            if (typeof window.characterCreator.show === 'function') {
+                                console.log('✅ CharacterCreator methods available');
+                            } else {
+                                console.error('❌ CharacterCreator methods not available');
+                            }
+                        } catch (err) {
+                            console.error('❌ Failed to initialize CharacterCreator:', err);
                         }
                     }
                     
@@ -1032,65 +989,6 @@
         
         // Start loading
         loadCharacterCreator();
-        
-        // MOBILE FIX: Force touch events compatibility
-        if ('ontouchstart' in window) {
-            console.log('📱 Mobile device detected - applying touch fixes');
-            document.addEventListener('DOMContentLoaded', () => {
-                // Force re-apply all onclick events after DOM is fully loaded
-                setTimeout(() => {
-                    if (window.characterCreator && window.characterCreator.setupEventListeners) {
-                        console.log('🔄 Re-applying mobile touch events');
-                        window.characterCreator.setupEventListeners();
-                    }
-                }, 1000);
-            });
-        }
-        
-        // DEBUG: Add global click listener to track ALL clicks
-        document.addEventListener('click', function(e) {
-            console.log('🖱️ GLOBAL CLICK DEBUG:', {
-                target: e.target,
-                tagName: e.target.tagName,
-                className: e.target.className,
-                id: e.target.id,
-                onclick: e.target.onclick ? 'HAS ONCLICK' : 'NO ONCLICK',
-                timestamp: new Date().toISOString()
-            });
-        }, true);
-        
-        // DEBUG: Add touch listener for mobile debugging
-        document.addEventListener('touchstart', function(e) {
-            console.log('📱 TOUCH START DEBUG:', {
-                target: e.target,
-                tagName: e.target.tagName,
-                className: e.target.className,
-                id: e.target.id,
-                touches: e.touches.length,
-                timestamp: new Date().toISOString()
-            });
-        }, true);
-        
-        // DEBUG: Monitor for any JavaScript errors
-        window.addEventListener('error', function(e) {
-            console.error('❌ JAVASCRIPT ERROR:', {
-                message: e.message,
-                filename: e.filename,
-                lineno: e.lineno,
-                colno: e.colno,
-                error: e.error,
-                timestamp: new Date().toISOString()
-            });
-        });
-        
-        // DEBUG: Monitor for unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('❌ UNHANDLED PROMISE REJECTION:', {
-                reason: e.reason,
-                promise: e.promise,
-                timestamp: new Date().toISOString()
-            });
-        });
     </script>
 </body>
 </html>
