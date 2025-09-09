@@ -213,17 +213,26 @@ export class CharacterCreator {
         const continueButtons = document.querySelectorAll('.continue-btn');
         console.log(`🔍 Found ${continueButtons.length} continue buttons:`, continueButtons);
         
-        // Back buttons
+        // Back buttons - DIRECT binding
         document.querySelectorAll('.back-btn').forEach(btn => {
-            this.addMobileCompatibleEvent(btn, () => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 console.log('⬅️ Back button clicked');
                 this.previousStep();
-            });
+            };
         });
         
-        // Continue buttons - REMOVED addEventListener to prevent conflicts
-        // Will be handled by updateNavigationButtons() with onclick
-        console.log(`🔍 Found ${continueButtons.length} continue buttons - will be handled by updateNavigationButtons()`);
+        // Continue buttons - DIRECT binding
+        continueButtons.forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('➡️ Continue button clicked');
+                this.nextStep();
+            };
+        });
+        console.log(`✅ Setup complete for ${continueButtons.length} continue buttons`);
         
         // Start game button (skills step)
         const startGameBtn = document.getElementById('startGameBtn');
@@ -253,12 +262,13 @@ export class CharacterCreator {
                 return;
             }
             
-            this.addMobileCompatibleEvent(btn, (e) => {
-                console.log(`🚻 Sex button clicked: "${sexValue}" from button ${index}`);
+            // DIRECT event binding
+            btn.onclick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log(`🚻 Sex button clicked: "${sexValue}" from button ${index}`);
                 this.selectSex(sexValue);
-            });
+            };
             
             console.log(`✅ Sex button ${index} setup complete`);
         });
@@ -420,53 +430,47 @@ export class CharacterCreator {
         const locationRightArrow = document.getElementById('locationNext');
         const locationCounter = document.querySelector('.location-selector .counter');
         
-        console.log('🔍 Location selector elements found:');
-        console.log('  locationDisplay:', locationDisplay);
-        console.log('  locationLeftArrow:', locationLeftArrow);
-        console.log('  locationRightArrow:', locationRightArrow);
-        console.log('  locationCounter:', locationCounter);
-        
         if (!this.locations || this.locations.length === 0) {
             console.error('❌ No locations available!');
             return;
         }
         
-        let currentLocationIndex = 0;
+        // FORCE initialize current index
+        if (!this.currentLocationIndex) {
+            this.currentLocationIndex = 0;
+        }
         
         if (locationDisplay && locationLeftArrow && locationRightArrow && locationCounter) {
             const updateLocationDisplay = () => {
-                const newLocation = this.locations[currentLocationIndex];
+                const newLocation = this.locations[this.currentLocationIndex];
                 locationDisplay.textContent = newLocation;
-                locationCounter.textContent = `${currentLocationIndex + 1}/${this.locations.length}`;
+                locationCounter.textContent = `${this.currentLocationIndex + 1}/${this.locations.length}`;
                 this.character.location = newLocation;
-                console.log('📍 Location updated to:', newLocation, 'Index:', currentLocationIndex);
+                console.log('📍 Location updated to:', newLocation);
             };
             
-            // Left arrow - Previous location
-            this.addMobileCompatibleEvent(locationLeftArrow, () => {
-                console.log('⬅️ Location left arrow clicked, current index:', currentLocationIndex);
-                currentLocationIndex = (currentLocationIndex - 1 + this.locations.length) % this.locations.length;
-                console.log('⬅️ New location index:', currentLocationIndex);
+            // DIRECT event binding - no mobile wrapper
+            locationLeftArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('⬅️ Location PREV clicked');
+                this.currentLocationIndex = (this.currentLocationIndex - 1 + this.locations.length) % this.locations.length;
                 updateLocationDisplay();
-            });
+            };
             
-            // Right arrow - Next location
-            this.addMobileCompatibleEvent(locationRightArrow, () => {
-                console.log('➡️ Location right arrow clicked, current index:', currentLocationIndex);
-                currentLocationIndex = (currentLocationIndex + 1) % this.locations.length;
-                console.log('➡️ New location index:', currentLocationIndex);
+            locationRightArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('➡️ Location NEXT clicked');
+                this.currentLocationIndex = (this.currentLocationIndex + 1) % this.locations.length;
                 updateLocationDisplay();
-            });
+            };
             
             // Initialize display
             updateLocationDisplay();
             console.log('✅ Location selector setup complete');
         } else {
-            console.error('❌ Location selector elements not found:');
-            console.error('  locationDisplay:', !!locationDisplay);
-            console.error('  locationLeftArrow:', !!locationLeftArrow);
-            console.error('  locationRightArrow:', !!locationRightArrow);
-            console.error('  locationCounter:', !!locationCounter);
+            console.error('❌ Location selector elements missing');
         }
     }
     
@@ -478,53 +482,47 @@ export class CharacterCreator {
         const roleRightArrow = document.getElementById('roleNext');
         const roleCounter = document.querySelector('.role-selector .counter');
         
-        console.log('🔍 Role selector elements found:');
-        console.log('  roleDisplay:', roleDisplay);
-        console.log('  roleLeftArrow:', roleLeftArrow);
-        console.log('  roleRightArrow:', roleRightArrow);
-        console.log('  roleCounter:', roleCounter);
-        
         if (!this.roles || this.roles.length === 0) {
             console.error('❌ No roles available!');
             return;
         }
         
-        let currentRoleIndex = 0;
+        // FORCE initialize current index
+        if (!this.currentRoleIndex) {
+            this.currentRoleIndex = 0;
+        }
         
         if (roleDisplay && roleLeftArrow && roleRightArrow && roleCounter) {
             const updateRoleDisplay = () => {
-                const newRole = this.roles[currentRoleIndex];
+                const newRole = this.roles[this.currentRoleIndex];
                 roleDisplay.textContent = newRole;
-                roleCounter.textContent = `${currentRoleIndex + 1}/${this.roles.length}`;
+                roleCounter.textContent = `${this.currentRoleIndex + 1}/${this.roles.length}`;
                 this.character.role = newRole;
-                console.log('🎭 Role updated to:', newRole, 'Index:', currentRoleIndex);
+                console.log('🎭 Role updated to:', newRole);
             };
             
-            // Left arrow - Previous role
-            this.addMobileCompatibleEvent(roleLeftArrow, () => {
-                console.log('⬅️ Role left arrow clicked, current index:', currentRoleIndex);
-                currentRoleIndex = (currentRoleIndex - 1 + this.roles.length) % this.roles.length;
-                console.log('⬅️ New role index:', currentRoleIndex);
+            // DIRECT event binding
+            roleLeftArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('⬅️ Role PREV clicked');
+                this.currentRoleIndex = (this.currentRoleIndex - 1 + this.roles.length) % this.roles.length;
                 updateRoleDisplay();
-            });
+            };
             
-            // Right arrow - Next role
-            this.addMobileCompatibleEvent(roleRightArrow, () => {
-                console.log('➡️ Role right arrow clicked, current index:', currentRoleIndex);
-                currentRoleIndex = (currentRoleIndex + 1) % this.roles.length;
-                console.log('➡️ New role index:', currentRoleIndex);
+            roleRightArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('➡️ Role NEXT clicked');
+                this.currentRoleIndex = (this.currentRoleIndex + 1) % this.roles.length;
                 updateRoleDisplay();
-            });
+            };
             
             // Initialize display
             updateRoleDisplay();
             console.log('✅ Role selector setup complete');
         } else {
-            console.error('❌ Role selector elements not found:');
-            console.error('  roleDisplay:', !!roleDisplay);
-            console.error('  roleLeftArrow:', !!roleLeftArrow);
-            console.error('  roleRightArrow:', !!roleRightArrow);
-            console.error('  roleCounter:', !!roleCounter);
+            console.error('❌ Role selector elements missing');
         }
     }
     
@@ -535,49 +533,38 @@ export class CharacterCreator {
         const ageLeftArrow = document.getElementById('agePrev');
         const ageRightArrow = document.getElementById('ageNext');
         
-        console.log('🔍 Age selector elements found:');
-        console.log('  ageDisplay:', ageDisplay);
-        console.log('  ageLeftArrow:', ageLeftArrow);
-        console.log('  ageRightArrow:', ageRightArrow);
-        
         if (ageDisplay && ageLeftArrow && ageRightArrow) {
             const updateAgeDisplay = () => {
                 ageDisplay.textContent = this.character.age + ' anos';
-                console.log('📅 Age updated to:', this.character.age, 'anos');
+                console.log('📅 Age updated to:', this.character.age);
             };
             
-            // Left arrow - Decrease age
-            this.addMobileCompatibleEvent(ageLeftArrow, () => {
-                console.log('⬅️ Age left arrow clicked, current age:', this.character.age);
+            // DIRECT event binding
+            ageLeftArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('⬅️ Age PREV clicked');
                 if (this.character.age > 14) {
                     this.character.age--;
-                    console.log('⬅️ New age:', this.character.age);
                     updateAgeDisplay();
-                } else {
-                    console.log('⛔ Age limit reached (minimum 14)');
                 }
-            });
+            };
             
-            // Right arrow - Increase age
-            this.addMobileCompatibleEvent(ageRightArrow, () => {
-                console.log('➡️ Age right arrow clicked, current age:', this.character.age);
+            ageRightArrow.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('➡️ Age NEXT clicked');
                 if (this.character.age < 100) {
                     this.character.age++;
-                    console.log('➡️ New age:', this.character.age);
                     updateAgeDisplay();
-                } else {
-                    console.log('⛔ Age limit reached (maximum 100)');
                 }
-            });
+            };
             
             // Initialize display
             updateAgeDisplay();
             console.log('✅ Age selector setup complete');
         } else {
-            console.error('❌ Age selector elements not found:');
-            console.error('  ageDisplay:', !!ageDisplay);
-            console.error('  ageLeftArrow:', !!ageLeftArrow);
-            console.error('  ageRightArrow:', !!ageRightArrow);
+            console.error('❌ Age selector elements missing');
         }
     }
     
@@ -711,16 +698,20 @@ export class CharacterCreator {
             const plusBtn = element.querySelector('.skill-btn.plus, .skill-plus');
             
             if (minusBtn && plusBtn && skillName) {
-                // Remove listeners antigos se existirem
-                minusBtn.replaceWith(minusBtn.cloneNode(true));
-                plusBtn.replaceWith(plusBtn.cloneNode(true));
+                // DIRECT event binding
+                minusBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(`➖ Minus skill clicked: ${skillName}`);
+                    this.decreaseSkill(skillName);
+                };
                 
-                // Pega as novas referências após cloneNode
-                const newMinusBtn = element.querySelector('.skill-btn.minus, .skill-minus');
-                const newPlusBtn = element.querySelector('.skill-btn.plus, .skill-plus');
-                
-                newMinusBtn && this.addMobileCompatibleEvent(newMinusBtn, () => this.decreaseSkill(skillName));
-                newPlusBtn && this.addMobileCompatibleEvent(newPlusBtn, () => this.increaseSkill(skillName));
+                plusBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(`➕ Plus skill clicked: ${skillName}`);
+                    this.increaseSkill(skillName);
+                };
                 
                 console.log(`🎮 Skills controls setup for: ${skillName}`);
             }
