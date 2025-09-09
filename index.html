@@ -619,6 +619,18 @@
                         position: relative !important;
                         z-index: 10 !important;
                     }
+                    
+                    /* GitHub Pages mobile fix */
+                    .menu-btn {
+                        pointer-events: auto !important;
+                        -webkit-user-select: none !important;
+                        user-select: none !important;
+                    }
+                }
+                
+                /* GitHub Pages specific fixes */
+                * {
+                    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
                 }
             </style>
 
@@ -897,14 +909,75 @@
     
     <!-- Initialize Character Creator globally -->
     <script type="module">
-        import { CharacterCreator } from './js/ui/character-creator.js';
+        // Debug information
+        console.log('🌍 Environment Info:');
+        console.log('- Hostname:', window.location.hostname);
+        console.log('- Pathname:', window.location.pathname);
+        console.log('- Full URL:', window.location.href);
+        console.log('- User Agent:', navigator.userAgent);
         
-        // Initialize character creator when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🎭 Initializing global CharacterCreator...');
-            window.characterCreator = new CharacterCreator();
-            console.log('✅ Global CharacterCreator initialized:', window.characterCreator);
-        });
+        // GitHub Pages compatible import
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        
+        let basePath = './';
+        if (isGitHubPages) {
+            basePath = '/rising-star-music-mogul/';
+        }
+        
+        console.log('🔧 Base path determined:', basePath);
+        console.log('📍 Is Local:', isLocal, '| Is GitHub Pages:', isGitHubPages);
+        
+        // Try multiple import strategies
+        async function loadCharacterCreator() {
+            const attempts = [
+                `${basePath}js/ui/character-creator.js`,
+                './js/ui/character-creator.js',
+                'js/ui/character-creator.js'
+            ];
+            
+            for (let i = 0; i < attempts.length; i++) {
+                try {
+                    console.log(`🔄 Attempt ${i + 1}: Loading from ${attempts[i]}`);
+                    const module = await import(attempts[i]);
+                    const { CharacterCreator } = module;
+                    
+                    console.log('✅ CharacterCreator loaded successfully!');
+                    
+                    // Initialize when DOM is ready
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initCharacterCreator);
+                    } else {
+                        initCharacterCreator();
+                    }
+                    
+                    function initCharacterCreator() {
+                        console.log('🎭 Initializing CharacterCreator...');
+                        window.characterCreator = new CharacterCreator();
+                        console.log('✅ Global CharacterCreator initialized:', window.characterCreator);
+                        
+                        // Test if it's working
+                        if (typeof window.characterCreator.show === 'function') {
+                            console.log('✅ CharacterCreator methods available');
+                        } else {
+                            console.error('❌ CharacterCreator methods not available');
+                        }
+                    }
+                    
+                    return; // Success, exit function
+                    
+                } catch (error) {
+                    console.warn(`❌ Attempt ${i + 1} failed:`, error.message);
+                    if (i === attempts.length - 1) {
+                        console.error('❌ All attempts failed to load CharacterCreator');
+                        console.error('🔍 Final error:', error);
+                    }
+                }
+            }
+        }
+        
+        // Start loading
+        loadCharacterCreator();
     </script>
 </body>
 </html>

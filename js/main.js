@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Service Worker registration
+// Service Worker registration - DISABLED FOR DEBUGGING
+/* 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
@@ -50,6 +51,8 @@ if ('serviceWorker' in navigator) {
         }
     });
 }
+*/
+console.log('⚠️ Service Worker temporarily disabled for debugging');
 
 // Loading screen management
 function showLoadingScreen() {
