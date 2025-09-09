@@ -594,6 +594,31 @@
                 .profile-content::-webkit-scrollbar {
                     display: none !important;
                 }
+                
+                /* CSS MOBILE TOUCH FIX */
+                button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
+                    -webkit-touch-callout: none !important;
+                    -webkit-user-select: none !important;
+                    -webkit-tap-highlight-color: transparent !important;
+                    touch-action: manipulation !important;
+                    cursor: pointer !important;
+                }
+                
+                /* Efeitos de toque para mobile */
+                button:active, .sex-btn:active, .continue-btn:active, .back-btn:active, .skill-btn:active {
+                    transform: scale(0.98) !important;
+                    transition: transform 0.1s ease !important;
+                }
+                
+                /* Garantir que botões sejam clicáveis no mobile */
+                @media (max-width: 768px) {
+                    button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
+                        min-height: 44px !important;
+                        min-width: 44px !important;
+                        position: relative !important;
+                        z-index: 10 !important;
+                    }
+                }
             </style>
 
             <!-- Step 3: Skills (LAYOUT SCROLL FIXO) -->
@@ -718,6 +743,24 @@
                 .skills-scroll-container {
                     scrollbar-width: none !important;
                     -ms-overflow-style: none !important;
+                }
+                
+                /* CSS MOBILE TOUCH FIX PARA SKILLS */
+                .skill-btn, .skill-btn.minus, .skill-btn.plus {
+                    -webkit-touch-callout: none !important;
+                    -webkit-user-select: none !important;
+                    -webkit-tap-highlight-color: transparent !important;
+                    touch-action: manipulation !important;
+                    cursor: pointer !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                    position: relative !important;
+                    z-index: 10 !important;
+                }
+                
+                .skill-btn:active {
+                    transform: scale(0.95) !important;
+                    transition: transform 0.1s ease !important;
                 }
                 
                 /* Efeitos hover premium para botões */
