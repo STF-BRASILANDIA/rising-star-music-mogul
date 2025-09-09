@@ -841,6 +841,25 @@ export class CharacterCreator {
         switch (this.currentStep) {
             case 1: // Profile
                 console.log('📝 Checking profile fields...');
+                
+                // BUGFIX: Get current values from DOM in case events didn't fire
+                const firstNameInput = document.getElementById('firstName');
+                const lastNameInput = document.getElementById('lastName');
+                const artistNameInput = document.getElementById('artistName');
+                
+                if (firstNameInput) {
+                    this.character.firstName = firstNameInput.value;
+                    console.log('🔧 Updated firstName from DOM:', this.character.firstName);
+                }
+                if (lastNameInput) {
+                    this.character.lastName = lastNameInput.value;
+                    console.log('🔧 Updated lastName from DOM:', this.character.lastName);
+                }
+                if (artistNameInput) {
+                    this.character.artistName = artistNameInput.value;
+                    console.log('🔧 Updated artistName from DOM:', this.character.artistName);
+                }
+                
                 console.log('firstName:', this.character.firstName);
                 console.log('lastName:', this.character.lastName);
                 console.log('artistName:', this.character.artistName);
