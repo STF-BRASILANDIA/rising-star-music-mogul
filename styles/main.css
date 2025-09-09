@@ -74,7 +74,7 @@
     width: 100%;
     height: 100vh;
     z-index: 9999;
-    overflow: hidden;
+    overflow: hidden; /* Padrão sem scroll */
 }
 
 #characterCreation.show {
@@ -126,7 +126,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    overflow: hidden;
+    overflow: hidden; /* Padrão sem scroll */
     position: relative;
     box-shadow: 
         0 0 40px rgba(0, 0, 0, 0.5),
@@ -139,6 +139,7 @@
     flex-direction: column;
     min-height: 100vh;
     padding: 0;
+    background: var(--bg-primary, #1a1a2e);
 }
 
 /* Step Header - Enhanced */
@@ -887,6 +888,58 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: var(--bg-primary, #1a1a2e);
+    color: var(--text-primary, #ffffff);
+}
+
+.character-summary {
+    background: var(--bg-secondary, #2a2a44);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.character-info-box h3 {
+    color: var(--text-primary, #ffffff);
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.character-info-box p {
+    color: var(--text-secondary, #cccccc);
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.points-section {
+    background: var(--bg-secondary, #2a2a44);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.points-available {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.points-label {
+    color: var(--text-secondary, #cccccc);
+    font-size: 16px;
+}
+
+.points-value {
+    color: var(--primary-color, #007AFF);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.points-info {
+    color: var(--text-secondary, #cccccc);
+    font-size: 14px;
+    margin: 0;
 }
 
 .character-info {
@@ -981,6 +1034,8 @@
     gap: 12px;
 }
 
+/* 
+COMENTADO - CONFLITO COM COMPONENTS.CSS
 .skill-item {
     background: #333;
     border-radius: 8px;
@@ -1017,6 +1072,7 @@
     align-items: center;
     justify-content: center;
 }
+*/
 
 .skill-btn.minus {
     background: #FF4444;
@@ -1536,11 +1592,29 @@ body.lock-scroll {
   z-index: 1;
 }
 
+/* CHARACTER CREATION é uma exceção - pode ser mostrado */
+#characterCreation.screen {
+  display: none; /* Hidden by default */
+}
+
+#characterCreation.screen.show {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 /* Por padrão, esconder todas as interfaces do jogo */
 #gameInterface,
 .main-nav,
 .game-section {
   display: none !important;
+}
+
+/* EXCEÇÃO CRÍTICA: Character Creation deve poder ser mostrado */
+#characterCreation.show {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Mostrar elementos do jogo apenas quando interface estiver ativa */

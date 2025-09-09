@@ -314,12 +314,21 @@ export class RisingStarGame {
             energy: playerData.energy || 100,
             creativity: playerData.creativity || 100,
             mood: playerData.mood || 75,
-            skills: {
-                songwriting: playerData.skills?.songwriting || 50,
-                production: playerData.skills?.production || 45,
-                performance: playerData.skills?.performance || 40,
-                marketing: playerData.skills?.marketing || 30,
-                networking: playerData.skills?.networking || 35
+            skills: playerData.skills || { // Use skills from character creation
+                // Artist traits
+                vocals: 1,
+                songWriting: 1,
+                rhythm: 1,
+                charisma: 1,
+                virality: 1,
+                videoDirecting: 1,
+                
+                // Business traits
+                leadership: 2,
+                marketing: 2,
+                negotiation: 2,
+                recruiting: 2,
+                sales: 2
             },
             stats: {
                 totalSongs: 0,
