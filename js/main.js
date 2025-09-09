@@ -39,6 +39,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Poll for mainMenu system and trigger showMainMenu once available
+(() => {
+    let attempts = 0;
+    const maxAttempts = 100; // ~20s (200ms intervals)
+    const interval = 200;
+    const handle = setInterval(() => {
+        attempts++;
+        if (window.game && window.game.systems && window.game.systems.mainMenu && typeof window.game.showMainMenu === 'function') {
+            try {
+                console.log('🔁 main.js poll: mainMenu available, calling showMainMenu()');
+                window.game.showMainMenu();
+                clearInterval(handle);
+                return;
+            } catch (err) {
+                console.error('❌ Error calling showMainMenu from poll:', err);
+            }
+        }
+
+        if (attempts >= maxAttempts) {
+            console.warn('⚠️ main.js poll: mainMenu not available after timeout');
+            clearInterval(handle);
+        }
+    }, interval);
+})();
+
+// Watchdog: se após X segundos ainda estivermos em loading, tentar forçar o menu e logar diagnóstico
+setTimeout(() => {
+    try {
+        console.log('⏱️ Loading watchdog triggered - checking game state');
+        if (!window.game) {
+            console.warn('⚠️ Watchdog: window.game não inicializado ainda');
+            // tentar forçar carregamento do menu principal se possível
+            if (typeof window.loadCharacterCreator === 'function') {
+                console.log('ℹ️ Watchdog: tentando carregar CharacterCreator globalmente');
+                try { window.loadCharacterCreator(); } catch (e) { /* ignore */ }
+            }
+            return;
+        }
+
+        if (window.game.gameState === 'loading') {
+            console.warn('⚠️ Watchdog: game still loading after timeout. Forçando showMainMenu()');
+            try {
+                window.game.showMainMenu();
+            } catch (err) {
+                console.error('❌ Watchdog failed to call showMainMenu():', err);
+                // Try fallback: reveal main menu element
+                const mm = document.getElementById('mainMenu');
+                if (mm) mm.style.display = 'block';
+                const ls = document.getElementById('loadingScreen');
+                if (ls) ls.style.display = 'none';
+            }
+        } else {
+            console.log('✅ Watchdog: game state is', window.game.gameState);
+        }
+    } catch (err) {
+        console.error('❌ Watchdog encountered error:', err);
+    }
+}, 6000);
+
 // Service Worker registration - DISABLED FOR DEBUGGING
 /* 
 if ('serviceWorker' in navigator) {

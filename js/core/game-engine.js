@@ -52,8 +52,22 @@ export class RisingStarGame {
         
         try {
             // Inicializar sistemas em ordem
-            await this.initializeSystems();
-            await this.loadGameData();
+            // Helper: promise with timeout to avoid hanging initialization
+            const promiseWithTimeout = (p, ms, name) => {
+                return new Promise(async (resolve, reject) => {
+                    let finished = false;
+                    p.then((res) => { finished = true; resolve(res); }).catch(err => { finished = true; reject(err); });
+                    setTimeout(() => {
+                        if (!finished) {
+                            console.warn(`⚠️ ${name} timeout after ${ms}ms`);
+                            resolve(null); // resolve so we continue in degraded mode
+                        }
+                    }, ms);
+                });
+            };
+
+            await promiseWithTimeout(this.initializeSystems(), 5000, 'initializeSystems');
+            await promiseWithTimeout(this.loadGameData(), 5000, 'loadGameData');
             this.setupEventListeners();
             this.startGameLoop();
             
@@ -72,50 +86,113 @@ export class RisingStarGame {
     }
     
     async initializeSystems() {
+        console.log('🔧 initializeSystems: starting');
+
         // Inicializar gerenciador de dados primeiro
-        this.systems.dataManager = new DataManager();
-        await this.systems.dataManager.init();
-        
+        try {
+            console.log('🔧 initializeSystems: initializing DataManager');
+            this.systems.dataManager = new DataManager();
+            await this.systems.dataManager.init();
+            console.log('✅ DataManager initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: DataManager failed:', err);
+            this.systems.dataManager = null;
+        }
+
         // Inicializar sistema de IA
-        this.systems.aiSimulation = new AISimulation(this);
-        
+        try {
+            console.log('🔧 initializeSystems: initializing AISimulation');
+            this.systems.aiSimulation = new AISimulation(this);
+            console.log('✅ AISimulation initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: AISimulation failed:', err);
+            this.systems.aiSimulation = null;
+        }
+
         // Inicializar sistema de criação musical
-        this.systems.musicCreation = new MusicCreation(this);
-        console.log('✅ MusicCreation inicializado');
-        
+        try {
+            console.log('🔧 initializeSystems: initializing MusicCreation');
+            this.systems.musicCreation = new MusicCreation(this);
+            console.log('✅ MusicCreation initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: MusicCreation failed:', err);
+            this.systems.musicCreation = null;
+        }
+
         // Importar e inicializar sistema de criação de personagem
-        const { CharacterCreator } = await import('../ui/character-creator.js');
-        this.systems.characterCreator = new CharacterCreator(this);
-        window.characterCreator = this.systems.characterCreator;
-        console.log('✅ CharacterCreator inicializado');
-        
-        this.systems.interfaceManager = new InterfaceManager(this);
-        console.log('✅ InterfaceManager inicializado');
-        
-        this.systems.mainMenu = new MainMenu(this);
-        console.log('✅ MainMenu inicializado');
-        
-        // Make main menu globally available
-        window.mainMenu = this.systems.mainMenu;
-        
-        // Outros sistemas serão inicializados conforme necessário
-        console.log('✅ Sistemas básicos inicializados');
+        try {
+            console.log('🔧 initializeSystems: importing CharacterCreator module');
+            const module = await import('../ui/character-creator.js');
+            const { CharacterCreator } = module;
+            console.log('🔧 initializeSystems: instantiating CharacterCreator');
+            this.systems.characterCreator = new CharacterCreator(this);
+            window.characterCreator = this.systems.characterCreator;
+            console.log('✅ CharacterCreator initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: CharacterCreator failed to load/init:', err);
+            this.systems.characterCreator = null;
+        }
+
+        // InterfaceManager
+        try {
+            console.log('🔧 initializeSystems: initializing InterfaceManager');
+            this.systems.interfaceManager = new InterfaceManager(this);
+            console.log('✅ InterfaceManager initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: InterfaceManager failed:', err);
+            this.systems.interfaceManager = null;
+        }
+
+        // MainMenu
+        try {
+            console.log('🔧 initializeSystems: initializing MainMenu');
+            this.systems.mainMenu = new MainMenu(this);
+            window.mainMenu = this.systems.mainMenu;
+            console.log('✅ MainMenu initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: MainMenu failed:', err);
+            this.systems.mainMenu = null;
+        }
+
+        console.log('✅ initializeSystems: finished (some systems may be null if failed)');
     }
     
     async loadGameData() {
-        // Carregar dados estáticos
-        const [artistsData, labelsData] = await Promise.all([
-            this.systems.dataManager.loadStaticData('artists'),
-            this.systems.dataManager.loadStaticData('labels')
-        ]);
-        
-        this.gameData.artists = artistsData;
-        this.gameData.labels = labelsData;
-        
-        // Tentar carregar save game
-        const saveData = await this.systems.dataManager.loadGame();
-        if (saveData) {
-            this.loadSaveData(saveData);
+        console.log('🔄 loadGameData: starting');
+        try {
+            if (!this.systems.dataManager) {
+                console.warn('⚠️ loadGameData: DataManager not available, skipping static data load');
+                return;
+            }
+
+            console.log('🔄 loadGameData: loading static artists and labels');
+            try {
+                const [artistsData, labelsData] = await Promise.all([
+                    this.systems.dataManager.loadStaticData('artists'),
+                    this.systems.dataManager.loadStaticData('labels')
+                ]);
+                this.gameData.artists = artistsData || {};
+                this.gameData.labels = labelsData || {};
+                console.log('✅ loadGameData: static data loaded');
+            } catch (err) {
+                console.error('❌ loadGameData: failed to load static data:', err);
+            }
+
+            // Tentar carregar save game
+            try {
+                console.log('🔄 loadGameData: attempting to load saved game');
+                const saveData = await this.systems.dataManager.loadGame();
+                if (saveData) {
+                    console.log('✅ loadGameData: save found - loading save data');
+                    this.loadSaveData(saveData);
+                } else {
+                    console.log('ℹ️ loadGameData: no save found');
+                }
+            } catch (err) {
+                console.error('❌ loadGameData: failed to load save data:', err);
+            }
+        } catch (err) {
+            console.error('❌ loadGameData: unexpected error:', err);
         }
     }
     
@@ -274,7 +351,16 @@ export class RisingStarGame {
     showMainMenu() {
         console.log('🎯 showMainMenu() chamado');
         this.gameState = 'main_menu';
-        this.hideLoadingScreen();
+        // Chamar função global de hideLoadingScreen se disponível (definida em js/main.js)
+        try {
+            if (typeof hideLoadingScreen === 'function') {
+                hideLoadingScreen();
+            } else if (typeof window !== 'undefined' && typeof window.hideLoadingScreen === 'function') {
+                window.hideLoadingScreen();
+            }
+        } catch (err) {
+            console.warn('⚠️ hideLoadingScreen não pôde ser chamada:', err);
+        }
         
         // Debug: verificar se o sistema existe
         if (!this.systems.mainMenu) {

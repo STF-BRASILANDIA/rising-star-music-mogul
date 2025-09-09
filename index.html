@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0.0">
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
+    <link rel="stylesheet" href="styles/dashboard.css?v=1.0.0">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -29,6 +30,10 @@
                 <div class="loading-progress"></div>
             </div>
             <p class="loading-text">Carregando universo musical...</p>
+            <!-- Temporary force-start button for debugging -->
+            <div style="margin-top:18px; display:flex; justify-content:center;">
+                <button id="forceStartBtn" style="padding:10px 18px; border-radius:8px; background:#ff6b35; color:#fff; border:none; font-weight:700; cursor:pointer;">Forçar Início</button>
+            </div>
         </div>
     </div>
 
@@ -797,105 +802,54 @@
         </div>
     </div>
 
-    <!-- Temporary Game Dashboard -->
+    <!-- Game Interface (dashboard approximated to design) -->
     <div id="gameInterface" class="screen" style="display: none;">
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <h1>🎵 Rising Star Dashboard</h1>
-                <div class="player-info">
-                    <span class="player-name" id="playerDisplayName">Nome do Artista</span>
-                    <span class="player-money" id="playerDisplayMoney">$0</span>
+        <div class="dashboard-app" style="min-height:100vh; display:flex; flex-direction:column; background:var(--bg-primary, #0b0b0d); color:var(--text-primary, #fff);">
+
+            <!-- Dashboard styles moved to styles/dashboard.css -->
+
+            <div class="header">
+                <div class="left-profile">
+                    <div class="avatar" id="headerAvatar">A</div>
+                    <div class="artist-block">
+                        <div class="artist-name" id="playerDisplayName">Nome do Artista</div>
+                        <div class="subinfo"><span id="playerGenre">Independent • Rap</span> • <span id="weekInfo">Week: 1 • Dec 30, 2024</span></div>
+                    </div>
+                </div>
+                <div class="top-right">
+                    <div class="settings-icon" title="Settings">⚙️</div>
+                    <div class="money-bubble" id="playerDisplayMoney">$0</div>
                 </div>
             </div>
-            
-            <div class="dashboard-content">
-                <div class="stats-section">
-                    <h2>📊 Talentos Artísticos</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-icon">🎤</span>
-                            <span class="stat-label">Vocals</span>
-                            <span class="stat-value" id="vocalsStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">✍️</span>
-                            <span class="stat-label">Song Writing</span>
-                            <span class="stat-value" id="songWritingStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">🥁</span>
-                            <span class="stat-label">Rhythm</span>
-                            <span class="stat-value" id="rhythmStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">✨</span>
-                            <span class="stat-label">Charisma</span>
-                            <span class="stat-value" id="charismaStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">🔥</span>
-                            <span class="stat-label">Virality</span>
-                            <span class="stat-value" id="viralityStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">�</span>
-                            <span class="stat-label">Video Directing</span>
-                            <span class="stat-value" id="videoDirectingStat">0</span>
-                        </div>
-                    </div>
-                    
-                    <h2>💼 Talentos Empresariais</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <span class="stat-icon">👑</span>
-                            <span class="stat-label">Leadership</span>
-                            <span class="stat-value" id="leadershipStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">📈</span>
-                            <span class="stat-label">Marketing</span>
-                            <span class="stat-value" id="marketingStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">🤝</span>
-                            <span class="stat-label">Negotiation</span>
-                            <span class="stat-value" id="negotiationStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">🎯</span>
-                            <span class="stat-label">Recruiting</span>
-                            <span class="stat-value" id="recruitingStat">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <span class="stat-icon">💰</span>
-                            <span class="stat-label">Sales</span>
-                            <span class="stat-value" id="salesStat">0</span>
-                        </div>
-                    </div>
+
+            <div class="stat-bar" role="region" aria-label="Player stats">
+                <div class="stat-item"><span>❤️</span><span id="healthStat">100</span></div>
+                <div class="stat-item"><span>🌍</span><span id="reachStat">71</span></div>
+                <div class="stat-item"><span>🙂</span><span id="moodStat">100</span></div>
+                <div class="stat-item"><span>⏱️</span><span id="timeStat">18</span></div>
+            </div>
+
+            <div class="info-row">
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="font-size:14px; color:rgba(255,255,255,0.9);">You</div>
+                    <div style="font-size:13px; color:rgba(255,255,255,0.6);">Prestige: <span id="prestigeIcons">0</span></div>
                 </div>
-                
-                <div class="actions-section">
-                    <h2>🎯 Ações Disponíveis</h2>
-                    <div class="action-buttons">
-                        <button class="action-btn" id="createMusicBtn">
-                            🎵 Criar Música
-                        </button>
-                        <button class="action-btn" id="viewStatsBtn">
-                            📈 Ver Estatísticas
-                        </button>
-                        <button class="action-btn" id="saveGameBtn">
-                            💾 Salvar Jogo
-                        </button>
-                        <button class="action-btn" id="backToMenuBtn">
-                            🏠 Voltar ao Menu
-                        </button>
-                    </div>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button class="create-label" id="createLabelBtn">+ Create Label</button>
                 </div>
-                
-                <div class="info-section">
-                    <h2>ℹ️ Sistema Temporário</h2>
-                    <p>Este é um dashboard temporário para testar a criação de personagem. 
-                       O sistema completo será implementado nas próximas fases!</p>
+            </div>
+
+            <div class="main-content">
+                <div class="activities-btn" id="activitiesBtn">Activities</div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-inner">
+                    <button class="nav-btn" id="navHome">🏠 Home</button>
+                    <button class="nav-btn" id="navProfile">👤</button>
+                    <button class="nav-btn" id="navStore">🛒</button>
+                    <button class="nav-btn" id="navWorld">🌐</button>
+                    <button class="nav-btn" id="navMore">⋯</button>
                 </div>
             </div>
         </div>
@@ -989,6 +943,29 @@
         
         // Start loading
         loadCharacterCreator();
+    </script>
+
+    <script>
+        // Force start button handler (debug)
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('forceStartBtn');
+            if (!btn) return;
+            btn.addEventListener('click', () => {
+                console.log('🛠️ Force Start button clicked');
+                const ls = document.getElementById('loadingScreen');
+                if (ls) ls.style.display = 'none';
+                try {
+                    if (window.game && typeof window.game.showMainMenu === 'function') {
+                        window.game.showMainMenu();
+                    } else {
+                        const mm = document.getElementById('mainMenu');
+                        if (mm) mm.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('❌ ForceStart error:', err);
+                }
+            });
+        });
     </script>
 </body>
 </html>

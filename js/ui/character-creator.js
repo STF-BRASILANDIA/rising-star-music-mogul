@@ -572,25 +572,23 @@ export class CharacterCreator {
         const locationRightArrow = document.querySelector('.location-selector .nav-arrow:last-child');
         const locationCounter = document.querySelector('.location-selector .counter');
         
-        let currentLocationIndex = 0;
-        
-        if (locationDisplay && locationLeftArrow && locationRightArrow && locationCounter) {
+        // Use instance index and delegation; do not attach per-arrow handlers here.
+        let currentLocationIndex = this.locationIndex || 0;
+
+        if (locationDisplay && locationCounter) {
             const updateLocationDisplay = () => {
                 locationDisplay.textContent = this.locations[currentLocationIndex];
                 locationCounter.textContent = `${currentLocationIndex + 1}/${this.locations.length}`;
                 this.character.location = this.locations[currentLocationIndex];
+                this.locationIndex = currentLocationIndex;
             };
-            
-            locationLeftArrow && this.addMobileCompatibleEvent(locationLeftArrow, () => {
-                currentLocationIndex = (currentLocationIndex - 1 + this.locations.length) % this.locations.length;
-                updateLocationDisplay();
-            });
-            
-            locationRightArrow && this.addMobileCompatibleEvent(locationRightArrow, () => {
-                currentLocationIndex = (currentLocationIndex + 1) % this.locations.length;
-                updateLocationDisplay();
-            });
-            
+
+            // Initialize display from character or index
+            if (this.character && this.character.location) {
+                const idx = this.locations.indexOf(this.character.location);
+                if (idx >= 0) currentLocationIndex = idx;
+            }
+
             updateLocationDisplay();
         }
     }
@@ -601,25 +599,23 @@ export class CharacterCreator {
         const roleRightArrow = document.querySelector('.role-selector .nav-arrow:last-child');
         const roleCounter = document.querySelector('.role-selector .counter');
         
-        let currentRoleIndex = 0;
-        
-        if (roleDisplay && roleLeftArrow && roleRightArrow && roleCounter) {
+        // Use instance index and delegation; do not attach per-arrow handlers here.
+        let currentRoleIndex = this.roleIndex || 0;
+
+        if (roleDisplay && roleCounter) {
             const updateRoleDisplay = () => {
                 roleDisplay.textContent = this.roles[currentRoleIndex];
                 roleCounter.textContent = `${currentRoleIndex + 1}/${this.roles.length}`;
                 this.character.role = this.roles[currentRoleIndex];
+                this.roleIndex = currentRoleIndex;
             };
-            
-            roleLeftArrow && this.addMobileCompatibleEvent(roleLeftArrow, () => {
-                currentRoleIndex = (currentRoleIndex - 1 + this.roles.length) % this.roles.length;
-                updateRoleDisplay();
-            });
-            
-            roleRightArrow && this.addMobileCompatibleEvent(roleRightArrow, () => {
-                currentRoleIndex = (currentRoleIndex + 1) % this.roles.length;
-                updateRoleDisplay();
-            });
-            
+
+            // Initialize from character if present
+            if (this.character && this.character.role) {
+                const idx = this.roles.indexOf(this.character.role);
+                if (idx >= 0) currentRoleIndex = idx;
+            }
+
             updateRoleDisplay();
         }
     }
@@ -629,25 +625,13 @@ export class CharacterCreator {
         const ageLeftArrow = document.querySelector('.age-selector .nav-arrow:first-child');
         const ageRightArrow = document.querySelector('.age-selector .nav-arrow:last-child');
         
-        if (ageDisplay && ageLeftArrow && ageRightArrow) {
+        if (ageDisplay) {
             const updateAgeDisplay = () => {
                 ageDisplay.textContent = this.character.age + ' anos';
             };
-            
-            ageLeftArrow && this.addMobileCompatibleEvent(ageLeftArrow, () => {
-                if (this.character.age > 14) {
-                    this.character.age--;
-                    updateAgeDisplay();
-                }
-            });
-            
-            ageRightArrow && this.addMobileCompatibleEvent(ageRightArrow, () => {
-                if (this.character.age < 100) {
-                    this.character.age++;
-                    updateAgeDisplay();
-                }
-            });
-            
+
+            // Initialize display
+            if (!this.character.age) this.character.age = 18;
             updateAgeDisplay();
         }
     }
@@ -1018,6 +1002,12 @@ export class CharacterCreator {
         console.log('🚨 Current step:', this.currentStep);
         console.log('� Stack trace:', new Error().stack);
         
+        // Fallback: if this instance não tem o gameEngine referenciado, tentar vincular ao global window.game
+        if (!this.gameEngine && typeof window !== 'undefined' && window.game) {
+            console.log('🔗 startGame fallback: vinculando this.gameEngine ao window.game');
+            this.gameEngine = window.game;
+        }
+
         // ONLY allow game start from step 3
         if (this.currentStep !== 3) {
             console.log('🛑 BLOCKING startGame() - not on step 3');
@@ -1054,8 +1044,46 @@ export class CharacterCreator {
         // Hide character creation and start game
         this.hide();
         
+        // If game engine available, start immediately
         if (this.gameEngine) {
             this.gameEngine.startGame(characterData);
+            return;
+        }
+
+        // Otherwise, poll for a global game object for a short period and then start
+        if (typeof window !== 'undefined') {
+            let attempts = 0;
+            const maxAttempts = 30; // ~3s
+            const pollInterval = 100; // ms
+            const poll = setInterval(() => {
+                attempts++;
+                if (window.game) {
+                    clearInterval(poll);
+                    console.log('🔗 startGame: window.game detected during poll, invoking startGame on engine');
+                    this.gameEngine = window.game;
+                    try {
+                        this.gameEngine.startGame(characterData);
+                    } catch (err) {
+                        console.error('❌ Erro ao iniciar o jogo via window.game:', err);
+                        this.showNotification('Erro ao iniciar o jogo. Recarregue a página.', 'warning', 5000);
+                    }
+                    return;
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(poll);
+                    console.error('❌ startGame: window.game não disponível após timeout');
+                    this.showNotification('Não foi possível iniciar o jogo: motor não inicializado. Recarregue a página.', 'warning', 6000);
+                    // Fallback visual: mostrar menu principal se existir
+                    if (window.mainMenu && typeof window.mainMenu.show === 'function') {
+                        try { window.mainMenu.show(); } catch (e) { /* ignore */ }
+                    } else {
+                        // Tentar exibir interface de jogo como último recurso
+                        const gi = document.getElementById('gameInterface');
+                        if (gi) gi.style.display = 'block';
+                    }
+                }
+            }, pollInterval);
         }
     }
     

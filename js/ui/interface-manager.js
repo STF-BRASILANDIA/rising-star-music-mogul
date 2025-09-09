@@ -29,20 +29,32 @@ export class InterfaceManager {
     }
 
     showMainInterface() {
-        const gameInterface = document.getElementById('gameInterface');
-        if (gameInterface) {
-            gameInterface.style.display = 'block';
-            
+        console.log('📺 showMainInterface() called');
+        try {
+            const gameInterface = document.getElementById('gameInterface');
+            if (gameInterface) {
+                gameInterface.style.display = 'block';
+            }
+
             // Popular dashboard com dados do jogador
             this.updatePlayerInfo();
             this.bindDashboardEvents();
-            
+
             // Start update timers only when interface is shown and game is ready
             setTimeout(() => {
-                this.startUpdateTimers();
-                // Initial dashboard update
-                this.updateDashboard();
+                try {
+                    this.startUpdateTimers();
+                    // Initial dashboard update
+                    this.updateDashboard();
+                } catch (err) {
+                    console.warn('⚠️ Erro iniciando timers/atualização do dashboard:', err);
+                }
             }, 1000); // Give time for game state to be set properly
+        } catch (err) {
+            console.error('❌ showMainInterface falhou:', err);
+            // Fallback: garantir que o elemento esteja visível
+            const gi = document.getElementById('gameInterface');
+            if (gi) gi.style.display = 'block';
         }
     }
     
@@ -134,6 +146,23 @@ export class InterfaceManager {
         if (viewStatsBtn) {
             viewStatsBtn.addEventListener('click', () => {
                 this.showNotification('Sistema de estatísticas detalhadas em desenvolvimento!', 'info');
+            });
+        }
+
+        // Novos botões do dashboard customizado
+        const activitiesBtn = document.getElementById('activitiesBtn');
+        if (activitiesBtn) {
+            activitiesBtn.addEventListener('click', () => {
+                this.showNotification('Abrindo Activities (em desenvolvimento)...', 'info');
+                // Exibir seção dashboard como placeholder
+                this.showSection('dashboard');
+            });
+        }
+
+        const createLabelBtn = document.getElementById('createLabelBtn');
+        if (createLabelBtn) {
+            createLabelBtn.addEventListener('click', () => {
+                this.showNotification('Funcionalidade Create Label em desenvolvimento.', 'info');
             });
         }
     }
