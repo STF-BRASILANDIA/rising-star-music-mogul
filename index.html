@@ -598,6 +598,7 @@
                 /* CSS MOBILE TOUCH FIX */
                 button, .sex-btn, .continue-btn, .back-btn, .skill-btn {
                     -webkit-touch-callout: none !important;
+                    user-select: none !important;
                     -webkit-user-select: none !important;
                     -webkit-tap-highlight-color: transparent !important;
                     touch-action: manipulation !important;
@@ -748,6 +749,7 @@
                 /* CSS MOBILE TOUCH FIX PARA SKILLS */
                 .skill-btn, .skill-btn.minus, .skill-btn.plus {
                     -webkit-touch-callout: none !important;
+                    user-select: none !important;
                     -webkit-user-select: none !important;
                     -webkit-tap-highlight-color: transparent !important;
                     touch-action: manipulation !important;
@@ -892,6 +894,17 @@
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/character-creator.js?v=2.1.0"></script>
-    <script type="module" src="js/main.js?v=1.5.0"></script>
+    
+    <!-- Initialize Character Creator globally -->
+    <script type="module">
+        import { CharacterCreator } from './js/ui/character-creator.js';
+        
+        // Initialize character creator when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎭 Initializing global CharacterCreator...');
+            window.characterCreator = new CharacterCreator();
+            console.log('✅ Global CharacterCreator initialized:', window.characterCreator);
+        });
+    </script>
 </body>
 </html>
