@@ -1118,8 +1118,34 @@ export class CharacterCreator {
                         const gi = document.getElementById('gameInterface');
                         if (gi) gi.style.display = 'block';
                     }
+                } else {
+                    attempts++;
                 }
             }, pollInterval);
+        }
+        
+        // Após completar o startGame, exibir o GameHub
+        try {
+            setTimeout(() => {
+                console.log('🎮 Tentando exibir GameHub após criar personagem...');
+                
+                // Inicializar GameHub se não existir
+                if (typeof window.initGameHub === 'function' && !window.gameHub) {
+                    window.initGameHub();
+                }
+                
+                // Mostrar o dashboard
+                if (window.gameHub && typeof window.gameHub.show === 'function') {
+                    window.gameHub.show();
+                    console.log('✅ GameHub exibido com sucesso');
+                } else {
+                    console.warn('⚠️ GameHub não disponível, exibindo interface padrão');
+                    const gi = document.getElementById('gameInterface');
+                    if (gi) gi.style.display = 'block';
+                }
+            }, 1500); // Delay para garantir que o engine já processou
+        } catch (err) {
+            console.error('❌ Erro ao exibir GameHub:', err);
         }
     }
     

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0.0">
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
+    <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -65,6 +66,10 @@
             </div>
 
             <div class="secondary-actions">
+                <button class="menu-btn" id="testDashboardBtn">
+                    🎮 Testar Dashboard
+                </button>
+
                 <button class="menu-btn" id="settingsBtn">
                     ⚙️ Configurações
                 </button>
@@ -801,21 +806,190 @@
         </div>
     </div>
 
-    <!-- Game Interface (visual UI/design removed) -->
+    <!-- Game Interface (Dashboard Híbrido) -->
     <div id="gameInterface" class="screen" style="display: none;">
-        <div class="game-area" style="min-height:100vh;">
-            <!-- Visual interface removed by request. Core/game logic should still attach elements programmatically when needed. -->
-            <div class="main-content">
-                <p style="padding:24px; color:var(--text-secondary, #bbb);">Interface principal (visual removido). Recursos de core permanecem intactos.</p>
+        <div class="app-shell hybrid">
+            <aside class="side-panel" id="sideProfile">
+                <div class="profile-header">
+                    <div class="avatar-wrapper">
+                        <div class="avatar" id="hubAvatar">🎵</div>
+                        <button class="edit-avatar-btn" id="editAvatarBtn" title="Editar Avatar">✎</button>
+                    </div>
+                    <div class="artist-block">
+                        <h2 id="artistStageName">Artista</h2>
+                        <p class="artist-sub" id="artistRoleGenre">Cantor(a) • R&B</p>
+                    </div>
+                </div>
+                <div class="primary-stats">
+                    <div class="p-stat">
+                        <span class="label">Fama</span>
+                        <span class="val" id="statFame">0</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="label">Seguidores</span>
+                        <span class="val" id="statListeners">0</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="label">Hype</span>
+                        <span class="val" id="statHype">0</span>
+                    </div>
+                    <div class="p-stat money">
+                        <span class="label">Cash</span>
+                        <span class="val" id="statMoney">$0</span>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="qa-btn" data-action="create-track">Nova Música</button>
+                    <button class="qa-btn" data-action="train">Treinar</button>
+                    <button class="qa-btn" data-action="show-offers" id="offersBtn">Ofertas</button>
+                    <button class="qa-btn alt" data-action="create-label">Criar Label</button>
+                </div>
+                <div class="collapse-toggle" id="collapseProfile">Recolher ▲</div>
+            </aside>
+
+            <div class="main-area">
+                <header class="top-bar">
+                    <div class="left">
+                        <h1 class="view-title" id="currentViewTitle">Visão Geral</h1>
+                        <div class="time-chip">
+                            <span id="weekIndicator">Semana 1</span>
+                            <span id="dayIndicator">Segunda</span>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="level-chip">
+                            <span id="careerLevelLabel">Nível 1</span>
+                            <div class="lvl-bar">
+                                <div id="careerLevelFill" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <button class="notif-btn" id="openNotifications">Notificações</button>
+                        <button class="switch-view-btn" id="switchToProfile" data-target="profile">Perfil</button>
+                    </div>
+                </header>
+
+                <!-- Perfil Inline Mobile -->
+                <div class="inline-profile-bar" id="inlineProfileBar" style="display:none;">
+                    <div class="avatar-wrapper">
+                        <div class="avatar" id="hubAvatarInline">🎵</div>
+                    </div>
+                    <div class="inline-profile-meta">
+                        <h2 id="artistStageNameInline">Artista</h2>
+                        <p id="artistRoleGenreInline">Cantor(a) • R&B</p>
+                        <div class="inline-profile-stats">
+                            <div class="p-stat"><span class="label">Fama</span><span class="val" id="statFameInline">0</span></div>
+                            <div class="p-stat"><span class="label">Seg.</span><span class="val" id="statListenersInline">0</span></div>
+                            <div class="p-stat"><span class="label">Cash</span><span class="val" id="statMoneyInline">$0</span></div>
+                        </div>
+                        <div class="inline-actions-row">
+                            <button class="qa-btn" data-action="create-track">Música</button>
+                            <button class="qa-btn" data-action="train">Treino</button>
+                            <button class="qa-btn alt" data-action="create-label">Label</button>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="tab-nav" id="hubTabs">
+                    <button class="tab-btn active" data-tab="overview">
+                        <span class="tab-icon">⌘</span>
+                        <span class="tab-label">Overview</span>
+                    </button>
+                    <button class="tab-btn" data-tab="resources">
+                        <span class="tab-icon">◈</span>
+                        <span class="tab-label">Recursos</span>
+                    </button>
+                    <button class="tab-btn" data-tab="goals">
+                        <span class="tab-icon">★</span>
+                        <span class="tab-label">Metas</span>
+                    </button>
+                    <button class="tab-btn" data-tab="feed">
+                        <span class="tab-icon">≡</span>
+                        <span class="tab-label">Feed</span>
+                    </button>
+                    <button class="tab-btn" data-tab="career">
+                        <span class="tab-icon">♔</span>
+                        <span class="tab-label">Carreira</span>
+                    </button>
+                    <button class="tab-btn" data-tab="streaming">
+                        <span class="tab-icon">♫</span>
+                        <span class="tab-label">Streaming</span>
+                    </button>
+                    <button class="tab-btn" data-tab="economy">
+                        <span class="tab-icon">$</span>
+                        <span class="tab-label">Economia</span>
+                    </button>
+                </nav>
+
+                <main class="hub-panels" id="hubPanels">
+                    <!-- Conteúdo populado via JS -->
+                </main>
+
+                <footer class="mobile-bottom-nav" id="mobileNav">
+                    <button data-view="profile" class="m-btn active">
+                        <span class="m-icon">⌂</span>
+                        <span class="m-label">Home</span>
+                    </button>
+                    <button data-view="overview" class="m-btn">
+                        <span class="m-icon">◎</span>
+                        <span class="m-label">Visão</span>
+                    </button>
+                    <button data-view="studio" class="m-btn">
+                        <span class="m-icon">♫</span>
+                        <span class="m-label">Estúdio</span>
+                    </button>
+                    <button data-view="social" class="m-btn">
+                        <span class="m-icon">♡</span>
+                        <span class="m-label">Social</span>
+                    </button>
+                    <button data-view="more" class="m-btn">
+                        <span class="m-icon">⋯</span>
+                        <span class="m-label">Mais</span>
+                    </button>
+                </footer>
             </div>
         </div>
+        <div id="hubNotificationContainer" class="hub-toast-stack"></div>
     </div>
 
+    <script type="module" src="js/ui/game-hub.js"></script>
     <script type="module" src="js/main.js?v=1.5.0"></script>
     <script type="module" src="js/core/ai-simulation.js?v=1.3.5"></script>
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
+    
+    <!-- Debug Dashboard -->
+    <script>
+        // Função global para testar o dashboard
+        window.testDashboard = function() {
+            console.log('🧪 Testando Dashboard...');
+            
+            // Esconder outras telas
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('characterCreation').style.display = 'none';
+            
+            // Mostrar gameInterface
+            const dashboard = document.getElementById('gameInterface');
+            if (dashboard) {
+                dashboard.style.display = 'block';
+                console.log('✅ Dashboard visível');
+                
+                // Inicializar GameHub se disponível
+                if (typeof window.initGameHub === 'function') {
+                    window.initGameHub();
+                    if (window.gameHub) {
+                        window.gameHub.show();
+                        console.log('✅ GameHub ativado');
+                    }
+                }
+            } else {
+                console.error('❌ gameInterface não encontrado');
+            }
+        };
+        
+        // Botão de debug no console
+        console.log('🔧 Digite window.testDashboard() no console para testar o dashboard');
+    </script>
     
     <!-- Initialize Character Creator globally -->
     <script type="module">

@@ -162,6 +162,23 @@ export class RisingStarGame {
             this.systems.mainMenu = null;
         }
 
+        // GameHub (Dashboard)
+        try {
+            console.log('🔧 initializeSystems: importing GameHub module');
+            if (typeof window.GameHub !== 'undefined') {
+                console.log('🔧 initializeSystems: instantiating GameHub');
+                this.systems.gameHub = new window.GameHub(this);
+                window.gameHub = this.systems.gameHub;
+                console.log('✅ GameHub initialized');
+            } else {
+                console.warn('⚠️ initializeSystems: GameHub class not available');
+                this.systems.gameHub = null;
+            }
+        } catch (err) {
+            console.error('❌ initializeSystems: GameHub failed:', err);
+            this.systems.gameHub = null;
+        }
+
         console.log('✅ initializeSystems: finished (some systems may be null if failed)');
     }
     

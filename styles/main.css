@@ -1687,10 +1687,8 @@ body.lock-scroll {
   display: none;
 }
 
-/* Esconder navegação e seções do jogo por padrão quando menu principal está ativo */
-#mainMenu ~ #gameInterface {
-  display: none !important;
-}
+/* REMOVIDA A REGRA PROBLEMÁTICA que impedia o dashboard de aparecer */
+/* #mainMenu ~ #gameInterface { display: none !important; } */
 
 .menu-container {
   max-width: 800px;

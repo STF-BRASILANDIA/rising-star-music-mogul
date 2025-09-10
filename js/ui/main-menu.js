@@ -115,6 +115,16 @@ export class MainMenu {
             });
         }
         
+        // Botão de teste do dashboard
+        const testDashboardBtn = document.getElementById('testDashboardBtn');
+        if (testDashboardBtn) {
+            testDashboardBtn.addEventListener('click', () => this.testDashboard());
+            testDashboardBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.testDashboard();
+            });
+        }
+        
         // Load Game modal
         document.getElementById('closeLoadGameBtn')?.addEventListener('click', () => {
             this.hideLoadGameModal();
@@ -878,6 +888,66 @@ export class MainMenu {
             }
         } else {
             console.error('❌ Character creation element not found');
+        }
+    }
+    
+    testDashboard() {
+        console.log('🧪 Testando Dashboard...');
+        
+        try {
+            // Esconder outras telas
+            this.hide();
+            const characterCreation = document.getElementById('characterCreation');
+            if (characterCreation) characterCreation.style.display = 'none';
+            
+            // Mostrar gameInterface
+            const dashboard = document.getElementById('gameInterface');
+            if (dashboard) {
+                dashboard.style.display = 'block';
+                console.log('✅ Dashboard visível');
+                
+                // Criar dados fake de jogador para teste
+                if (!window.game) {
+                    window.game = {
+                        gameData: {
+                            player: {
+                                artistName: 'Artista Teste',
+                                name: 'João Silva',
+                                role: 'Cantor(a)',
+                                genre: 'R&B',
+                                fame: 15420,
+                                monthlyListeners: 89350,
+                                money: 25600,
+                                creativity: 75,
+                                energy: 85,
+                                morale: 90,
+                                careerLevel: 2,
+                                careerXP: 350,
+                                careerNextXP: 500
+                            }
+                        }
+                    };
+                }
+                
+                // Inicializar GameHub se disponível
+                if (typeof window.initGameHub === 'function') {
+                    window.initGameHub();
+                    if (window.gameHub) {
+                        window.gameHub.show();
+                        console.log('✅ GameHub ativado com dados de teste');
+                        this.showNotification('Dashboard teste ativado!', 'success');
+                    }
+                } else {
+                    console.log('⚠️ initGameHub não disponível, mostrando apenas HTML');
+                    this.showNotification('Dashboard HTML ativo (sem JavaScript)', 'info');
+                }
+            } else {
+                console.error('❌ gameInterface não encontrado');
+                this.showNotification('Erro: gameInterface não encontrado', 'error');
+            }
+        } catch (err) {
+            console.error('❌ Erro ao testar dashboard:', err);
+            this.showNotification('Erro ao testar dashboard: ' + err.message, 'error');
         }
     }
     
