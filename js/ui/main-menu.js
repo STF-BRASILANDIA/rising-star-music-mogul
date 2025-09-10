@@ -17,6 +17,11 @@ export class MainMenu {
         this.loadSavedGames();
         this.applySettings();
         this.updateSyncStatus();
+
+        // Aplicar imediatamente offset salvo (defesa extra contra timing)
+        if (typeof this.settings.safeAreaOffset === 'number') {
+            document.documentElement.style.setProperty('--safe-area-extra-top', this.settings.safeAreaOffset + 'px');
+        }
         
         // Update sync status periodically
         setInterval(() => {
@@ -219,6 +224,26 @@ export class MainMenu {
         
         // Sistema global de fechamento de modais com ESC
         this.setupGlobalKeyboardShortcuts();
+
+        // Live update para safeAreaOffset (mover interface para baixo em dispositivos com notch)
+        const safeAreaInput = document.getElementById('safeAreaOffset');
+        if (safeAreaInput) {
+            safeAreaInput.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value || '0');
+                document.documentElement.style.setProperty('--safe-area-extra-top', val + 'px');
+                // Atualizar configuração em memória para salvar depois
+                if (typeof this.settings === 'object') {
+                    this.settings.safeAreaOffset = val;
+                }
+                // Persistir imediatamente para não perder ajuste caso usuário feche modal
+                try {
+                    const current = JSON.parse(localStorage.getItem('risingstar_settings') || '{}');
+                    localStorage.setItem('risingstar_settings', JSON.stringify({ ...current, safeAreaOffset: val }));
+                } catch (err) {
+                    console.warn('Não foi possível salvar safeAreaOffset imediatamente', err);
+                }
+            });
+        }
     }
     
     setupGlobalKeyboardShortcuts() {
@@ -701,7 +726,8 @@ export class MainMenu {
             autoSaveInterval: 2, // em minutos
             fastModeEnabled: false,
             cloudSyncEnabled: false,
-            analyticsEnabled: true
+            analyticsEnabled: true,
+            safeAreaOffset: 0
         };
         
         try {
@@ -723,7 +749,8 @@ export class MainMenu {
                 autoSaveInterval: parseInt(document.getElementById('autoSaveInterval').value),
                 fastModeEnabled: document.getElementById('fastModeEnabled').checked,
                 cloudSyncEnabled: document.getElementById('cloudSyncEnabled').checked,
-                analyticsEnabled: document.getElementById('analyticsEnabled').checked
+                analyticsEnabled: document.getElementById('analyticsEnabled').checked,
+                safeAreaOffset: parseInt(document.getElementById('safeAreaOffset')?.value || '0')
             };
             
             localStorage.setItem('risingstar_settings', JSON.stringify(settings));
@@ -749,13 +776,14 @@ export class MainMenu {
     }
     
     populateSettingsForm() {
-        document.getElementById('masterVolume').value = this.settings.masterVolume;
-        document.getElementById('musicVolume').value = this.settings.musicVolume;
-        document.getElementById('sfxVolume').value = this.settings.sfxVolume;
-        document.getElementById('animationsEnabled').checked = this.settings.animationsEnabled;
-        document.getElementById('notificationsEnabled').checked = this.settings.notificationsEnabled;
-        document.getElementById('uiScale').value = this.settings.uiScale;
-        document.getElementById('autoSaveEnabled').checked = this.settings.autoSaveEnabled;
+    const animationsEl = document.getElementById('animationsEnabled');
+    if (animationsEl) animationsEl.checked = this.settings.animationsEnabled;
+    const notifEl = document.getElementById('notificationsEnabled');
+    if (notifEl) notifEl.checked = this.settings.notificationsEnabled;
+    const scaleEl = document.getElementById('uiScale');
+    if (scaleEl) scaleEl.value = this.settings.uiScale;
+    const autoSaveEl = document.getElementById('autoSaveEnabled');
+    if (autoSaveEl) autoSaveEl.checked = this.settings.autoSaveEnabled;
         
         // Novos campos
         if (document.getElementById('autoSaveInterval')) {
@@ -769,6 +797,11 @@ export class MainMenu {
         }
         if (document.getElementById('analyticsEnabled')) {
             document.getElementById('analyticsEnabled').checked = this.settings.analyticsEnabled !== false; // true por padrão
+        }
+        if (document.getElementById('safeAreaOffset')) {
+            document.getElementById('safeAreaOffset').value = this.settings.safeAreaOffset || 0;
+            const valLabel = document.getElementById('safeAreaValue');
+            if (valLabel) valLabel.textContent = (this.settings.safeAreaOffset || 0) + 'px';
         }
     }
     
@@ -788,6 +821,11 @@ export class MainMenu {
         // Notify game engine about settings
         if (this.gameEngine && this.gameEngine.applySettings) {
             this.gameEngine.applySettings(this.settings);
+        }
+
+        // Apply safe area offset as CSS variable
+        if (typeof this.settings.safeAreaOffset === 'number') {
+            document.documentElement.style.setProperty('--safe-area-extra-top', this.settings.safeAreaOffset + 'px');
         }
     }
     

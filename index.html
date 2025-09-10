@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
     <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
 </head>
-<body>
+<body class="menu-active">
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen" style="display: none;">
         <div class="loading-content">
@@ -130,6 +130,14 @@
                             <option value="1.0" selected>Normal</option>
                             <option value="1.2">Grande</option>
                         </select>
+                    </div>
+                    <div class="setting-item in-game-only" style="display:none;">
+                        <label for="safeAreaOffset">Margem Superior (Notch/Dynamic Island)</label>
+                        <input type="range" id="safeAreaOffset" min="0" max="80" step="4" value="0" oninput="document.getElementById('safeAreaValue').textContent=this.value + 'px'">
+                        <div style="font-size:12px; opacity:.7; display:flex; justify-content:space-between; margin-top:2px;">
+                            <span>Ajuste se a câmera cobrir elementos</span>
+                            <span id="safeAreaValue">0px</span>
+                        </div>
                     </div>
                 </div>
 
@@ -807,7 +815,7 @@
     </div>
 
     <!-- Game Interface (Dashboard Híbrido) -->
-    <div id="gameInterface" class="screen" style="display: none;">
+    <div id="gameInterface" class="screen" style="display: none;" data-guard="dashboard">
         <div class="app-shell hybrid">
             <aside class="side-panel" id="sideProfile">
                 <div class="profile-header">
@@ -848,7 +856,7 @@
             </aside>
 
             <div class="main-area">
-                <header class="top-bar">
+        <header class="top-bar">
                     <div class="left">
                         <h1 class="view-title" id="currentViewTitle">Visão Geral</h1>
                         <div class="time-chip">
@@ -863,8 +871,9 @@
                                 <div id="careerLevelFill" style="width:0%"></div>
                             </div>
                         </div>
-                        <button class="notif-btn" id="openNotifications">Notificações</button>
-                        <button class="switch-view-btn" id="switchToProfile" data-target="profile">Perfil</button>
+                        <button class="settings-ingame-btn" id="openInGameSettings" title="Configurações" style="background:none;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;">⚙️</button>
+                        <button class="settings-ingame-btn" id="openNotifications" title="Notificações" style="background:none;border:1px solid rgba(255,255,255,0.25);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;">🔔</button>
+                        <!-- Botão Perfil removido: já existe aba dedicada -->
                     </div>
                 </header>
 
@@ -958,37 +967,116 @@
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
     
-    <!-- Debug Dashboard -->
+    <!-- Debug & In-Game Safe Area Handling -->
     <script>
-        // Função global para testar o dashboard
         window.testDashboard = function() {
             console.log('🧪 Testando Dashboard...');
-            
-            // Esconder outras telas
             document.getElementById('mainMenu').style.display = 'none';
             document.getElementById('characterCreation').style.display = 'none';
-            
-            // Mostrar gameInterface
             const dashboard = document.getElementById('gameInterface');
             if (dashboard) {
                 dashboard.style.display = 'block';
-                console.log('✅ Dashboard visível');
-                
-                // Inicializar GameHub se disponível
+                document.body.classList.add('in-game');
                 if (typeof window.initGameHub === 'function') {
                     window.initGameHub();
-                    if (window.gameHub) {
-                        window.gameHub.show();
-                        console.log('✅ GameHub ativado');
-                    }
                 }
-            } else {
-                console.error('❌ gameInterface não encontrado');
             }
         };
-        
-        // Botão de debug no console
         console.log('🔧 Digite window.testDashboard() no console para testar o dashboard');
+
+        // Patch para marcar quando jogo inicia e revelar controles in-game-only
+        (function patchInit() {
+            if (window.__safeAreaInitPatched) return;
+            const hook = () => {
+                if (typeof window.initGameHub === 'function' && !window.__safeAreaInitPatched) {
+                    window.__safeAreaInitPatched = true;
+                    const original = window.initGameHub;
+                    window.initGameHub = function(...args) {
+                        const r = original.apply(this, args);
+                        document.body.classList.add('in-game');
+                        document.querySelectorAll('.in-game-only').forEach(el => {
+                            el.style.display = '';
+                        });
+                        return r;
+                    };
+                } else if (!window.__safeAreaInitPatched) {
+                    setTimeout(hook, 200);
+                }
+            };
+            hook();
+        })();
+
+        // Abrir configurações por botão in-game (delegado, chama método oficial se disponível)
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'openInGameSettings') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.mainMenu && typeof window.mainMenu.showSettings === 'function') {
+                    window.mainMenu.showSettings();
+                } else {
+                    const modal = document.getElementById('settingsModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        modal.classList.add('show');
+                    }
+                }
+            }
+        });
+
+        // Impedir clique dentro do modal de vazar para o dashboard (usar fase de bolha para não bloquear handlers dos botões)
+        document.addEventListener('click', (e) => {
+            const mc = e.target.closest('.modal-content');
+            if (mc) {
+                // Já deixa botões funcionarem (handlers rodam antes desta etapa)
+                e.stopPropagation();
+            }
+        });
+
+        // Fallback / reforço para botões do modal caso alguma ligação inicial falhe ou modal seja aberto antes do MainMenu bindEvents
+        document.addEventListener('click', (e) => {
+            const id = e.target && e.target.id;
+            if (!id) return;
+            if (id === 'closeSettingsBtn') {
+                e.preventDefault();
+                if (window.mainMenu?.hideSettings) {
+                    window.mainMenu.hideSettings();
+                } else {
+                    const modal = document.getElementById('settingsModal');
+                    if (modal) { modal.classList.remove('show'); setTimeout(()=> modal.style.display='none', 200); }
+                }
+            } else if (id === 'saveSettingsBtn') {
+                e.preventDefault();
+                if (window.mainMenu?.saveSettings) {
+                    window.mainMenu.saveSettings(); // já fecha dentro de saveSettings()
+                } else {
+                    // Fallback mínimo: apenas fechar modal
+                    const modal = document.getElementById('settingsModal');
+                    if (modal) { modal.classList.remove('show'); setTimeout(()=> modal.style.display='none', 200); }
+                }
+            } else if (id === 'resetSettingsBtn') {
+                e.preventDefault();
+                if (window.mainMenu?.resetSettings) {
+                    window.mainMenu.resetSettings();
+                } else {
+                    // Reset simples fallback (limpa localStorage e recarrega)
+                    try { localStorage.removeItem('risingstar_settings'); } catch(_) {}
+                    location.reload();
+                }
+            }
+        });
+
+        // Fechar modal ao clicar fora (overlay)
+        document.addEventListener('click', (e) => {
+            const anyOpen = document.querySelector('.modal.show');
+            if (anyOpen && e.target.classList && e.target.classList.contains('modal')) {
+                if (window.mainMenu && typeof window.mainMenu.hideSettings === 'function') {
+                    window.mainMenu.hideSettings();
+                } else {
+                    anyOpen.classList.remove('show');
+                    setTimeout(()=> anyOpen.style.display = 'none', 250);
+                }
+            }
+        });
     </script>
     
     <!-- Initialize Character Creator globally -->
@@ -1129,5 +1217,18 @@
                 }
             })();
         </script>
+     <script>
+        // Guarda final: não permitir dashboard visível antes do jogo
+        (function finalDashboardGuard(){
+            const gi = document.getElementById('gameInterface');
+            if (!gi) return;
+            if (!window.game || window.game.gameState !== 'playing') {
+                gi.style.display = 'none';
+            }
+            document.addEventListener('readystatechange', ()=>{
+                if (!window.game || window.game.gameState !== 'playing') gi.style.display='none';
+            });
+        })();
+     </script>
 </body>
 </html>

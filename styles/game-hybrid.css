@@ -21,9 +21,16 @@
   --shadow-sm: 0 2px 8px -2px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 18px -6px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 32px -8px rgba(0,0,0,0.5);
+  /* Safe area custom offset (user configurable) */
+  --safe-area-extra-top: 0px;
 }
 
-/* ===== FORÇAR VISIBILIDADE DO DASHBOARD ===== */
+/* Elementos marcados como somente in-game escondidos até jogo iniciar */
+body:not(.in-game) .in-game-only { display: none !important; }
+body.in-game .in-game-only { display: block; }
+
+/* ===== VISIBILIDADE DO DASHBOARD ===== */
+/* Não forçar display aqui; interface só aparece quando jogo inicia (startGame/loadGame) */
 #gameInterface {
   position: relative !important;
   z-index: 1000 !important;
@@ -32,13 +39,10 @@
   overflow: hidden !important;
 }
 
-#gameInterface.screen {
-  display: block !important;
-}
+/* Removido #gameInterface.screen { display:block } para evitar aparecimento no menu inicial */
 
-/* Garantir que o dashboard seja visível quando ativo */
+/* Quando JS definir display:block, apenas reforçamos visibilidade (sem sobrescrever ocultação inicial) */
 #gameInterface[style*="display: block"] {
-  display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
@@ -65,6 +69,21 @@
   color: #fff; 
   font-family: var(--font, 'Inter', system-ui, Arial);
   position: relative;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--safe-area-extra-top));
+}
+
+/* Ajustar top-bar para descolar de notches dinâmicos */
+.top-bar { 
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--safe-area-extra-top) + 8px) !important;
+}
+
+/* Em iPhones modernos a bottom-nav também precisa considerar a área segura inferior */
+@supports (padding: max(0px)) {
+  .mobile-bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
+  /* Garantir que se o usuário deslocar muito a parte superior, o conteúdo principal não fique muito comprimido:
+     não mexemos diretamente aqui, mas deixamos comentário para futuras adaptações. */
+  }
 }
 
 /* ===== SIDEBAR / PERFIL ===== */
@@ -338,7 +357,9 @@
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  padding: 14px 26px; 
+  padding: 14px 26px; /* base */
+  /* Reaplicar top dinâmico somando espaço original + safe area */
+  padding-top: calc(14px + env(safe-area-inset-top, 0px) + var(--safe-area-extra-top));
   border-bottom: 1px solid rgba(255,255,255,0.08); 
   background: rgba(18,19,24,0.65); 
   backdrop-filter: blur(12px);
@@ -866,7 +887,8 @@
   }
   
   .top-bar {
-    padding: 12px 18px;
+  padding: 12px 18px; /* base */
+  padding-top: calc(12px + env(safe-area-inset-top, 0px) + var(--safe-area-extra-top));
   }
   
   .tab-nav {
@@ -998,7 +1020,8 @@
   .inline-profile-stats .p-stat { padding:5px 4px 4px; }
   
   .top-bar {
-    padding: 10px 14px;
+  padding: 10px 14px; /* base */
+  padding-top: calc(10px + env(safe-area-inset-top, 0px) + var(--safe-area-extra-top));
   }
   
   .tab-nav {

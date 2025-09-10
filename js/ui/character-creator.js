@@ -1080,10 +1080,13 @@ export class CharacterCreator {
         // Hide character creation and start game
         this.hide();
         
-        // If game engine available, start immediately
+        // If game engine available, start immediately (não retornar para permitir fluxo de exibição do hub)
         if (this.gameEngine) {
-            this.gameEngine.startGame(characterData);
-            return;
+            try {
+                this.gameEngine.startGame(characterData);
+            } catch (err) {
+                console.error('❌ Erro ao chamar gameEngine.startGame:', err);
+            }
         }
 
         // Otherwise, poll for a global game object for a short period and then start
@@ -1124,28 +1127,32 @@ export class CharacterCreator {
             }, pollInterval);
         }
         
-        // Após completar o startGame, exibir o GameHub
+        // Após iniciar o jogo, garantir interface e GameHub
         try {
-            setTimeout(() => {
-                console.log('🎮 Tentando exibir GameHub após criar personagem...');
-                
-                // Inicializar GameHub se não existir
+            const ensureHub = () => {
+                console.log('🎮 ensureHub(): preparando exibição do GameHub');
+                // Garantir que interface principal esteja visível
+                const gi = document.getElementById('gameInterface');
+                if (gi && gi.style.display !== 'block') {
+                    gi.style.display = 'block';
+                }
+                // Inicializar GameHub se necessário
                 if (typeof window.initGameHub === 'function' && !window.gameHub) {
                     window.initGameHub();
                 }
-                
-                // Mostrar o dashboard
+                // Exibir GameHub
                 if (window.gameHub && typeof window.gameHub.show === 'function') {
                     window.gameHub.show();
-                    console.log('✅ GameHub exibido com sucesso');
+                    console.log('✅ GameHub exibido (ensureHub)');
                 } else {
-                    console.warn('⚠️ GameHub não disponível, exibindo interface padrão');
-                    const gi = document.getElementById('gameInterface');
-                    if (gi) gi.style.display = 'block';
+                    console.warn('⚠️ GameHub ainda não disponível');
                 }
-            }, 1500); // Delay para garantir que o engine já processou
+            };
+            // Fazer duas tentativas com pequeno atraso para cobrir timing de inicialização
+            setTimeout(ensureHub, 400);
+            setTimeout(ensureHub, 1200);
         } catch (err) {
-            console.error('❌ Erro ao exibir GameHub:', err);
+            console.error('❌ Erro na rotina de ensureHub:', err);
         }
     }
     
