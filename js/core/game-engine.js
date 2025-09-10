@@ -73,11 +73,19 @@ export class RisingStarGame {
             
             console.log('✅ Jogo inicializado com sucesso');
             
-            // Aguardar um pouco para que a animação de loading seja vista
+            // Mostrar menu principal assim que sistemas estejam prontos (delay reduzido)
             setTimeout(() => {
-                console.log('🎯 Timeout executado - mostrando menu principal');
-                this.showMainMenu();
-            }, 2000);
+                try {
+                    if (this.systems.mainMenu) {
+                        console.log('🎯 Exibindo menu principal (init concluído)');
+                        this.showMainMenu();
+                    } else {
+                        console.warn('⚠️ mainMenu ainda não disponível após init');
+                    }
+                } catch (err) {
+                    console.error('❌ Falha ao mostrar menu principal pós-init:', err);
+                }
+            }, 600); // 600ms para permitir pequena animação de loading
             
         } catch (error) {
             console.error('❌ Erro ao inicializar o jogo:', error);
@@ -350,7 +358,12 @@ export class RisingStarGame {
     
     showMainMenu() {
         console.log('🎯 showMainMenu() chamado');
+        if (this._mainMenuShown) {
+            console.log('ℹ️ showMainMenu ignorado (já exibido)');
+            return;
+        }
         this.gameState = 'main_menu';
+        this._mainMenuShown = true;
         // Chamar função global de hideLoadingScreen se disponível (definida em js/main.js)
         try {
             if (typeof hideLoadingScreen === 'function') {

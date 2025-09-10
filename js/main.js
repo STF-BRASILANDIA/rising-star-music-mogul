@@ -39,6 +39,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Hard fallback: garantir que loading desapareça mesmo se algo travar
+setTimeout(() => {
+    try {
+        const ls = document.getElementById('loadingScreen');
+        if (ls && ls.style.display !== 'none') {
+            console.warn('⚠️ Hard fallback: forçando fechamento da tela de loading (timeout)');
+            hideLoadingScreen();
+            // Caso game não tenha mostrado menu, exibir menu principal pelo DOM
+            const mm = document.getElementById('mainMenu');
+            if (mm && mm.style.display === 'none') {
+                mm.style.display = 'block';
+            }
+        }
+    } catch(e) { console.warn('⚠️ Hard fallback error', e); }
+}, 12000); // 12s máximo absoluto
+
 // Poll for mainMenu system and trigger showMainMenu once available
 (() => {
     let attempts = 0;
