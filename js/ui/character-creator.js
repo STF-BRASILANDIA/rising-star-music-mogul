@@ -13,14 +13,36 @@ export class CharacterCreator {
         // Pontos iniciais para distribuir - 100 pontos totais, 6 usados (1 em cada talento artístico), 94 disponíveis
         this.availablePoints = 100;
         
-        // Initialize notification system
-        this.initNotificationSystem();
+        // Delegar notificações para interfaceManager se existir
+        this._notify = (msg, type='info', duration=4000, extra={}) => {
+            try {
+                if (window.game?.systems?.interfaceManager?.showNotification) {
+                    window.game.systems.interfaceManager.showNotification({
+                        message: msg,
+                        type,
+                        duration,
+                        ...extra
+                    });
+                } else {
+                    // Fallback simples (único container)
+                    let container = document.getElementById('notificationContainer');
+                    if (!container) {
+                        container = document.createElement('div');
+                        container.id = 'notificationContainer';
+                        container.className = 'notification-container';
+                        document.body.appendChild(container);
+                    }
+                    const div = document.createElement('div');
+                    div.className = `notification notification-${type} show`;
+                    div.textContent = msg;
+                    container.appendChild(div);
+                    setTimeout(()=>div.remove(), duration);
+                }
+            } catch(e) { console.warn('⚠️ Falha ao mostrar notificação (delegação):', e); }
+        };
         
-        // TESTE IMEDIATO DE NOTIFICAÇÃO
-        setTimeout(() => {
-            console.log('🧪 Testing notification system...');
-            this.showNotification('TESTE: Sistema inicializado!', 'info', 5000);
-        }, 1000);
+        // Teste inicial controlado
+        setTimeout(() => this._notify('Sistema de criação inicializado', 'info', 2500), 800);
         
         this.locations = ['Estados Unidos', 'Canadá', 'América Latina', 'Reino Unido', 'Europa', 'África', 'Coreia do Sul', 'Japão', 'Oceania'];
         this.roles = ['Cantor(a)', 'Rapper', 'Guitarrista', 'Baterista', 'Tecladista', 'DJ'];
@@ -1101,95 +1123,9 @@ export class CharacterCreator {
         }
     }
     
-    // ===== NOTIFICATION SYSTEM ===== (Updated)
-    initNotificationSystem() {
-        console.log('🔔 Initializing notification system');
-        // Ensure notification container exists
-        let container = document.getElementById('notificationContainer');
-        if (!container) {
-            console.log('📦 Creating notification container');
-            container = document.createElement('div');
-            container.id = 'notificationContainer';
-            container.className = 'notification-container';
-            document.body.appendChild(container);
-        }
-        console.log('✅ Notification container ready:', container);
-    }
-    
-    showNotification(message, type = 'error', duration = 4000) {
-        console.log(`🔔 Showing notification: "${message}" (type: ${type})`);
-        const container = document.getElementById('notificationContainer');
-        if (!container) {
-            console.error('❌ Notification container not found!');
-            return;
-        }
-        
-        const notification = document.createElement('div');
-        notification.className = `notification ${type} show`; // Add show class immediately
-        notification.textContent = message;
-        
-        // Check if mobile
-        const isMobile = window.innerWidth <= 768;
-        
-        // Force initial styles for visibility
-        let baseStyles = `
-            position: relative !important;
-            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%) !important;
-            color: white !important;
-            padding: 16px 20px !important;
-            border-radius: 12px !important;
-            margin-bottom: 12px !important;
-            opacity: 1 !important;
-            display: block !important;
-            z-index: 999999 !important;
-            box-sizing: border-box !important;
-        `;
-        
-        if (isMobile) {
-            baseStyles += `
-                transform: translateY(0) !important;
-                width: 100% !important;
-                max-width: none !important;
-            `;
-        } else {
-            baseStyles += `
-                transform: translateX(0) !important;
-                max-width: 350px !important;
-            `;
-        }
-        
-        notification.style.cssText = baseStyles;
-        
-        if (type === 'success') {
-            notification.style.background = 'linear-gradient(135deg, #2ed573 0%, #1e90ff 100%) !important';
-        } else if (type === 'warning') {
-            notification.style.background = 'linear-gradient(135deg, #ffa726 0%, #ff9800 100%) !important';
-        } else if (type === 'info') {
-            notification.style.background = 'linear-gradient(135deg, #5352ed 0%, #3742fa 100%) !important';
-        }
-        
-        console.log('📦 Created notification element:', notification);
-        console.log('📱 Mobile detected:', isMobile);
-        
-        // Add to container
-        container.appendChild(notification);
-        console.log('📌 Added notification to container');
-        
-        // Auto remove
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-                console.log('🗑️ Notification removed');
-            }
-        }, duration);
-        
-        // Click to close
-        notification.addEventListener('click', () => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-                console.log('👆 Notification closed by click');
-            }
-        });
+    // Backwards compatibility wrapper
+    showNotification(message, type='info', duration=4000) {
+        this._notify(message, type, duration);
     }
 }
 
