@@ -485,6 +485,20 @@ export class CharacterCreator {
                     console.log(`🔍 Skills content found:`, skillsContent);
                     console.log(`🔍 Skills content display:`, window.getComputedStyle(skillsContent).display);
                 }
+
+                // Ensure the step element is scrolled into view on small screens
+                try {
+                    const container = document.getElementById('characterCreation');
+                    if (currentStepElement && currentStepElement.scrollIntoView) {
+                        currentStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        console.log('🔧 Scrolled current step into view');
+                    }
+                    // Also ensure internal scrollable areas show top
+                    const scrollable = currentStepElement.querySelector('.profile-form, .profile-content, .skills-scroll-container');
+                    if (scrollable && scrollable.scrollTop !== 0) scrollable.scrollTop = 0;
+                } catch (err) {
+                    console.warn('⚠️ Error while scrolling step into view:', err);
+                }
             }, 100);
         } else {
             console.error(`❌ Step ${stepNumber} (${stepId}) element not found!`);

@@ -31,7 +31,7 @@ Rising Star: Music Mogul é um jogo de simulação de carreira musical sem fim q
 - Distribua pontos de habilidade entre vocais, composição, performance, produção, marketing e negócios
 - Selecione gênero musical inicial e dificuldade
 
-### 2. Dashboard Principal
+### 2. Interface Principal
 - Monitore suas estatísticas: dinheiro, fãs, nível
 - Acompanhe atividades recentes e tendências do mercado
 - Gerencie rapidamente seus projetos ativos

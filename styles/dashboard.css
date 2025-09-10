@@ -1,26 +1,2 @@
-/* Dashboard specific styles moved from index.html */
-:root{
-  --dashboard-bg: #0b0b0d;
-  --dashboard-accent: linear-gradient(90deg,#3b82f6,#7c3aed);
-  --primary-text: #ffffff;
-}
-
-#gameInterface .dashboard-app{min-height:100vh;display:flex;flex-direction:column;background:var(--dashboard-bg);color:var(--primary-text)}
-#gameInterface .header{display:flex;align-items:center;justify-content:space-between;padding:18px 16px}
-#gameInterface .left-profile{display:flex;gap:12px;align-items:center}
-#gameInterface .avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(180deg,#fff,#eee);display:flex;align-items:center;justify-content:center;font-weight:700;color:#333;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
-#gameInterface .stat-bar{margin:0 auto;margin-top:8px;background:var(--dashboard-accent);border-radius:32px;padding:10px 16px;display:flex;gap:12px;align-items:center;width:92%;max-width:760px;box-shadow:0 8px 30px rgba(0,0,0,0.35)}
-#gameInterface .stat-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:999px;font-weight:700}
-#gameInterface .top-right{display:flex;gap:12px;align-items:center}
-#gameInterface .money-bubble{background:#fff;color:#000;padding:8px 12px;border-radius:20px;font-weight:800}
-#gameInterface .info-row{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-#gameInterface .artist-block{display:flex;flex-direction:column;gap:6px}
-#gameInterface .artist-name{font-size:20px;font-weight:800}
-#gameInterface .subinfo{font-size:12px;color:rgba(255,255,255,0.75)}
-#gameInterface .create-label{background:linear-gradient(135deg,#7c3aed,#ff6b6b);color:#fff;padding:10px 14px;border-radius:10px;font-weight:700}
-#gameInterface .main-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px 90px}
-#gameInterface .activities-btn{width:90%;max-width:720px;background:linear-gradient(180deg,#2db7ff,#1f8ce6);color:white;padding:20px;border-radius:14px;font-size:20px;font-weight:800;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,0.45)}
-#gameInterface .bottom-nav{position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:center;pointer-events:none}
-#gameInterface .nav-inner{width:96%;max-width:760px;background:linear-gradient(180deg,#0e2438,#071025);border-radius:14px;padding:10px;display:flex;justify-content:space-around;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,0.6);pointer-events:auto}
-#gameInterface .nav-btn{background:transparent;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700}
-@media (max-width:420px){#gameInterface .avatar{width:60px;height:60px}#gameInterface .stat-bar{width:96%}}
+/* Visual interface styles removed - file emptied to avoid accidental loading.
+  Visual UI was deleted per user request. */

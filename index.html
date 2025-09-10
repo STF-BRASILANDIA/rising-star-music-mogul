@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0.0">
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
-    <link rel="stylesheet" href="styles/dashboard.css?v=1.0.0">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -640,7 +639,7 @@
             </style>
 
             <!-- Step 3: Skills (LAYOUT SCROLL FIXO) -->
-            <div id="skills-step" class="creation-step" style="display: none; flex-direction: column; height: 100vh; overflow: hidden;">
+            <div id="skills-step" class="creation-step" style="display: none; flex-direction: column; height: 100vh; max-height: 100vh; overflow: hidden;">
                 <div class="skills-container" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
                     
                     <!-- Header FIXO -->
@@ -802,55 +801,12 @@
         </div>
     </div>
 
-    <!-- Game Interface (dashboard approximated to design) -->
+    <!-- Game Interface (visual UI/design removed) -->
     <div id="gameInterface" class="screen" style="display: none;">
-        <div class="dashboard-app" style="min-height:100vh; display:flex; flex-direction:column; background:var(--bg-primary, #0b0b0d); color:var(--text-primary, #fff);">
-
-            <!-- Dashboard styles moved to styles/dashboard.css -->
-
-            <div class="header">
-                <div class="left-profile">
-                    <div class="avatar" id="headerAvatar">A</div>
-                    <div class="artist-block">
-                        <div class="artist-name" id="playerDisplayName">Nome do Artista</div>
-                        <div class="subinfo"><span id="playerGenre">Independent • Rap</span> • <span id="weekInfo">Week: 1 • Dec 30, 2024</span></div>
-                    </div>
-                </div>
-                <div class="top-right">
-                    <div class="settings-icon" title="Settings">⚙️</div>
-                    <div class="money-bubble" id="playerDisplayMoney">$0</div>
-                </div>
-            </div>
-
-            <div class="stat-bar" role="region" aria-label="Player stats">
-                <div class="stat-item"><span>❤️</span><span id="healthStat">100</span></div>
-                <div class="stat-item"><span>🌍</span><span id="reachStat">71</span></div>
-                <div class="stat-item"><span>🙂</span><span id="moodStat">100</span></div>
-                <div class="stat-item"><span>⏱️</span><span id="timeStat">18</span></div>
-            </div>
-
-            <div class="info-row">
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <div style="font-size:14px; color:rgba(255,255,255,0.9);">You</div>
-                    <div style="font-size:13px; color:rgba(255,255,255,0.6);">Prestige: <span id="prestigeIcons">0</span></div>
-                </div>
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <button class="create-label" id="createLabelBtn">+ Create Label</button>
-                </div>
-            </div>
-
+        <div class="game-area" style="min-height:100vh;">
+            <!-- Visual interface removed by request. Core/game logic should still attach elements programmatically when needed. -->
             <div class="main-content">
-                <div class="activities-btn" id="activitiesBtn">Activities</div>
-            </div>
-
-            <div class="bottom-nav">
-                <div class="nav-inner">
-                    <button class="nav-btn" id="navHome">🏠 Home</button>
-                    <button class="nav-btn" id="navProfile">👤</button>
-                    <button class="nav-btn" id="navStore">🛒</button>
-                    <button class="nav-btn" id="navWorld">🌐</button>
-                    <button class="nav-btn" id="navMore">⋯</button>
-                </div>
+                <p style="padding:24px; color:var(--text-secondary, #bbb);">Interface principal (visual removido). Recursos de core permanecem intactos.</p>
             </div>
         </div>
     </div>
@@ -967,5 +923,37 @@
             });
         });
     </script>
+
+        <!-- Dynamic VH fallback for mobile browsers (evita corte por barras de endereço) -->
+        <script>
+            (function() {
+                function applyDynamicVH() {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', vh + 'px');
+                    const steps = document.querySelectorAll('#characterCreation .creation-step');
+                    steps.forEach(step => {
+                        // Usa a variável dinâmica; se não existir, fallback normal do navegador
+                        step.style.height = 'calc(var(--vh, 1vh) * 100)';
+                        step.style.maxHeight = 'calc(var(--vh, 1vh) * 100)';
+                    });
+                }
+
+                let resizeTimeout;
+                function schedule() {
+                    clearTimeout(resizeTimeout);
+                        resizeTimeout = setTimeout(applyDynamicVH, 60);
+                }
+
+                window.addEventListener('resize', schedule, { passive: true });
+                window.addEventListener('orientationchange', () => setTimeout(applyDynamicVH, 120));
+                document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(); });
+                // Primeira aplicação assim que possível
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', applyDynamicVH);
+                } else {
+                    applyDynamicVH();
+                }
+            })();
+        </script>
 </body>
 </html>

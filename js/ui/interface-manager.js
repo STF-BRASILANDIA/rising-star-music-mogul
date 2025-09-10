@@ -7,7 +7,8 @@ export class InterfaceManager {
     constructor(gameEngine) {
         console.log('🏗️ Construindo InterfaceManager...');
         this.gameEngine = gameEngine;
-        this.currentSection = 'dashboard';
+    // Default to a neutral section since the visual dashboard was removed
+    this.currentSection = 'studio';
         this.notifications = [];
         this.modals = [];
         this.updateTimers = new Map();
@@ -36,20 +37,14 @@ export class InterfaceManager {
                 gameInterface.style.display = 'block';
             }
 
-            // Popular dashboard com dados do jogador
-            this.updatePlayerInfo();
-            this.bindDashboardEvents();
-
             // Start update timers only when interface is shown and game is ready
             setTimeout(() => {
                 try {
                     this.startUpdateTimers();
-                    // Initial dashboard update
-                    this.updateDashboard();
                 } catch (err) {
-                    console.warn('⚠️ Erro iniciando timers/atualização do dashboard:', err);
+                    console.warn('⚠️ Erro iniciando timers:', err);
                 }
-            }, 1000); // Give time for game state to be set properly
+            }, 1000);
         } catch (err) {
             console.error('❌ showMainInterface falhou:', err);
             // Fallback: garantir que o elemento esteja visível
@@ -77,7 +72,7 @@ export class InterfaceManager {
             playerMoney.textContent = this.formatMoney(player.money || 0);
         }
         
-        // Atualizar estatísticas - ARTIST TRAITS
+    // Atualizar estatísticas - ARTIST TRAITS
         this.updateStatDisplay('vocalsStat', player.skills?.vocals || 0);
         this.updateStatDisplay('songWritingStat', player.skills?.songWriting || 0);
         this.updateStatDisplay('rhythmStat', player.skills?.rhythm || 0);
@@ -92,7 +87,7 @@ export class InterfaceManager {
         this.updateStatDisplay('recruitingStat', player.skills?.recruiting || 0);
         this.updateStatDisplay('salesStat', player.skills?.sales || 0);
         
-        console.log('✅ Informações do jogador atualizadas no dashboard');
+    console.log('✅ Informações do jogador atualizadas na interface');
     }
     
     updateStatDisplay(elementId, value) {
@@ -110,61 +105,12 @@ export class InterfaceManager {
         }).format(amount);
     }
     
-    bindDashboardEvents() {
-        // Evitar binding duplicado
-        if (this.dashboardEventsBound) return;
-        this.dashboardEventsBound = true;
-        
-        // Botão de voltar ao menu
-        const backToMenuBtn = document.getElementById('backToMenuBtn');
-        if (backToMenuBtn) {
-            backToMenuBtn.addEventListener('click', () => {
-                this.hideMainInterface();
-                this.gameEngine.showMainMenu();
-            });
-        }
-        
-        // Botão de salvar jogo
-        const saveGameBtn = document.getElementById('saveGameBtn');
-        if (saveGameBtn) {
-            saveGameBtn.addEventListener('click', () => {
-                this.gameEngine.saveGame();
-                this.showNotification('Jogo salvo com sucesso!', 'success');
-            });
-        }
-        
-        // Outros botões (placeholder para futuras funcionalidades)
-        const createMusicBtn = document.getElementById('createMusicBtn');
-        const viewStatsBtn = document.getElementById('viewStatsBtn');
-        
-        if (createMusicBtn) {
-            createMusicBtn.addEventListener('click', () => {
-                this.showNotification('Sistema de criação musical em desenvolvimento!', 'info');
-            });
-        }
-        
-        if (viewStatsBtn) {
-            viewStatsBtn.addEventListener('click', () => {
-                this.showNotification('Sistema de estatísticas detalhadas em desenvolvimento!', 'info');
-            });
-        }
-
-        // Novos botões do dashboard customizado
-        const activitiesBtn = document.getElementById('activitiesBtn');
-        if (activitiesBtn) {
-            activitiesBtn.addEventListener('click', () => {
-                this.showNotification('Abrindo Activities (em desenvolvimento)...', 'info');
-                // Exibir seção dashboard como placeholder
-                this.showSection('dashboard');
-            });
-        }
-
-        const createLabelBtn = document.getElementById('createLabelBtn');
-        if (createLabelBtn) {
-            createLabelBtn.addEventListener('click', () => {
-                this.showNotification('Funcionalidade Create Label em desenvolvimento.', 'info');
-            });
-        }
+    bindUIEvents() {
+        // Visual UI/designer foi removido por solicitação.
+        // Este método permanece como stub para não quebrar chamadas antigas.
+        if (this.uiEventsBound) return;
+        this.uiEventsBound = true;
+        console.log('ℹ️ bindUIEvents() stub - visual UI removido');
     }
     
     hideMainInterface() {
@@ -365,8 +311,9 @@ export class InterfaceManager {
         }
         
         switch (sectionName) {
-            case 'dashboard':
-                this.updateDashboard();
+            // Seção principal visual foi removida; mantemos outras seções
+            case 'studio':
+                this.updateStudio();
                 break;
             case 'studio':
                 this.updateStudio();
@@ -386,59 +333,17 @@ export class InterfaceManager {
         }
     }
     
-    updateDashboard() {
-        console.log('🎯 updateDashboard() chamado - MODO SEGURO');
-        
-        // MODO ULTRA-SEGURO - return imediatamente
+    updateMainInterface() {
+        // Visual UI/designer foi removido. Método mantido como no-op seguro para evitar erros.
+        console.log('ℹ️ updateMainInterface() stub - visual UI removed');
+        // Optionally keep lightweight data sync calls if needed by core logic
         try {
-            // Multiple safety checks
-            if (!this.gameEngine) {
-                console.log('⚠️ GameEngine não disponível');
-                return;
+            if (this.gameEngine && typeof this.gameEngine.getFormattedDate === 'function') {
+                this.updateElement('gameDate', this.gameEngine.getFormattedDate());
             }
-            
-            if (!this.gameEngine.gameData) {
-                console.log('⚠️ GameData não disponível');
-                return;
-            }
-            
-            const gameData = this.gameEngine.gameData;
-            const player = gameData.player;
-            
-            // Check if player data exists
-            if (!player) {
-                console.log('⚠️ Player data not initialized yet');
-                return;
-            }
-            
-            console.log('✅ Atualizando dashboard com dados do player:', player.stageName);
-            
-            // Update player stats with additional safety
-            if (player.stageName !== undefined) {
-                this.updateElement('playerName', player.stageName || 'Rising Star');
-            }
-            if (player.money !== undefined) {
-                this.updateElement('playerMoney', `$${(player.money || 0).toLocaleString()}`);
-            }
-            if (player.fans !== undefined) {
-                this.updateElement('playerFans', `${(player.fans || 0).toLocaleString()}`);
-            }
-            if (player.level !== undefined) {
-                this.updateElement('playerLevel', player.level || 1);
-            }
-        } catch (error) {
-            console.error('❌ Erro em updateDashboard:', error);
-            // Never throw, just log
+        } catch (e) {
+            // swallow
         }
-        
-        // Update current date
-        this.updateElement('gameDate', this.gameEngine.getFormattedDate());
-        
-        // Update recent activities
-        this.updateRecentActivities();
-        
-        // Update quick stats
-        this.updateQuickStats();
     }
     
     updateStudio() {
@@ -877,14 +782,14 @@ export class InterfaceManager {
     }
     
     navigateToNextSection() {
-        const sections = ['dashboard', 'studio', 'career', 'social', 'industry', 'analytics'];
+    const sections = ['studio', 'career', 'social', 'industry', 'analytics'];
         const currentIndex = sections.indexOf(this.currentSection);
         const nextIndex = (currentIndex + 1) % sections.length;
         this.showSection(sections[nextIndex]);
     }
     
     navigateToPreviousSection() {
-        const sections = ['dashboard', 'studio', 'career', 'social', 'industry', 'analytics'];
+    const sections = ['studio', 'career', 'social', 'industry', 'analytics'];
         const currentIndex = sections.indexOf(this.currentSection);
         const prevIndex = currentIndex === 0 ? sections.length - 1 : currentIndex - 1;
         this.showSection(sections[prevIndex]);
@@ -937,12 +842,7 @@ export class InterfaceManager {
         
         console.log('⏰ Iniciando timers de atualização');
         
-        // Update dashboard every 5 seconds
-        this.updateTimers.set('dashboard', setInterval(() => {
-            if (this.currentSection === 'dashboard' && this.gameEngine.gameState === 'playing') {
-                this.updateDashboard();
-            }
-        }, 5000));
+    // Visual UI timers removed. Other sections timers may be enabled when needed.
         
         // Update other sections every 10 seconds
         ['studio', 'career', 'social', 'industry', 'analytics'].forEach(section => {
