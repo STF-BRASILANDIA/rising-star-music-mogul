@@ -781,48 +781,28 @@ export class MainMenu {
         }
     }
     
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <span>${message}</span>
-            <button onclick="this.parentNode.remove()">×</button>
-        `;
-        
-        // Add styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            max-width: 300px;
-            box-shadow: var(--shadow-lg);
-        `;
-        
-        if (type === 'success') {
-            notification.style.borderColor = 'var(--success-color)';
-            notification.style.background = 'rgba(0, 184, 148, 0.1)';
-        } else if (type === 'info') {
-            notification.style.borderColor = 'var(--accent-color)';
-            notification.style.background = 'rgba(108, 92, 231, 0.1)';
-        }
-        
-        document.body.appendChild(notification);
-        
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
+    showNotification(message, type = 'info', duration = 4000) {
+        try {
+            if (window.game?.systems?.interfaceManager?.showNotification) {
+                window.game.systems.interfaceManager.showNotification({ message, type, duration });
+                return;
             }
-        }, 3000);
+        } catch (e) {
+            console.warn('⚠️ Delegação de notificação (main-menu) falhou', e);
+        }
+        // Fallback mínimo se interfaceManager não existir ainda
+        const c = document.getElementById('notificationContainer') || (() => {
+            const div = document.createElement('div');
+            div.id = 'notificationContainer';
+            div.className = 'notification-container';
+            document.body.appendChild(div);
+            return div;
+        })();
+        const el = document.createElement('div');
+        el.className = `notification notification-${type} show`;
+        el.textContent = message;
+        c.appendChild(el);
+        setTimeout(()=> el.remove(), duration);
     }
     
     formatDate(timestamp) {

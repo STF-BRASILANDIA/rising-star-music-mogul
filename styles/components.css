@@ -980,10 +980,21 @@
   height: auto !important;
 }
 
+/* Ajuste mobile: ocupar largura total com padding lateral */
+@media (max-width: 768px) {
+  .notification-container {
+    left: 0 !important;
+    right: 0 !important;
+    top: env(safe-area-inset-top, 12px) !important;
+    padding: 0 12px !important;
+    max-width: 100% !important;
+  }
+}
+
 .notification {
   background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%) !important;
   color: white !important;
-  padding: 16px 20px !important;
+  padding: 14px 18px !important; /* ajuste leve por remoção de ícone/fechar */
   border-radius: 12px !important;
   margin-bottom: 12px !important;
   box-shadow: 
@@ -1007,6 +1018,30 @@
 .notification.show {
   transform: translateX(0) !important;
   opacity: 1 !important;
+}
+
+/* Título opcional dentro da notificação */
+.notification-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+  line-height: 1.2;
+  display: block;
+  color: #fff;
+}
+
+.notification-text-block {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0 !important; /* remove espaço antes reservado para ícone */
+}
+
+/* Tipos extras de ícones / cores podem ser refinados depois */
+.notification.notification-award {
+  border-left: 4px solid #ffd700;
+}
+.notification.notification-collaboration {
+  border-left: 4px solid #1e90ff;
 }
 
 .notification.success {

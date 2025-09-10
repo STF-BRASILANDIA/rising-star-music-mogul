@@ -212,14 +212,7 @@ export class InterfaceManager {
     
     bindNotificationEvents() {
         // Notification clicks
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('notification-close')) {
-                const notification = e.target.closest('.notification');
-                if (notification) {
-                    this.removeNotification(notification.dataset.id);
-                }
-            }
-        });
+    // (Removido botão de fechar dedicado)
     }
     
     setupMobileHandlers() {
@@ -448,41 +441,82 @@ export class InterfaceManager {
     }
     
     showNotification(message, type = 'info', duration = 5000) {
-        const id = Date.now().toString();
+        // Unified API: accepts (message, type, duration) OR an options object
+        let options;
+        if (typeof message === 'object' && message !== null) {
+            options = { duration: 5000, type: 'info', ...message };
+        } else {
+            options = { message, type, duration };
+        }
+
+        // Basic validation
+        if (!options.message || typeof options.message !== 'string') {
+            console.warn('⚠️ showNotification: mensagem inválida', options);
+            return null;
+        }
+
+        // Deduplicação simples: evitar mesma mensagem+tipo em < 1500ms
+        const now = Date.now();
+        this._lastNotifications = this._lastNotifications || {}; // key => timestamp
+        const key = `${options.type}|${options.message.trim()}`;
+        const lastTs = this._lastNotifications[key];
+        if (lastTs && (now - lastTs) < 1500) {
+            // Ignora duplicata recente
+            return null;
+        }
+        this._lastNotifications[key] = now;
+
+        // Limitar histórico de dedupe para não crescer indefinidamente
+        if (Object.keys(this._lastNotifications).length > 200) {
+            for (const k of Object.keys(this._lastNotifications)) {
+                if (now - this._lastNotifications[k] > 10000) delete this._lastNotifications[k];
+            }
+        }
+
+        const id = now.toString() + Math.random().toString(36).slice(2, 7);
         const notification = {
             id,
-            message,
-            type,
-            timestamp: Date.now()
+            message: options.message,
+            type: options.type || 'info',
+            title: options.title || null,
+            data: options.data || null,
+            timestamp: now,
+            duration: options.duration == null ? 5000 : options.duration
         };
-        
+
         this.notifications.push(notification);
         this.renderNotification(notification);
-        
-        // Auto-remove after duration
-        if (duration > 0) {
-            setTimeout(() => {
-                this.removeNotification(id);
-            }, duration);
+
+        if (notification.duration > 0) {
+            setTimeout(() => this.removeNotification(id), notification.duration);
         }
-        
         return id;
     }
     
     renderNotification(notification) {
         const container = document.getElementById('notificationContainer');
         if (!container) return;
+
+        // Limite máximo de notificações visíveis (evita spam visual)
+        const MAX_VISIBLE = 5;
+        while (container.children.length >= MAX_VISIBLE) {
+            const first = container.firstElementChild;
+            if (first) first.remove();
+        }
         
         const notificationElement = document.createElement('div');
         notificationElement.className = `notification notification-${notification.type}`;
         notificationElement.dataset.id = notification.id;
-        
+
+        const titleHtml = notification.title ? `<div class="notification-title">${notification.title}</div>` : '';
+        // Estrutura mínima sem ícone e sem botão de fechar (auto dismiss)
         notificationElement.innerHTML = `
             <div class="notification-content">
-                <span class="notification-icon">${this.getNotificationIcon(notification.type)}</span>
-                <span class="notification-message">${notification.message}</span>
+                <div class="notification-text-block">
+                    ${titleHtml}
+                    <span class="notification-message">${notification.message}</span>
+                </div>
             </div>
-            <button class="notification-close">×</button>
         `;
         
         container.appendChild(notificationElement);
@@ -491,6 +525,12 @@ export class InterfaceManager {
         setTimeout(() => {
             notificationElement.classList.add('show');
         }, 10);
+
+        // Clique fecha
+        // Clique (qualquer área) fecha antecipadamente opcionalmente
+        notificationElement.addEventListener('click', () => {
+            this.removeNotification(notification.id);
+        });
     }
     
     removeNotification(id) {
@@ -506,17 +546,8 @@ export class InterfaceManager {
     }
     
     getNotificationIcon(type) {
-        const icons = {
-            info: 'ℹ️',
-            success: '✅',
-            warning: '⚠️',
-            error: '❌',
-            achievement: '🏆',
-            money: '💰',
-            fans: '👥',
-            music: '🎵'
-        };
-        return icons[type] || icons.info;
+        // Ícones removidos (retorna string vazia para compatibilidade caso algum código ainda chame)
+        return '';
     }
     
     showModal(modalContent, options = {}) {
