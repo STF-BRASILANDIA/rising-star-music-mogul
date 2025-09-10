@@ -19,8 +19,10 @@ export class MainMenu {
         this.updateSyncStatus();
 
         // Aplicar imediatamente offset salvo (defesa extra contra timing)
-        if (typeof this.settings.safeAreaOffset === 'number') {
+        if (typeof this.settings.safeAreaOffset === 'number' && this.settings.safeAreaOffset > 0) {
             document.documentElement.style.setProperty('--safe-area-extra-top', this.settings.safeAreaOffset + 'px');
+        } else {
+            document.documentElement.style.setProperty('--safe-area-extra-top', '0px');
         }
         
         // Update sync status periodically
@@ -230,7 +232,11 @@ export class MainMenu {
         if (safeAreaInput) {
             safeAreaInput.addEventListener('input', (e) => {
                 const val = parseInt(e.target.value || '0');
-                document.documentElement.style.setProperty('--safe-area-extra-top', val + 'px');
+                if (val > 0) {
+                    document.documentElement.style.setProperty('--safe-area-extra-top', val + 'px');
+                } else {
+                    document.documentElement.style.setProperty('--safe-area-extra-top', '0px');
+                }
                 // Atualizar configuração em memória para salvar depois
                 if (typeof this.settings === 'object') {
                     this.settings.safeAreaOffset = val;
@@ -824,8 +830,10 @@ export class MainMenu {
         }
 
         // Apply safe area offset as CSS variable
-        if (typeof this.settings.safeAreaOffset === 'number') {
+        if (typeof this.settings.safeAreaOffset === 'number' && this.settings.safeAreaOffset > 0) {
             document.documentElement.style.setProperty('--safe-area-extra-top', this.settings.safeAreaOffset + 'px');
+        } else {
+            document.documentElement.style.setProperty('--safe-area-extra-top', '0px');
         }
     }
     
