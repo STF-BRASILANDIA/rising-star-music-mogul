@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
     <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
     <link rel="stylesheet" href="styles/menu-navigation.css?v=1.0.0">
+    <link rel="stylesheet" href="styles/pages-design.css?v=1.0.0">
     <link rel="stylesheet" href="styles/icons-fa.css?v=1.0.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -1182,36 +1183,110 @@
     <div id="studioPage" class="screen" style="display: none;">
         <div class="page-container">
             <div class="page-content">
-                <div style="padding: 20px;">
-                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
-                        <i class="fas fa-music"></i> Studio
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-music"></i>
+                        Studio
                     </h1>
-                    <p style="color: #ccc; margin-bottom: 30px;">Crie suas músicas e gerencie sua produção musical</p>
+                    <p class="page-subtitle">Crie suas músicas e gerencie sua produção musical</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="stats-section">
+                    <h3 class="stats-title">Status do Estúdio</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Músicas Gravadas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">85%</div>
+                            <div class="stat-label">Qualidade Média</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12h</div>
+                            <div class="stat-label">Tempo no Estúdio</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">$2.5K</div>
+                            <div class="stat-label">Gastos Mensais</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Features -->
+                <div class="content-grid">
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-record-vinyl"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-record-vinyl"></i>
+                            Gravar Música
+                        </h3>
+                        <p class="card-description">Crie uma nova faixa musical com instrumentos de alta qualidade e tecnologia de ponta</p>
+                        <button class="card-action">Iniciar Gravação</button>
+                    </div>
                     
-                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-record-vinyl"></i> Gravar Música
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Crie uma nova faixa musical</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Iniciar Gravação</button>
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-microphone"></i>
                         </div>
-                        
-                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-microphone"></i> Estúdio Vocal
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Grave vocais e harmonias</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Acessar Estúdio</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-microphone"></i>
+                            Estúdio Vocal
+                        </h3>
+                        <p class="card-description">Grave vocais e harmonias com equipamentos profissionais de última geração</p>
+                        <button class="card-action">Acessar Estúdio</button>
+                    </div>
+                    
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-sliders-h"></i>
                         </div>
-                        
-                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-sliders-h"></i> Mixagem
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Mixe e masterize suas faixas</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Abrir Mixer</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-sliders-h"></i>
+                            Mixagem
+                        </h3>
+                        <p class="card-description">Mixe e masterize suas faixas para obter o som perfeito</p>
+                        <button class="card-action">Abrir Mixer</button>
+                    </div>
+
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
                         </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-users"></i>
+                            Colaborações
+                        </h3>
+                        <p class="card-description">Trabalhe com outros artistas e produtores em projetos musicais</p>
+                        <button class="card-action">Buscar Parceiros</button>
+                    </div>
+
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-cogs"></i>
+                            Equipamentos
+                        </h3>
+                        <p class="card-description">Gerencie e atualize seus equipamentos de estúdio</p>
+                        <button class="card-action">Ver Equipamentos</button>
+                    </div>
+
+                    <div class="feature-card studio-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Analytics
+                        </h3>
+                        <p class="card-description">Analise o desempenho de suas produções musicais</p>
+                        <button class="card-action">Ver Relatórios</button>
                     </div>
                 </div>
             </div>
@@ -1245,36 +1320,110 @@
     <div id="careerPage" class="screen" style="display: none;">
         <div class="page-container">
             <div class="page-content">
-                <div style="padding: 20px;">
-                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
-                        <i class="fas fa-trophy"></i> Career
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-trophy"></i>
+                        Career
                     </h1>
-                    <p style="color: #ccc; margin-bottom: 30px;">Acompanhe sua carreira e conquistas musicais</p>
+                    <p class="page-subtitle">Acompanhe sua carreira e conquistas musicais</p>
+                </div>
+
+                <!-- Career Stats -->
+                <div class="stats-section">
+                    <h3 class="stats-title">Progresso da Carreira</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">Level 8</div>
+                            <div class="stat-label">Nível Artístico</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">Shows Realizados</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">2.5M</div>
+                            <div class="stat-label">Streams Totais</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">87%</div>
+                            <div class="stat-label">Taxa de Sucesso</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Career Features -->
+                <div class="content-grid">
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Estatísticas
+                        </h3>
+                        <p class="card-description">Visualize métricas detalhadas do seu progresso na carreira musical</p>
+                        <button class="card-action">Ver Estatísticas</button>
+                    </div>
                     
-                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-chart-line"></i> Estatísticas
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Visualize seu progresso na carreira</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Estatísticas</button>
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-award"></i>
                         </div>
-                        
-                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-award"></i> Conquistas
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Veja seus troféus e marcos</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Conquistas</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-award"></i>
+                            Conquistas
+                        </h3>
+                        <p class="card-description">Veja seus troféus, marcos alcançados e objetivos cumpridos</p>
+                        <button class="card-action">Ver Conquistas</button>
+                    </div>
+                    
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
-                        
-                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-calendar-alt"></i> Agenda
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Gerencie eventos e compromissos</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Agenda</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Agenda
+                        </h3>
+                        <p class="card-description">Gerencie eventos, shows, entrevistas e compromissos profissionais</p>
+                        <button class="card-action">Ver Agenda</button>
+                    </div>
+
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-handshake"></i>
                         </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-handshake"></i>
+                            Contratos
+                        </h3>
+                        <p class="card-description">Gerencie contratos com gravadoras, patrocinadores e parceiros</p>
+                        <button class="card-action">Ver Contratos</button>
+                    </div>
+
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-star"></i>
+                            Habilidades
+                        </h3>
+                        <p class="card-description">Desenvolva suas habilidades musicais e artísticas</p>
+                        <button class="card-action">Treinar Habilidades</button>
+                    </div>
+
+                    <div class="feature-card career-card">
+                        <div class="card-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-bullseye"></i>
+                            Objetivos
+                        </h3>
+                        <p class="card-description">Defina e acompanhe seus objetivos de carreira</p>
+                        <button class="card-action">Gerenciar Objetivos</button>
                     </div>
                 </div>
             </div>
@@ -1308,36 +1457,110 @@
     <div id="socialPage" class="screen" style="display: none;">
         <div class="page-container">
             <div class="page-content">
-                <div style="padding: 20px;">
-                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
-                        <i class="fas fa-users"></i> Social
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-users"></i>
+                        Social
                     </h1>
-                    <p style="color: #ccc; margin-bottom: 30px;">Conecte-se com fãs e outros artistas</p>
+                    <p class="page-subtitle">Conecte-se com fãs e outros artistas</p>
+                </div>
+
+                <!-- Social Stats -->
+                <div class="stats-section">
+                    <h3 class="stats-title">Alcance Social</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">125K</div>
+                            <div class="stat-label">Seguidores</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">95%</div>
+                            <div class="stat-label">Engajamento</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">850</div>
+                            <div class="stat-label">Posts este Mês</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Colaborações Ativas</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Features -->
+                <div class="content-grid">
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-heart"></i>
+                            Base de Fãs
+                        </h3>
+                        <p class="card-description">Interaja com sua base de fãs e acompanhe o crescimento da sua audiência</p>
+                        <button class="card-action">Gerenciar Fãs</button>
+                    </div>
                     
-                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-heart"></i> Fãs
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Interaja com sua base de fãs</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Fãs</button>
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-handshake"></i>
                         </div>
-                        
-                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-handshake"></i> Colaborações
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Encontre outros artistas para colaborar</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Buscar Artistas</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-handshake"></i>
+                            Colaborações
+                        </h3>
+                        <p class="card-description">Encontre outros artistas para colaborar em projetos musicais</p>
+                        <button class="card-action">Buscar Artistas</button>
+                    </div>
+                    
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-share-alt"></i>
                         </div>
-                        
-                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-share-alt"></i> Redes Sociais
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Gerencie suas redes sociais</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Gerenciar Redes</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-share-alt"></i>
+                            Redes Sociais
+                        </h3>
+                        <p class="card-description">Gerencie suas contas nas redes sociais e campanhas de marketing</p>
+                        <button class="card-action">Gerenciar Redes</button>
+                    </div>
+
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-microphone-alt"></i>
                         </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-microphone-alt"></i>
+                            Entrevistas
+                        </h3>
+                        <p class="card-description">Participe de entrevistas e podcasts para aumentar sua visibilidade</p>
+                        <button class="card-action">Ver Convites</button>
+                    </div>
+
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-bullhorn"></i>
+                            Campanhas
+                        </h3>
+                        <p class="card-description">Crie e gerencie campanhas promocionais para seus lançamentos</p>
+                        <button class="card-action">Criar Campanha</button>
+                    </div>
+
+                    <div class="feature-card social-card">
+                        <div class="card-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-comments"></i>
+                            Feedback
+                        </h3>
+                        <p class="card-description">Veja comentários e feedback dos fãs sobre suas músicas</p>
+                        <button class="card-action">Ver Feedback</button>
                     </div>
                 </div>
             </div>
@@ -1371,36 +1594,110 @@
     <div id="financePage" class="screen" style="display: none;">
         <div class="page-container">
             <div class="page-content">
-                <div style="padding: 20px;">
-                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
-                        <i class="fas fa-dollar-sign"></i> Finance
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-dollar-sign"></i>
+                        Finance
                     </h1>
-                    <p style="color: #ccc; margin-bottom: 30px;">Gerencie suas finanças e investimentos</p>
+                    <p class="page-subtitle">Gerencie suas finanças e investimentos</p>
+                </div>
+
+                <!-- Financial Stats -->
+                <div class="stats-section">
+                    <h3 class="stats-title">Situação Financeira</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">$125K</div>
+                            <div class="stat-label">Patrimônio Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">$15K</div>
+                            <div class="stat-label">Receita Mensal</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">$8.5K</div>
+                            <div class="stat-label">Gastos Mensais</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">+23%</div>
+                            <div class="stat-label">Crescimento</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Finance Features -->
+                <div class="content-grid">
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-wallet"></i>
+                            Receitas
+                        </h3>
+                        <p class="card-description">Acompanhe suas receitas de streams, shows, merchandising e royalties</p>
+                        <button class="card-action">Ver Receitas</button>
+                    </div>
                     
-                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-wallet"></i> Receitas
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Acompanhe suas receitas musicais</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Receitas</button>
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-pie"></i>
                         </div>
-                        
-                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-chart-pie"></i> Despesas
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Controle seus gastos e investimentos</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Despesas</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Despesas
+                        </h3>
+                        <p class="card-description">Controle seus gastos com equipamentos, marketing e produção</p>
+                        <button class="card-action">Ver Despesas</button>
+                    </div>
+                    
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-piggy-bank"></i>
                         </div>
-                        
-                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
-                                <i class="fas fa-piggy-bank"></i> Investimentos
-                            </h3>
-                            <p style="color: #ccc; margin-bottom: 15px;">Invista em equipamentos e marketing</p>
-                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Investir</button>
+                        <h3 class="card-title">
+                            <i class="fas fa-piggy-bank"></i>
+                            Investimentos
+                        </h3>
+                        <p class="card-description">Invista em equipamentos, marketing e desenvolvimento da carreira</p>
+                        <button class="card-action">Investir</button>
+                    </div>
+
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
                         </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            Contratos
+                        </h3>
+                        <p class="card-description">Gerencie contratos financeiros e acordos comerciais</p>
+                        <button class="card-action">Ver Contratos</button>
+                    </div>
+
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Relatórios
+                        </h3>
+                        <p class="card-description">Analise relatórios financeiros detalhados e projeções</p>
+                        <button class="card-action">Ver Relatórios</button>
+                    </div>
+
+                    <div class="feature-card finance-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3 class="card-title">
+                            <i class="fas fa-calculator"></i>
+                            Impostos
+                        </h3>
+                        <p class="card-description">Gerencie obrigações fiscais e declarações de imposto</p>
+                        <button class="card-action">Calcular Impostos</button>
                     </div>
                 </div>
             </div>
