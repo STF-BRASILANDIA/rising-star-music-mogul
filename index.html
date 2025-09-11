@@ -991,8 +991,11 @@
                         <span class="tab-icon"><i class="fas fa-user"></i></span>
                         <span class="tab-label">Perfil</span>
                     </button>
-                    <button class="tab-btn" data-tab="notifications">
-                        <span class="tab-icon"><i class="fas fa-bell"></i></span>
+                    <button class="tab-btn" data-tab="notifications" id="notificationsTabBtn">
+                        <span class="tab-icon" style="position: relative;">
+                            <i class="fas fa-bell"></i>
+                            <span id="notificationBadge" class="notification-badge" style="display: none; position: absolute; top: -6px; right: -6px; background: #ff4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 50%; min-width: 16px; text-align: center; z-index: 10;">0</span>
+                        </span>
                         <span class="tab-label">Notificações</span>
                     </button>
                     <button class="tab-btn" data-tab="settings">
@@ -1065,28 +1068,49 @@
                     </section>
 
                     <!-- Painel: Notificações -->
+                    <!-- Painel: Feed de Notificações/Eventos - NOVO DESIGN CLEAN -->
                     <section class="hub-panel" id="panel-notifications" data-tab="notifications" style="display: none;">
-                        <div class="notifications-container" style="padding: 20px; max-width: 800px; margin: 0 auto;">
-                            <h2 style="margin: 0 0 20px; color: #fff; text-align: center;" class="icon-text">
-                                <i class="fas fa-bell"></i>
-                                Feed de Notificações
-                            </h2>
-                            <div class="notifications-feed" id="notificationsFeed">
-                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #ffd700;">
-                                    <h4 style="margin: 0 0 8px; color: #ffd700;">🏢 Nova Mensagem de Gravadora</h4>
-                                    <p style="margin: 0; color: #ccc;">Universal Music está interessada em seu trabalho.</p>
-                                    <small style="color: #999;">Há 2 horas</small>
+                        <div class="news-feed-container">
+                            <header class="news-feed-header">
+                                <div class="header-title">
+                                    <i class="fas fa-bell"></i>
+                                    <h2>Feed de Notificações</h2>
+                                    <span id="unreadCounter" class="unread-counter">0</span>
                                 </div>
-                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #00ff88;">
-                                    <h4 style="margin: 0 0 8px; color: #00ff88;">🎪 Convite para Festival</h4>
-                                    <p style="margin: 0; color: #ccc;">Você foi convidado para o Lollapalooza 2024.</p>
-                                    <small style="color: #999;">Ontem</small>
+                                <div class="feed-filters">
+                                    <button class="filter-tab active" data-filter="all">
+                                        <i class="fas fa-th-large"></i>
+                                        Todas
+                                    </button>
+                                    <button class="filter-tab" data-filter="news">
+                                        <i class="fas fa-newspaper"></i>
+                                        Notícias da Indústria
+                                    </button>
+                                    <button class="filter-tab" data-filter="messages">
+                                        <i class="fas fa-envelope"></i>
+                                        Mensagens
+                                    </button>
+                                    <button class="filter-tab" data-filter="events">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Eventos
+                                    </button>
+                                    <button class="filter-tab" data-filter="achievements">
+                                        <i class="fas fa-trophy"></i>
+                                        Conquistas
+                                    </button>
                                 </div>
-                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #ff6b35;">
-                                    <h4 style="margin: 0 0 8px; color: #ff6b35;">📰 Billboard News</h4>
-                                    <p style="margin: 0; color: #ccc;">Novos artistas de R&B estão dominando as paradas.</p>
-                                    <small style="color: #999;">2 dias atrás</small>
+                            </header>
+                            
+                            <main class="news-feed-content" id="notificationFeedContent">
+                                <!-- Notificações serão inseridas dinamicamente aqui -->
+                            </main>
+                            
+                            <div class="empty-state" id="emptyState" style="display: none;">
+                                <div class="empty-icon">
+                                    <i class="fas fa-bell-slash"></i>
                                 </div>
+                                <h3>Nenhuma notificação encontrada</h3>
+                                <p>Quando houver novidades importantes, elas aparecerão aqui.</p>
                             </div>
                         </div>
                     </section>
@@ -1177,6 +1201,34 @@
             </div>
         </div>
         <div id="hubNotificationContainer" class="hub-toast-stack"></div>
+
+        <!-- Modal Detalhado de Notificação - NOVO DESIGN -->
+        <div id="notificationDetailModal" class="notification-modal" style="display: none;">
+            <div class="modal-overlay"></div>
+            <div class="modal-container">
+                <header class="modal-header">
+                    <div class="modal-source" id="modalSource"></div>
+                    <button class="modal-close" id="closeModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </header>
+                
+                <main class="modal-body">
+                    <h1 class="modal-title" id="modalTitle"></h1>
+                    <div class="modal-timestamp" id="modalTimestamp"></div>
+                    <div class="modal-content" id="modalContent"></div>
+                    
+                    <div class="modal-impacts" id="modalImpacts" style="display: none;">
+                        <h4><i class="fas fa-chart-line"></i> Impactos Potenciais</h4>
+                        <div class="impacts-list" id="impactsList"></div>
+                    </div>
+                </main>
+                
+                <footer class="modal-footer">
+                    <div class="modal-actions" id="modalActions"></div>
+                </footer>
+            </div>
+        </div>
     </div>
 
     <!-- Studio Page -->
@@ -2350,6 +2402,804 @@
             background: rgba(255,255,255,0.15) !important;
         }
         
+        /* ===== NOVO SISTEMA DE NOTIFICAÇÕES - ESTILO APPLE iOS/macOS ===== */
+        .news-feed-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+            background: rgba(28, 28, 30, 0.92);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 20px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 1px 0 rgba(255, 255, 255, 0.05) inset,
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+            border: none;
+            overflow: hidden;
+            max-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-feed-header {
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 28px 32px 24px 32px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .header-title i {
+            color: #007AFF;
+            font-size: 26px;
+            filter: drop-shadow(0 0 12px rgba(0, 122, 255, 0.4));
+        }
+
+        .header-title h2 {
+            margin: 0;
+            color: #FFFFFF;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.7px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .unread-counter {
+            background: linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 22px;
+            text-align: center;
+            box-shadow: 
+                0 2px 12px rgba(255, 59, 48, 0.4),
+                0 1px 0 rgba(255, 255, 255, 0.25) inset;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .unread-counter.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .feed-filters {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 6px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.75);
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.95);
+            transform: translateY(-1px);
+        }
+
+        .filter-tab.active {
+            background: rgba(0, 122, 255, 0.9);
+            color: white;
+            box-shadow: 
+                0 2px 12px rgba(0, 122, 255, 0.4),
+                0 1px 0 rgba(255, 255, 255, 0.2) inset;
+            transform: translateY(0);
+        }
+
+        .filter-tab i {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .news-feed-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 32px 32px 32px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .news-feed-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .news-feed-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .news-feed-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            transition: background 0.2s ease;
+        }
+
+        .news-feed-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .notification-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.25),
+                0 1px 0 rgba(255, 255, 255, 0.1) inset;
+        }
+
+        .notification-card:hover::before {
+            opacity: 1;
+        }
+
+        .notification-card.unread {
+            background: rgba(0, 122, 255, 0.08);
+            border-color: rgba(0, 122, 255, 0.2);
+            box-shadow: 
+                0 4px 20px rgba(0, 122, 255, 0.15),
+                0 1px 0 rgba(255, 255, 255, 0.1) inset;
+        }
+
+        .notification-card.unread::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 8px;
+            height: 8px;
+            background: #007AFF;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 122, 255, 0.5);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .notification-source {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            font-weight: 500;
+        }
+
+        .source-icon {
+            font-size: 16px;
+            filter: brightness(1.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+        }
+
+        .source-icon img {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px;
+        }
+
+        .source-name {
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .notification-title {
+            margin: 0;
+            color: #FFFFFF;
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            letter-spacing: -0.2px;
+        }
+
+        .notification-summary {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .notification-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .notification-action-btn {
+            background: rgba(0, 122, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 122, 255, 0.3);
+            color: #007AFF;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .notification-action-btn:hover {
+            background: rgba(0, 122, 255, 0.25);
+            border-color: rgba(0, 122, 255, 0.5);
+            color: #0056D6;
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.2);
+        }
+
+        .notification-action-btn i {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #4facfe, #00d4ff);
+            border-color: transparent;
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, #3d8bfe, #00b8e6);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 80px 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-feed i {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .empty-feed h3 {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            letter-spacing: -0.3px;
+        }
+
+        .empty-feed p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Responsive Design para Notificações */
+        @media (max-width: 768px) {
+            #panel-notifications {
+                padding: 0 !important;
+                overflow: hidden;
+            }
+
+            .news-feed-container {
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+                height: 100vh;
+                width: 100%;
+            }
+
+            .news-feed-header {
+                padding: 16px 20px 14px 20px;
+            }
+
+            .header-title h2 {
+                font-size: 24px;
+            }
+
+            .feed-filters {
+                gap: 3px;
+                padding: 3px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .feed-filters::-webkit-scrollbar {
+                display: none;
+            }
+
+            .filter-tab {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: auto;
+                flex-shrink: 0;
+            }
+
+            .filter-tab span {
+                display: none;
+            }
+
+            .news-feed-content {
+                padding: 12px 20px 20px 20px;
+                flex: 1;
+                overflow-y: auto;
+            }
+
+            .notification-card {
+                padding: 16px;
+                border-radius: 12px;
+                margin-bottom: 10px;
+            }
+
+            .notification-title {
+                font-size: 15px;
+                line-height: 1.3;
+            }
+
+            .notification-summary {
+                font-size: 13px;
+            }
+
+            .notification-source {
+                font-size: 12px;
+            }
+
+            .notification-time {
+                font-size: 11px;
+            }
+
+            .empty-feed {
+                padding: 40px 20px;
+            }
+
+            .empty-feed i {
+                font-size: 40px;
+            }
+
+            .empty-feed h3 {
+                font-size: 18px;
+            }
+
+            .empty-feed p {
+                font-size: 14px;
+            }
+        }
+        
+        /* =====================================
+           MODAL DETALHADO DE NOTIFICAÇÃO 
+        ===================================== */
+        
+        .notification-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
+        
+        .modal-container {
+            position: relative;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 700px;
+            max-height: 90vh;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                0 1px 0 rgba(255, 255, 255, 0.05) inset;
+            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(30px);
+                filter: blur(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px;
+            background: linear-gradient(180deg, 
+                rgba(0, 122, 255, 0.15) 0%, 
+                rgba(0, 122, 255, 0.08) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .modal-source {
+            font-size: 15px;
+            font-weight: 600;
+            color: #007AFF;
+            text-transform: none;
+            letter-spacing: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .modal-close {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.8);
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(90vh - 200px);
+        }
+        
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0 0 16px 0;
+            line-height: 1.25;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            letter-spacing: -0.5px;
+        }
+        
+        .modal-timestamp {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .modal-timestamp::before {
+            content: "🕒";
+            font-size: 14px;
+        }
+        
+        .modal-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+        
+        .modal-content p {
+            margin-bottom: 15px;
+        }
+        
+        .modal-impacts {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .modal-impacts h4 {
+            color: #8B5CF6;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .impacts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .impact-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+        
+        .impact-item.positive {
+            border-left-color: #10B981;
+        }
+        
+        .impact-item.negative {
+            border-left-color: #EF4444;
+        }
+        
+        .impact-item.neutral {
+            border-left-color: #6B7280;
+        }
+        
+        .impact-label {
+            color: #ddd;
+            font-weight: 500;
+        }
+        
+        .impact-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .impact-value.positive {
+            color: #10B981;
+        }
+        
+        .impact-value.negative {
+            color: #EF4444;
+        }
+        
+        .impact-value.neutral {
+            color: #6B7280;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid #444;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .modal-action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-action-btn.primary {
+            background: linear-gradient(90deg, #8B5CF6 0%, #A855F7 100%);
+            color: white;
+        }
+        
+        .modal-action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        
+        .modal-action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ddd;
+            border: 1px solid #444;
+        }
+        
+        .modal-action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #666;
+        }
+        
+        /* Responsividade do Modal */
+        @media (max-width: 768px) {
+            .notification-modal {
+                padding: 10px;
+            }
+            
+            .modal-container {
+                max-height: 95vh;
+                border-radius: 12px;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+                max-height: calc(95vh - 160px);
+            }
+            
+            .modal-title {
+                font-size: 20px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .modal-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Estado Vazio do Feed */
+        .empty-feed {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .empty-feed h3 {
+            color: #ccc;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-feed p {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        /* Indicador de não lida */
+        .unread-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: #8B5CF6;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+        }
+        
+        /* Badge de notificação na aba */
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff4444;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 16px;
+            text-align: center;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+        
         /* Cards do perfil detalhado */
         .info-card, .stats-card, .skills-card, .business-skills-card, 
         .life-status-card, .achievements-card {
@@ -3518,8 +4368,769 @@
             console.log('🎮 Use apenas o menu da Home para navegar');
         });
         </script>
-     
-     <script>
+
+    <script>
+        // ========================================
+        // SISTEMA DE FEED DE NOTIFICAÇÕES/EVENTOS
+        // ========================================
+        
+        class NotificationFeedManager {
+            constructor() {
+                this.notifications = [];
+                this.currentFilter = 'all';
+                this.modal = null;
+                this.init();
+                
+                // Gerar dados de exemplo na inicialização
+                this.generateSampleData();
+            }
+            
+            init() {
+                // Configurar modal
+                this.setupModal();
+                
+                // Configurar filtros
+                this.setupFilters();
+                
+                // Event listeners
+                this.setupEventListeners();
+                
+                // Atualizar indicador visual inicial
+                this.updateUnreadIndicator();
+                
+                console.log('🔔 Sistema de Notificações inicializado');
+            }
+            
+            setupModal() {
+                this.modal = document.getElementById('notificationDetailModal');
+                const closeBtn = document.getElementById('closeModalBtn');
+                const overlay = this.modal?.querySelector('.modal-overlay');
+                
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => this.closeModal());
+                }
+                
+                if (overlay) {
+                    overlay.addEventListener('click', () => this.closeModal());
+                }
+                
+                // Fechar modal com ESC
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.modal && this.modal.style.display !== 'none') {
+                        this.closeModal();
+                    }
+                });
+            }
+            
+            setupFilters() {
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filter = btn.dataset.filter;
+                        this.setFilter(filter);
+                        
+                        // Atualizar UI dos filtros
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+            }
+            
+            setupEventListeners() {
+                // Listener para quando a tab de notificações for aberta
+                const notificationsTab = document.getElementById('notificationsTabBtn');
+                if (notificationsTab) {
+                    notificationsTab.addEventListener('click', () => {
+                        setTimeout(() => this.render(), 100);
+                    });
+                }
+            }
+            
+            generateSampleData() {
+                const sources = ['Billboard News', 'Pitchfork Reviews', 'Rolling Stone', 'Forbes Music Mogul', 'The Verge: Music Tech'];
+                
+                this.notifications = [
+                    // Notícias da Indústria
+                    {
+                        id: 1,
+                        type: 'news',
+                        source: 'Billboard News',
+                        title: 'Streaming Revenue Reaches All-Time High in 2024',
+                        summary: 'Global streaming platforms report unprecedented growth, creating new opportunities...',
+                        content: `A indústria musical alcançou um marco histórico em 2024, com as receitas de streaming atingindo valores recordes. Este crescimento representa uma oportunidade única para artistas emergentes e estabelecidos expandirem sua base de fãs globalmente.
+                        
+                        <p>Os dados mostram que o consumo de música digital cresceu 23% no último trimestre, impulsionado principalmente por playlists algorítmicas e descoberta de novos talentos.</p>
+                        
+                        <p>Especialistas sugerem que investir em marketing digital e presença nas redes sociais será crucial para aproveitar essa tendência.</p>`,
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+5', type: 'positive' },
+                            { attribute: 'Streaming Revenue', value: '+15%', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Investir em Marketing Digital', cost: 5000, impacts: { fama: 10, dinheiro: -5000 } },
+                            { text: 'Focar em Playlists', cost: 3000, impacts: { fama: 7, dinheiro: -3000 } }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        type: 'news',
+                        source: 'Pitchfork Reviews',
+                        title: 'Indie Rock Resurges in Underground Scene',
+                        summary: 'Independent artists are finding new audiences through grassroots movements...',
+                        content: `O rock independente está vivenciando um renascimento notável, com artistas undergrounds conquistando audiências fiéis através de movimentos grassroots e venues intimistas.
+                        
+                        <p>Esta tendência oferece oportunidades únicas para músicos que valorizam autenticidade e conexão direta com fãs.</p>`,
+                        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Criatividade', value: '+8', type: 'positive' },
+                            { attribute: 'Underground Cred', value: '+12', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Tocar em Venues Pequenos', cost: 1000, impacts: { fama: 5, energia: -10 } }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        type: 'news',
+                        source: 'The Verge: Music Tech',
+                        title: 'AI Music Tools Transform Creative Process',
+                        summary: 'New AI-powered instruments are revolutionizing how artists create music...',
+                        content: `Ferramentas de inteligência artificial estão revolucionando o processo criativo musical, oferecendo novas possibilidades para composição, produção e arranjos.
+                        
+                        <p>Artistas que adotam essas tecnologias cedo podem ganhar vantagem competitiva significativa no mercado.</p>`,
+                        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Inovação', value: '+10', type: 'positive' },
+                            { attribute: 'Produtividade', value: '+15', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Investir em AI Tools', cost: 8000, impacts: { criatividade: 15, dinheiro: -8000 } }
+                        ]
+                    },
+                    
+                    // Mensagens
+                    {
+                        id: 4,
+                        type: 'message',
+                        source: 'Produtor Marcus Silva',
+                        title: 'Proposta de Colaboração',
+                        summary: 'Interessado em produzir seu próximo álbum...',
+                        content: `Olá! Sou o produtor Marcus Silva e tenho acompanhado seu trabalho. Gostaria de discutir uma possível colaboração para seu próximo projeto.
+                        
+                        <p>Tenho experiência com artistas como Ana Vilela e The Cosmos. Meu estúdio está equipado com tecnologia de ponta.</p>
+                        
+                        <p>Que tal marcarmos uma reunião?</p>`,
+                        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Qualidade Musical', value: '+20', type: 'positive' },
+                            { attribute: 'Networking', value: '+8', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Aceitar Reunião', cost: 0, impacts: { networking: 10 } },
+                            { text: 'Propor Colaboração', cost: 15000, impacts: { qualidade: 25, dinheiro: -15000 } }
+                        ]
+                    },
+                    
+                    // Eventos
+                    {
+                        id: 5,
+                        type: 'event',
+                        source: 'Rock in Rio Organization',
+                        title: 'Convite para Rock in Rio 2025',
+                        summary: 'Você foi selecionado para se apresentar no palco Sunset...',
+                        content: `Parabéns! Você foi selecionado para se apresentar no Rock in Rio 2025, no icônico Palco Sunset.
+                        
+                        <p>Esta é uma oportunidade única de alcançar uma audiência de milhões de pessoas e consolidar sua carreira.</p>
+                        
+                        <p>O evento acontece em setembro de 2025. Confirme sua participação até o final deste mês.</p>`,
+                        timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+50', type: 'positive' },
+                            { attribute: 'Fãs', value: '+100000', type: 'positive' },
+                            { attribute: 'Pressão', value: '+25', type: 'negative' }
+                        ],
+                        actions: [
+                            { text: 'Confirmar Participação', cost: 0, impacts: { fama: 50, fans: 100000, pressao: 25 } },
+                            { text: 'Declinar Respeitosamente', cost: 0, impacts: { networking: -5 } }
+                        ]
+                    },
+                    
+                    // Conquistas
+                    {
+                        id: 6,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Conquista Desbloqueada: Rising Star',
+                        summary: 'Você alcançou 10.000 fãs pela primeira vez!',
+                        content: `Parabéns! Você desbloqueou a conquista "Rising Star" ao alcançar 10.000 fãs dedicados.
+                        
+                        <p>Esta é apenas o começo de sua jornada para o estrelato. Continue criando música incrível!</p>
+                        
+                        <p>Recompensa: +5000 XP e novo título disponível</p>`,
+                        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'XP', value: '+5000', type: 'positive' },
+                            { attribute: 'Moral', value: '+10', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Equipar Título', cost: 0, impacts: { fama: 2 } }
+                        ]
+                    },
+                    
+                    // Mais Conquistas Específicas dos Requisitos
+                    {
+                        id: 7,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Seu último single atingiu o #1 na Billboard Hot 100!',
+                        summary: 'Parabéns! Você alcançou o topo das paradas musicais.',
+                        content: `Seu single "Rising Star" conquistou o primeiro lugar na Billboard Hot 100, a principal parada musical dos Estados Unidos!
+                        
+                        <p>Este é um marco histórico em sua carreira. Apenas os maiores artistas da música alcançam este feito.</p>
+                        
+                        <p>Sua base de fãs explodiu e agora você é uma sensação mundial!</p>`,
+                        timestamp: new Date(Date.now() - 30 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+100', type: 'positive' },
+                            { attribute: 'Fãs', value: '+500000', type: 'positive' },
+                            { attribute: 'Receita', value: '+$50000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Comemorar nas Redes Sociais', cost: 0, impacts: { fama: 25 } }
+                        ]
+                    },
+                    {
+                        id: 8,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Você alcançou 1 milhão de ouvintes mensais no Spotify!',
+                        summary: 'Marco impressionante de streaming alcançado!',
+                        content: `Incrível! Seu perfil no Spotify agora conta com mais de 1 milhão de ouvintes mensais únicos.
+                        
+                        <p>Este número coloca você entre os artistas mais ouvidos da plataforma em sua categoria.</p>
+                        
+                        <p>Spotify destacou seu perfil como "Artista em Ascensão" esta semana!</p>`,
+                        timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Streaming Revenue', value: '+$25000/mês', type: 'positive' },
+                            { attribute: 'Alcance Global', value: '+50', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Lançar Playlist Exclusiva', cost: 5000, impacts: { fama: 15, dinheiro: -5000 } }
+                        ]
+                    },
+                    {
+                        id: 9,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Parabéns! Seu álbum foi certificado Ouro.',
+                        summary: 'Vendas ultrapassaram 500.000 cópias certificadas.',
+                        content: `Seu álbum "Dreams & Melodies" acaba de receber a certificação Ouro pela Recording Industry Association of America (RIAA).
+                        
+                        <p>Mais de 500.000 unidades foram vendidas, incluindo streams, downloads e cópias físicas.</p>
+                        
+                        <p>Uma conquista que poucos artistas independentes alcançam!</p>`,
+                        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Prestígio', value: '+75', type: 'positive' },
+                            { attribute: 'Valor de Mercado', value: '+$100000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Organizar Evento de Celebração', cost: 15000, impacts: { fama: 30, dinheiro: -15000 } }
+                        ]
+                    },
+                    {
+                        id: 10,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Você completou com sucesso sua primeira turnê mundial!',
+                        summary: '50 shows em 25 países - uma jornada épica!',
+                        content: `Sua primeira turnê mundial "Rising Star World Tour" foi concluída com absoluto sucesso!
+                        
+                        <p>50 shows realizados em 25 países diferentes, com mais de 2 milhões de pessoas no total.</p>
+                        
+                        <p>Críticos descreveram como "uma das melhores estreias mundiais da década".</p>`,
+                        timestamp: new Date(Date.now() - 60 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Experiência', value: '+200', type: 'positive' },
+                            { attribute: 'Fama Global', value: '+150', type: 'positive' },
+                            { attribute: 'Receita', value: '+$2000000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Planejar Segunda Turnê', cost: 100000, impacts: { fama: 50, dinheiro: -100000 } }
+                        ]
+                    },
+                    {
+                        id: 11,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Seu canal no YouTube atingiu 10 milhões de inscritos!',
+                        summary: 'Botão de Diamante do YouTube desbloqueado!',
+                        content: `Incrível marco alcançado! Seu canal oficial no YouTube agora conta com mais de 10 milhões de inscritos fiéis.
+                        
+                        <p>YouTube enviará o prestigioso Botão de Diamante para celebrar este feito extraordinário.</p>
+                        
+                        <p>Você agora está entre os criadores de conteúdo musical mais influentes da plataforma!</p>`,
+                        timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Influência Digital', value: '+100', type: 'positive' },
+                            { attribute: 'Receita YouTube', value: '+$40000/mês', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Criar Série Documental', cost: 25000, impacts: { fama: 40, dinheiro: -25000 } }
+                        ]
+                    },
+                    
+                    // Mensagens de Gravadoras e Agentes
+                    {
+                        id: 12,
+                        type: 'message',
+                        source: 'Universal Music Group',
+                        title: 'Convite para Contrato de Gravação Major',
+                        summary: 'Oferta de contrato multimilionário em discussão...',
+                        content: `Prezado artista,
+                        
+                        <p>A Universal Music Group tem acompanhado seu crescimento exponencial e gostaríamos de discutir uma parceria estratégica.</p>
+                        
+                        <p>Nossa proposta inicial envolve:</p>
+                        <ul>
+                        <li>Contrato de 5 álbuns</li>
+                        <li>Adiantamento de $2.5 milhões</li>
+                        <li>Suporte completo de marketing e distribuição global</li>
+                        <li>Equipe de produção A-list</li>
+                        </ul>
+                        
+                        <p>Aguardamos sua resposta até o final desta semana.</p>`,
+                        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Oportunidade de Carreira', value: 'MAJOR', type: 'positive' },
+                            { attribute: 'Pressão de Decisão', value: '+30', type: 'negative' }
+                        ],
+                        actions: [
+                            { text: 'Aceitar Proposta', cost: 0, impacts: { fama: 200, dinheiro: 2500000 } },
+                            { text: 'Negociar Termos', cost: 10000, impacts: { networking: 15, dinheiro: -10000 } },
+                            { text: 'Recusar Educadamente', cost: 0, impacts: { independencia: 50 } }
+                        ]
+                    },
+                    {
+                        id: 13,
+                        type: 'message',
+                        source: 'CAA (Creative Artists Agency)',
+                        title: 'Proposta de Representação Exclusiva',
+                        summary: 'Maior agência de talentos quer representar você...',
+                        content: `Olá,
+                        
+                        <p>Sou Sarah Mitchell, agente sênior da CAA. Represento alguns dos maiores nomes da música mundial.</p>
+                        
+                        <p>Gostaria de discutir representação exclusiva para shows, endorsements e oportunidades de mídia.</p>
+                        
+                        <p>Nossa comissão é de 10%, mas garantimos shows em venues premium e festivais internacionais.</p>`,
+                        timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Networking Premium', value: '+25', type: 'positive' },
+                            { attribute: 'Shows de Alto Nível', value: 'Acesso', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Assinar com CAA', cost: 0, impacts: { networking: 50, shows_premium: 100 } },
+                            { text: 'Pedir Mais Detalhes', cost: 0, impacts: { informacao: 10 } }
+                        ]
+                    }
+                ];
+                
+                console.log('📊 Dados de exemplo gerados:', this.notifications.length, 'notificações');
+            }
+            
+            setFilter(filter) {
+                this.currentFilter = filter;
+                this.render();
+            }
+            
+            getFilteredNotifications() {
+                if (this.currentFilter === 'all') {
+                    return this.notifications;
+                }
+                
+                const typeMap = {
+                    'news': 'news',
+                    'messages': 'message',
+                    'events': 'event',
+                    'achievements': 'achievement'
+                };
+                
+                return this.notifications.filter(n => n.type === typeMap[this.currentFilter]);
+            }
+            
+            updateUnreadIndicator() {
+                const unreadCount = this.notifications.filter(n => !n.isRead).length;
+                
+                // Atualizar contador no painel
+                const unreadCounter = document.getElementById('unreadCounter');
+                if (unreadCounter) {
+                    unreadCounter.textContent = unreadCount;
+                    unreadCounter.classList.toggle('visible', unreadCount > 0);
+                }
+                
+                // Atualizar badge na aba de navegação
+                const notificationBadge = document.getElementById('notificationBadge');
+                if (notificationBadge) {
+                    notificationBadge.textContent = unreadCount;
+                    notificationBadge.style.display = unreadCount > 0 ? 'block' : 'none';
+                }
+                
+                console.log(`📊 Indicadores atualizados: ${unreadCount} não lidas`);
+            }
+            
+            render() {
+                const container = document.getElementById('notificationFeedContent');
+                if (!container) return;
+                
+                const filtered = this.getFilteredNotifications();
+                
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-feed">
+                            <i class="fas fa-inbox" style="font-size: 48px; color: #666; margin-bottom: 16px;"></i>
+                            <h3>Nenhuma notificação encontrada</h3>
+                            <p>Não há itens para este filtro no momento.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const html = filtered.map(notification => this.renderNotificationCard(notification)).join('');
+                container.innerHTML = html;
+                
+                // Adicionar event listeners para os cards
+                this.setupCardListeners();
+            }
+            
+            renderNotificationCard(notification) {
+                const timeAgo = this.formatTimeAgo(notification.timestamp);
+                const unreadClass = notification.isRead ? '' : 'unread';
+                
+                const sourceIcons = {
+                    'Billboard News': '<div style="background: linear-gradient(45deg, #FF1744, #E91E63); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">BB</div>',
+                    'Pitchfork Reviews': '<div style="background: linear-gradient(45deg, #FF5722, #FF9800); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">P</div>',
+                    'Rolling Stone': '<div style="background: linear-gradient(45deg, #E53935, #D32F2F); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">RS</div>',
+                    'Forbes Music Mogul': '<div style="background: linear-gradient(45deg, #1565C0, #0277BD); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">F</div>',
+                    'The Verge: Music Tech': '<div style="background: linear-gradient(45deg, #7B1FA2, #8E24AA); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">V</div>',
+                    'Sistema do Jogo': '🏆',
+                    'Universal Music Group': '<div style="background: linear-gradient(45deg, #424242, #616161); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 7px;">UMG</div>',
+                    'CAA (Creative Artists Agency)': '<div style="background: linear-gradient(45deg, #FF6F00, #FF8F00); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 7px;">CAA</div>',
+                    'Produtor Marcus Silva': '🎛️',
+                    'Rock in Rio Organization': '<div style="background: linear-gradient(45deg, #C62828, #AD1457); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 6px;">RIR</div>'
+                };
+                
+                const typeIcons = {
+                    'news': '📰',
+                    'message': '💬',
+                    'event': '🎊',
+                    'achievement': '🏆'
+                };
+                
+                const icon = sourceIcons[notification.source] || typeIcons[notification.type] || '📋';
+                
+                return `
+                    <div class="notification-card ${unreadClass}" data-id="${notification.id}">
+                        <div class="notification-header">
+                            <div class="notification-source">
+                                <span class="source-icon">${icon}</span>
+                                <span class="source-name">${notification.source}</span>
+                            </div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        
+                        <div class="notification-body">
+                            <h3 class="notification-title">${notification.title}</h3>
+                            <p class="notification-summary">${notification.summary}</p>
+                        </div>
+                        
+                        <div class="notification-footer">
+                            <button class="notification-action-btn" data-action="read-more" data-id="${notification.id}">
+                                <i class="fas fa-arrow-right"></i>
+                                Ler Mais
+                            </button>
+                            ${!notification.isRead ? '<span class="unread-indicator"></span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            setupCardListeners() {
+                const actionBtns = document.querySelectorAll('.notification-action-btn[data-action="read-more"]');
+                actionBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        this.openModal(id);
+                    });
+                });
+                
+                // Click no card inteiro também abre o modal
+                const cards = document.querySelectorAll('.notification-card');
+                cards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        const id = parseInt(card.dataset.id);
+                        this.openModal(id);
+                    });
+                });
+            }
+            
+            openModal(notificationId) {
+                const notification = this.notifications.find(n => n.id === notificationId);
+                if (!notification || !this.modal) return;
+                
+                // Marcar como lida
+                if (!notification.isRead) {
+                    notification.isRead = true;
+                    this.updateUnreadIndicator(); // Atualizar indicadores
+                    this.render(); // Re-render para remover indicador de não lida
+                }
+                
+                // Popular modal
+                this.populateModal(notification);
+                
+                // Mostrar modal
+                this.modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                // Animar entrada
+                setTimeout(() => {
+                    this.modal.querySelector('.modal-container').style.transform = 'scale(1) translateY(0)';
+                }, 10);
+            }
+            
+            populateModal(notification) {
+                const sourceEl = document.getElementById('modalSource');
+                const titleEl = document.getElementById('modalTitle');
+                const timestampEl = document.getElementById('modalTimestamp');
+                const contentEl = document.getElementById('modalContent');
+                const impactsEl = document.getElementById('modalImpacts');
+                const impactsListEl = document.getElementById('impactsList');
+                const actionsEl = document.getElementById('modalActions');
+                
+                if (sourceEl) sourceEl.textContent = notification.source;
+                if (titleEl) titleEl.textContent = notification.title;
+                if (timestampEl) timestampEl.textContent = this.formatFullDate(notification.timestamp);
+                if (contentEl) contentEl.innerHTML = notification.content;
+                
+                // Impactos
+                if (notification.impacts && notification.impacts.length > 0) {
+                    impactsEl.style.display = 'block';
+                    impactsListEl.innerHTML = notification.impacts.map(impact => `
+                        <div class="impact-item ${impact.type}">
+                            <span class="impact-label">${impact.attribute}</span>
+                            <span class="impact-value ${impact.type}">${impact.value}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    impactsEl.style.display = 'none';
+                }
+                
+                // Ações
+                if (notification.actions && notification.actions.length > 0) {
+                    actionsEl.innerHTML = notification.actions.map(action => `
+                        <button class="modal-action-btn primary" data-action="execute" data-cost="${action.cost}" data-impacts='${JSON.stringify(action.impacts)}'>
+                            <i class="fas fa-play"></i>
+                            ${action.text}
+                            ${action.cost > 0 ? `($${action.cost.toLocaleString()})` : ''}
+                        </button>
+                    `).join('') + `
+                        <button class="modal-action-btn secondary" data-action="close">
+                            <i class="fas fa-times"></i>
+                            Fechar
+                        </button>
+                    `;
+                } else {
+                    actionsEl.innerHTML = `
+                        <button class="modal-action-btn secondary" data-action="close">
+                            <i class="fas fa-times"></i>
+                            Fechar
+                        </button>
+                    `;
+                }
+                
+                // Event listeners para ações
+                this.setupModalActionListeners();
+            }
+            
+            setupModalActionListeners() {
+                const actionBtns = document.querySelectorAll('.modal-action-btn');
+                actionBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = btn.dataset.action;
+                        
+                        if (action === 'close') {
+                            this.closeModal();
+                        } else if (action === 'execute') {
+                            const cost = parseInt(btn.dataset.cost) || 0;
+                            const impacts = JSON.parse(btn.dataset.impacts || '{}');
+                            this.executeAction(cost, impacts, btn);
+                        }
+                    });
+                });
+            }
+            
+            executeAction(cost, impacts, button) {
+                // Verificar se tem dinheiro suficiente
+                if (cost > 0 && window.game && window.game.dinheiro < cost) {
+                    this.showToast('💰 Dinheiro insuficiente para esta ação!', 'error');
+                    return;
+                }
+                
+                // Aplicar impactos
+                if (window.game) {
+                    Object.entries(impacts).forEach(([attr, value]) => {
+                        if (attr === 'dinheiro') {
+                            window.game.dinheiro = Math.max(0, window.game.dinheiro + value);
+                        } else if (attr === 'fama') {
+                            window.game.fama = Math.max(0, window.game.fama + value);
+                        } else if (attr === 'energia') {
+                            window.game.energia = Math.max(0, Math.min(100, window.game.energia + value));
+                        }
+                        // Adicionar outros atributos conforme necessário
+                    });
+                    
+                    // Atualizar interface se possível
+                    if (window.uiManager && window.uiManager.updateStats) {
+                        window.uiManager.updateStats();
+                    }
+                }
+                
+                // Feedback visual
+                button.innerHTML = '<i class="fas fa-check"></i> Executado!';
+                button.disabled = true;
+                button.style.background = '#10B981';
+                
+                this.showToast('✅ Ação executada com sucesso!', 'success');
+                
+                // Fechar modal após delay
+                setTimeout(() => {
+                    this.closeModal();
+                }, 1500);
+            }
+            
+            closeModal() {
+                if (!this.modal) return;
+                
+                // Animar saída
+                this.modal.querySelector('.modal-container').style.transform = 'scale(0.9) translateY(20px)';
+                
+                setTimeout(() => {
+                    this.modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+            
+            showToast(message, type = 'info') {
+                // Criar toast simples
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#8B5CF6'};
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    z-index: 11000;
+                    animation: slideInRight 0.3s ease;
+                `;
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            
+            formatTimeAgo(date) {
+                const now = new Date();
+                const diff = Math.floor((now - date) / 1000);
+                
+                if (diff < 60) return 'Agora mesmo';
+                if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
+                if (diff < 86400) return `${Math.floor(diff / 3600)}h atrás`;
+                if (diff < 604800) return `${Math.floor(diff / 86400)}d atrás`;
+                
+                return date.toLocaleDateString('pt-BR');
+            }
+            
+            formatFullDate(date) {
+                return date.toLocaleString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            
+            // Método público para adicionar notificação
+            addNotification(notification) {
+                const newNotification = {
+                    id: Date.now(),
+                    timestamp: new Date(),
+                    isRead: false,
+                    ...notification
+                };
+                
+                this.notifications.unshift(newNotification);
+                
+                // Atualizar indicadores visuais
+                this.updateUnreadIndicator();
+                
+                // Re-render se a tab estiver ativa
+                const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+                if (activeTab === 'notifications') {
+                    this.render();
+                }
+                
+                return newNotification;
+            }
+        }
+        
+        // Inicializar sistema
+        document.addEventListener('DOMContentLoaded', () => {
+            window.notificationFeedManager = new NotificationFeedManager();
+            
+            // CSS para animações de toast
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            console.log('🔔 NotificationFeedManager inicializado globalmente');
+        });
+        </script>
+
+    <script>
         // Guarda final: não permitir dashboard visível antes do jogo
         (function finalDashboardGuard(){
             const gi = document.getElementById('gameInterface');
@@ -3531,6 +5142,6 @@
                 if (!window.game || window.game.gameState !== 'playing') gi.style.display='none';
             });
         })();
-     </script>
+    </script>
 </body>
 </html>

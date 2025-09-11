@@ -1,0 +1,1 @@
+Teste para truncar o arquivo corretamente

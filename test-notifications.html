@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Sistema de Notificações</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1b23;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff6b35, #f093fb);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔔 Teste do Sistema de Notificações</h1>
+        
+        <button onclick="testNotificationSystem()">Inicializar Sistema</button>
+        <button onclick="addTestNotification()">Adicionar Notificação de Teste</button>
+        <button onclick="openTestModal()">Abrir Modal de Teste</button>
+        
+        <div id="notifications-panel" style="margin-top: 20px; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px;">
+            <h3>Feed de Notificações/Eventos</h3>
+            <div id="notificationFeed"></div>
+        </div>
+        
+        <!-- Modal básico -->
+        <div id="testModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 20px; box-sizing: border-box;">
+            <div style="background: #2a2d3a; border-radius: 16px; padding: 24px; max-width: 600px; margin: 50px auto; position: relative;">
+                <h3 id="testModalTitle">Título do Teste</h3>
+                <p id="testModalContent">Conteúdo do teste</p>
+                <div id="testModalActions" style="display: flex; gap: 8px; margin-top: 20px;">
+                    <!-- Botões serão inseridos aqui -->
+                </div>
+                <button onclick="closeTestModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 18px; cursor: pointer;">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testNotifications = [];
+        
+        function testNotificationSystem() {
+            console.log('🧪 Iniciando teste do sistema de notificações...');
+            
+            // Criar uma notificação de teste
+            const testNotification = {
+                id: Date.now(),
+                type: 'news',
+                title: 'Teste: Nova Tendência Musical',
+                summary: 'Esta é uma notificação de teste para verificar se o sistema está funcionando corretamente.',
+                fullContent: '<h3>Conteúdo Completo do Teste</h3><p>Esta é uma notificação de teste completa com botões funcionais.</p>',
+                source: 'Sistema de Teste',
+                actions: [
+                    { label: 'Ler Mais', action: 'read_more', type: 'primary' },
+                    { label: 'Aceitar', action: 'accept', type: 'secondary' },
+                    { label: 'Recusar', action: 'decline', type: 'secondary' }
+                ],
+                timestamp: new Date()
+            };
+            
+            testNotifications.push(testNotification);
+            renderTestNotifications();
+        }
+        
+        function addTestNotification() {
+            const newNotification = {
+                id: Date.now(),
+                type: 'messages',
+                title: `Teste ${testNotifications.length + 1}: Mensagem Importante`,
+                summary: 'Esta é uma nova notificação de teste.',
+                fullContent: '<p>Conteúdo completo da mensagem de teste.</p>',
+                source: 'Sistema de Teste',
+                actions: [
+                    { label: 'Ver Detalhes', action: 'view_details', type: 'primary' },
+                    { label: 'Arquivar', action: 'archive', type: 'secondary' }
+                ],
+                timestamp: new Date()
+            };
+            
+            testNotifications.push(newNotification);
+            renderTestNotifications();
+            console.log('➕ Nova notificação adicionada:', newNotification.title);
+        }
+        
+        function renderTestNotifications() {
+            const feed = document.getElementById('notificationFeed');
+            
+            if (testNotifications.length === 0) {
+                feed.innerHTML = '<p style="color: #999; text-align: center;">Nenhuma notificação de teste ainda.</p>';
+                return;
+            }
+            
+            feed.innerHTML = testNotifications.map(notification => `
+                <div style="
+                    background: rgba(255,255,255,0.1);
+                    padding: 16px;
+                    margin-bottom: 12px;
+                    border-radius: 12px;
+                    border-left: 4px solid #ff6b35;
+                    cursor: pointer;
+                " onclick="openTestNotification(${notification.id})">
+                    <h4 style="margin: 0 0 8px; color: #ff6b35;">${notification.title}</h4>
+                    <p style="margin: 0 0 8px; color: #ccc; font-size: 14px;">${notification.summary}</p>
+                    <small style="color: #999;">${notification.source} • ${notification.timestamp.toLocaleTimeString()}</small>
+                </div>
+            `).join('');
+        }
+        
+        function openTestNotification(id) {
+            const notification = testNotifications.find(n => n.id === id);
+            if (!notification) return;
+            
+            console.log('🔍 Abrindo notificação:', notification.title);
+            
+            document.getElementById('testModalTitle').textContent = notification.title;
+            document.getElementById('testModalContent').innerHTML = notification.fullContent || notification.summary;
+            
+            // Renderizar botões de ação
+            const actionsContainer = document.getElementById('testModalActions');
+            actionsContainer.innerHTML = '';
+            
+            if (notification.actions) {
+                notification.actions.forEach(action => {
+                    console.log('🔘 Criando botão:', action.label);
+                    
+                    const btn = document.createElement('button');
+                    btn.textContent = action.label;
+                    btn.style.cssText = `
+                        background: ${action.type === 'primary' ? 'linear-gradient(135deg, #ff6b35, #f093fb)' : 'rgba(255,255,255,0.1)'};
+                        border: 1px solid ${action.type === 'primary' ? 'transparent' : 'rgba(255,255,255,0.2)'};
+                        color: white;
+                        padding: 10px 16px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        margin-right: 8px;
+                    `;
+                    
+                    btn.addEventListener('click', () => {
+                        console.log('✅ Botão clicado:', action.label, action.action);
+                        alert(`Ação executada: ${action.label} (${action.action})`);
+                        closeTestModal();
+                    });
+                    
+                    actionsContainer.appendChild(btn);
+                });
+            }
+            
+            document.getElementById('testModal').style.display = 'block';
+        }
+        
+        function openTestModal() {
+            document.getElementById('testModalTitle').textContent = 'Modal de Teste Manual';
+            document.getElementById('testModalContent').innerHTML = '<p>Este é um teste manual do modal com botões funcionais.</p>';
+            
+            const actionsContainer = document.getElementById('testModalActions');
+            actionsContainer.innerHTML = '';
+            
+            const testActions = [
+                { label: 'Botão Primário', action: 'primary_test', type: 'primary' },
+                { label: 'Botão Secundário', action: 'secondary_test', type: 'secondary' }
+            ];
+            
+            testActions.forEach(action => {
+                const btn = document.createElement('button');
+                btn.textContent = action.label;
+                btn.style.cssText = `
+                    background: ${action.type === 'primary' ? 'linear-gradient(135deg, #ff6b35, #f093fb)' : 'rgba(255,255,255,0.1)'};
+                    border: 1px solid ${action.type === 'primary' ? 'transparent' : 'rgba(255,255,255,0.2)'};
+                    color: white;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    margin-right: 8px;
+                `;
+                
+                btn.addEventListener('click', () => {
+                    alert(`Teste OK: ${action.label} funcionando!`);
+                    console.log('✅ Teste de botão bem-sucedido:', action.label);
+                });
+                
+                actionsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('testModal').style.display = 'block';
+        }
+        
+        function closeTestModal() {
+            document.getElementById('testModal').style.display = 'none';
+        }
+        
+        // Auto-inicializar ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Página de teste carregada!');
+        });
+    </script>
+</body>
+</html>
