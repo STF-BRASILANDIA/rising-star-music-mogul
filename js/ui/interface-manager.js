@@ -37,6 +37,18 @@ export class InterfaceManager {
                 gameInterface.style.display = 'block';
             }
 
+            // Atualiza imediatamente valores (inclui dinheiro abreviado) para evitar mostrar número cru inicial
+            try {
+                if (window.gameHub && typeof window.gameHub.updateMetrics === 'function') {
+                    window.gameHub.updateMetrics();
+                }
+                if (window.gameHub && typeof window.gameHub.updateProfileInfo === 'function') {
+                    window.gameHub.updateProfileInfo();
+                }
+            } catch (e) {
+                console.warn('⚠️ Falha atualização imediata inicial:', e);
+            }
+
             // Start update timers only when interface is shown and game is ready
             setTimeout(() => {
                 try {
@@ -98,11 +110,16 @@ export class InterfaceManager {
     }
     
     formatMoney(amount) {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0
-        }).format(amount);
+    if (!Number.isFinite(amount)) return '$0';
+    const sign = amount < 0 ? '-' : '';
+    const abs = Math.abs(amount);
+    if (abs < 1000) return sign + '$' + abs.toLocaleString('en-US');
+    if (abs < 10_000) return sign + '$' + (abs/1000).toFixed(2).replace(/0$/,'').replace(/\.0$/,'') + 'K';
+    if (abs < 100_000) return sign + '$' + (abs/1000).toFixed(1).replace(/\.0$/,'') + 'K';
+    if (abs < 1_000_000) return sign + '$' + Math.round(abs/1000) + 'K';
+    if (abs < 10_000_000) return sign + '$' + (abs/1_000_000).toFixed(1).replace(/\.0$/,'') + 'M';
+    if (abs < 1_000_000_000) return sign + '$' + Math.round(abs/1_000_000) + 'M';
+    return sign + '$' + (abs/1_000_000_000).toFixed(1).replace(/\.0$/,'') + 'B';
     }
     
     bindUIEvents() {

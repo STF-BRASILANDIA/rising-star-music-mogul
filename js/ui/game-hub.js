@@ -8,8 +8,12 @@ export class GameHub {
         this.game = game;
         this.root = document.getElementById('gameInterface');
         this.panels = document.getElementById('hubPanels');
-        this.currentTab = 'overview';
+        this.currentTab = 'activity'; // Mudança: iniciar na aba Atividade
         this.isVisible = false;
+        
+        // Action Registry - sistema centralizado de ações
+        this.actionRegistry = new Map();
+        this._setupActionRegistry();
         
         // Bindings
         this._bind();
@@ -46,6 +50,30 @@ export class GameHub {
         // Renderizar conteúdo inicial
         console.log('🎮 Renderizando conteúdo inicial...');
         this.updateProfileInfo();
+    // Inicializar upload de avatar (apenas uma vez)
+    try { this._initAvatarUpload(); } catch(e) { console.warn('Falha init upload avatar:', e); }
+        // Forçar atualização de métricas imediatamente (garante dinheiro abreviado no primeiro frame)
+        try {
+            this.updateMetrics();
+            this.updateResources();
+        } catch (e) {
+            console.warn('⚠️ Falha atualização imediata em show():', e);
+        }
+        
+        // Garantir que a aba Atividade esteja ativa
+        const activityTab = document.querySelector('.tab-btn[data-tab="activity"]');
+        if (activityTab) {
+            [...document.querySelectorAll('.tab-btn')].forEach(btn => 
+                btn.classList.toggle('active', btn === activityTab)
+            );
+        }
+        
+        // Atualizar título inicial
+        const titleEl = document.getElementById('currentViewTitle');
+        if (titleEl) {
+            titleEl.textContent = 'Atividade';
+        }
+        
         this.renderCurrent();
         
         console.log('✅ GameHub exibido com sucesso');
@@ -59,6 +87,15 @@ export class GameHub {
     }
 
     _bind() {
+        // Action handler global - delega para actionRegistry
+        document.addEventListener('click', (e) => {
+            const actionBtn = e.target.closest('[data-action]');
+            if (!actionBtn) return;
+            
+            const action = actionBtn.dataset.action;
+            this.invokeAction(action, actionBtn);
+        });
+
         // Navegação por tabs
         document.getElementById('hubTabs')?.addEventListener('click', (e) => {
             const btn = e.target.closest('.tab-btn');
@@ -71,6 +108,21 @@ export class GameHub {
             [...e.currentTarget.querySelectorAll('.tab-btn')].forEach(b => 
                 b.classList.toggle('active', b === btn)
             );
+            
+            // Atualizar título da view
+            const titleEl = document.getElementById('currentViewTitle');
+            if (titleEl) {
+                const titles = {
+                    'activity': 'Atividade',
+                    'resources': 'Recursos', 
+                    'goals': 'Metas',
+                    'feed': 'Feed',
+                    'career': 'Carreira',
+                    'streaming': 'Streaming',
+                    'economy': 'Economia'
+                };
+                titleEl.textContent = titles[tab] || 'Dashboard';
+            }
             
             this.renderCurrent();
         });
@@ -120,10 +172,69 @@ export class GameHub {
         });
     }
 
+    // Action Registry - Sistema centralizado de ações
+    _setupActionRegistry() {
+        // Ações de criação musical
+        this.actionRegistry.set('create-song', () => this._createSong());
+        this.actionRegistry.set('create-ep', () => this._createEP());
+        this.actionRegistry.set('create-album', () => this._createAlbum());
+        this.actionRegistry.set('create-joint-album', () => this._createJointAlbum());
+        this.actionRegistry.set('create-compilation', () => this._createCompilation());
+        
+        // Ações de contratação e colaboração
+        this.actionRegistry.set('hire-composer', () => this._hireComposer());
+        this.actionRegistry.set('unreleased-songs', () => this._showUnreleasedSongs());
+        
+        // Ações de treinamento e desenvolvimento
+        this.actionRegistry.set('practice', () => this._practice());
+        this.actionRegistry.set('train', () => this._practice()); // Alias
+        
+        // Ações de shows e eventos
+        this.actionRegistry.set('gig-hub', () => this._openGigHub());
+        this.actionRegistry.set('create-setlist', () => this._createSetlist());
+        this.actionRegistry.set('ticket-gods', () => this._openTicketSales());
+        
+        // Ações de merchandising
+        this.actionRegistry.set('create-merch', () => this._createMerch());
+        
+        // Ações de biblioteca de conteúdo
+        this.actionRegistry.set('open-songs', () => this._openSongsLibrary());
+        this.actionRegistry.set('open-albums', () => this._openAlbumsLibrary());
+        this.actionRegistry.set('open-videos', () => this._openVideosLibrary());
+        
+        // Ações de promoção social
+        this.actionRegistry.set('promo-instagram', () => this._promoInstagram());
+        this.actionRegistry.set('promo-tiktok', () => this._promoTikTok());
+        this.actionRegistry.set('promo-youtube', () => this._promoYouTube());
+        this.actionRegistry.set('promo-twitter', () => this._promoTwitter());
+        
+        // Ações rápidas existentes (compatibilidade)
+        this.actionRegistry.set('create-track', () => this._createSong()); // Alias
+        this.actionRegistry.set('show-offers', () => this._showOffers());
+        this.actionRegistry.set('create-label', () => this._createLabel());
+    }
+
+    invokeAction(actionName, element = null) {
+        const handler = this.actionRegistry.get(actionName);
+        if (handler) {
+            console.log(`🎮 Executando ação: ${actionName}`);
+            try {
+                handler(element);
+            } catch (error) {
+                console.error(`❌ Erro ao executar ação ${actionName}:`, error);
+                this._showNotification(`Erro ao executar ${actionName}`, 'error');
+            }
+        } else {
+            console.warn(`⚠️ Ação não encontrada: ${actionName}`);
+            this._showNotification(`Ação "${actionName}" não implementada`, 'warning');
+        }
+    }
+
     renderCurrent() {
         if (!this.panels) return;
         
         switch (this.currentTab) {
+            case 'activity': return this.renderActivity(); // Nova aba
             case 'overview': return this.renderOverview();
             case 'resources': return this.renderResources();
             case 'feed': return this.renderFeed();
@@ -131,7 +242,34 @@ export class GameHub {
             case 'career': return this.renderCareer();
             case 'streaming': return this.renderStreaming();
             case 'economy': return this.renderEconomy();
-            default: return this.renderOverview();
+            default: return this.renderActivity(); // Default para atividade
+        }
+    }
+
+    renderActivity() {
+        // Esconder outros painéis e mostrar apenas o de atividade
+        const allPanels = document.querySelectorAll('.hub-panel');
+        allPanels.forEach(panel => panel.style.display = 'none');
+        
+        const activityPanel = document.getElementById('panel-activity');
+        if (activityPanel) {
+            activityPanel.style.display = 'block';
+        }
+        
+        // Atualizar dados dinâmicos
+        const ovrEl = document.getElementById('activity-ovr');
+        if (ovrEl && this.game?.player) {
+            // Calcular OVR baseado nas skills do player
+            const skills = this.game.player.skills || {};
+            const ovr = Math.round((
+                (skills.vocals || 1) + 
+                (skills.songWriting || 1) + 
+                (skills.rhythm || 1) + 
+                (skills.charisma || 1) + 
+                (skills.virality || 1) + 
+                (skills.videoDirecting || 1)
+            ) / 6);
+            ovrEl.textContent = ovr;
         }
     }
 
@@ -256,6 +394,14 @@ export class GameHub {
 
     updateProfileInfo() {
         const p = this.game?.gameData?.player || this.game?.player || {};
+
+        // Fallback: se não houver avatar em p mas existir em localStorage, injeta
+        if (!p.avatarImage) {
+            try {
+                const storedDirect = localStorage.getItem('playerAvatarImage');
+                if (storedDirect) { p.avatarImage = storedDirect; }
+            } catch(storageReadErr) { /* silencioso */ }
+        }
         
         // Sidebar profile
         this._setText('artistStageName', p.artistName || p.name || 'Novo Artista');
@@ -264,15 +410,44 @@ export class GameHub {
         this._setText('artistStageNameInline', p.artistName || p.name || 'Novo Artista');
         this._setText('artistRoleGenreInline', `${p.role || 'Cantor(a)'} • ${p.genre || 'R&B'}`);
         
-        // Avatar inicial
-        const avatar = document.getElementById('hubAvatar');
-        if (avatar && p.artistName) {
-            avatar.textContent = p.artistName.charAt(0).toUpperCase();
-        }
-        const avatarInline = document.getElementById('hubAvatarInline');
-        if (avatarInline && p.artistName) {
-            avatarInline.textContent = p.artistName.charAt(0).toUpperCase();
-        }
+        // ===== Avatar usando <img> para evitar conflitos de CSS com background =====
+        const applyAvatar = (containerId) => {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const artistLetter = (p.artistName || p.name || '🎵').charAt(0).toUpperCase();
+            if (p.avatarImage) {
+                let img = el.querySelector('img.player-avatar-img');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.className = 'player-avatar-img';
+                    // Limpa qualquer conteúdo textual/emoji
+                    el.innerHTML = '';
+                    el.appendChild(img);
+                }
+                if (img.getAttribute('src') !== p.avatarImage) {
+                    img.src = p.avatarImage;
+                }
+                el.classList.add('has-image');
+                // Segurança: se der erro ao carregar a imagem, volta para a letra
+                img.onerror = () => {
+                    console.warn('Falha ao carregar avatar, revertendo para letra.');
+                    el.classList.remove('has-image');
+                    el.innerHTML = artistLetter;
+                };
+            } else {
+                // Sem imagem: mostra inicial
+                el.classList.remove('has-image');
+                // Evita recriar se já é apenas a letra
+                if (el.textContent !== artistLetter || el.children.length) {
+                    el.innerHTML = artistLetter;
+                }
+            }
+        };
+
+        applyAvatar('newDesktopAvatar');
+        applyAvatar('newMobileAvatar');
+
+    // (debug removido)
 
         // Mostrar barra inline em telas pequenas
         const inlineBar = document.getElementById('inlineProfileBar');
@@ -285,6 +460,78 @@ export class GameHub {
         }
     }
 
+    /**
+     * Inicializa o fluxo de upload do avatar do jogador.
+     * - Abre seletor de arquivo ao clicar no botão editar
+     * - Valida tipo e tamanho (<= 2MB)
+     * - Converte para DataURL e salva em gameData + localStorage
+     * - Re-renderiza avatar principal e inline
+     * - Carrega avatar salvo no primeiro init se existir
+     */
+    _initAvatarUpload() {
+        if (this._avatarUploadInitialized) return; // evita múltiplos binds
+        const editBtn = document.getElementById('editAvatarBtn');
+        const fileInput = document.getElementById('avatarFileInput');
+        const avatarClickable = document.getElementById('newDesktopAvatar');
+        const avatarInlineClickable = document.getElementById('newMobileAvatar');
+        if (!editBtn || !fileInput) return; // elementos não presentes ainda
+
+        const openPicker = (e) => { e.preventDefault(); fileInput.click(); };
+        editBtn.addEventListener('click', openPicker);
+        if (avatarClickable) avatarClickable.addEventListener('click', openPicker);
+        if (avatarInlineClickable) avatarInlineClickable.addEventListener('click', openPicker);
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                this.pushToast('Arquivo inválido. Selecione uma imagem.');
+                fileInput.value = '';
+                return;
+            }
+            const maxBytes = 2 * 1024 * 1024; // 2MB
+            if (file.size > maxBytes) {
+                this.pushToast('Imagem muito grande (máx 2MB).');
+                fileInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result;
+                try {
+                    const player = this.game?.gameData?.player || this.game?.player;
+                    if (player) {
+                        player.avatarImage = dataUrl;
+                    }
+                    try { localStorage.setItem('playerAvatarImage', dataUrl); } catch(storageErr) { /* ignore */ }
+                    this.updateProfileInfo();
+                    this.pushToast('Avatar atualizado');
+                } catch(err) {
+                    console.error('Erro aplicando avatar:', err);
+                    this.pushToast('Falha ao atualizar avatar');
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Carregar avatar salvo previamente (uma vez)
+        try {
+            const stored = localStorage.getItem('playerAvatarImage');
+            if (stored) {
+                const player = this.game?.gameData?.player || this.game?.player;
+                if (player && !player.avatarImage) {
+                    player.avatarImage = stored;
+                    this.updateProfileInfo();
+                }
+            }
+        } catch(loadErr) {
+            console.warn('Não foi possível carregar avatar salvo:', loadErr);
+        }
+
+        this._avatarUploadInitialized = true;
+    }
+
     updateMetrics() {
         const p = this.game?.gameData?.player || this.game?.player || {};
         
@@ -292,16 +539,16 @@ export class GameHub {
         this._setText('statFame', this._formatNumber(p.fame || 0));
         this._setText('statListeners', this._formatNumber(p.monthlyListeners || 0));
         this._setText('statHype', this._formatNumber(p.hype || 0));
-        this._setText('statMoney', '$' + this._formatNumber(p.money || 0));
+    this._setText('statMoney', this._formatMoney(p.money || 0));
     // Inline stats
     this._setText('statFameInline', this._formatNumber(p.fame || 0));
     this._setText('statListenersInline', this._formatNumber(p.monthlyListeners || 0));
-    this._setText('statMoneyInline', '$' + this._formatNumber(p.money || 0));
+    this._setText('statMoneyInline', this._formatMoney(p.money || 0));
         
         // Main metrics
         this._setText('fameValue', this._formatNumber(p.fame || 0));
         this._setText('listenersValue', this._formatNumber(p.monthlyListeners || 0));
-        this._setText('netWorthValue', '$' + this._formatNumber(p.money || 0));
+    this._setText('netWorthValue', this._formatMoney(p.money || 0));
         this._setText('careerLevelValue', p.careerLevel || 1);
         
         // Career progress
@@ -375,24 +622,140 @@ export class GameHub {
         }
     }
 
-    // ===== AÇÕES =====
-    _handleQuickAction(action) {
-        console.log('🎮 Ação rápida:', action);
-        
-        switch (action) {
-            case 'create-track':
-                this.pushToast('Sistema de criação em desenvolvimento');
-                break;
-            case 'train':
-                this.pushToast('Sistema de treinamento em desenvolvimento');
-                break;
-            case 'show-offers':
-                this.pushToast('Sistema de ofertas em desenvolvimento');
-                break;
-            case 'create-label':
-                this.pushToast('Criação de label em desenvolvimento');
-                break;
+    // ===== IMPLEMENTAÇÕES DE AÇÕES ===== 
+
+    // Ações de criação musical
+    _createSong() {
+        this._showNotification('Criando nova música...', 'info');
+        // TODO: Integrar com sistema de criação de música
+        if (this.game?.createTrack) {
+            this.game.createTrack();
+        } else {
+            console.log('🎵 Sistema de criação de música será implementado');
         }
+    }
+
+    _createEP() {
+        this._showNotification('Criando novo EP...', 'info');
+        console.log('� Sistema de criação de EP será implementado');
+    }
+
+    _createAlbum() {
+        this._showNotification('Criando novo álbum...', 'info');
+        console.log('🎵 Sistema de criação de álbum será implementado');
+    }
+
+    _createJointAlbum() {
+        this._showNotification('Criando álbum conjunto...', 'info');
+        console.log('🎵 Sistema de álbum conjunto será implementado');
+    }
+
+    _createCompilation() {
+        this._showNotification('Criando compilação...', 'info');
+        console.log('🎵 Sistema de compilação será implementado');
+    }
+
+    // Ações de contratação
+    _hireComposer() {
+        this._showNotification('Contratando compositor...', 'info');
+        console.log('👥 Sistema de contratação será implementado');
+    }
+
+    _showUnreleasedSongs() {
+        this._showNotification('Mostrando músicas não lançadas...', 'info');
+        console.log('🎵 Sistema de músicas não lançadas será implementado');
+    }
+
+    // Ações de treinamento
+    _practice() {
+        this._showNotification('Iniciando treino...', 'info');
+        // TODO: Integrar com sistema de treinamento
+        if (this.game?.train) {
+            this.game.train();
+        } else {
+            console.log('💪 Sistema de treinamento será implementado');
+        }
+    }
+
+    // Ações de shows
+    _openGigHub() {
+        this._showNotification('Abrindo Gig Hub...', 'info');
+        console.log('🎤 Sistema de shows será implementado');
+    }
+
+    _createSetlist() {
+        this._showNotification('Criando setlist...', 'info');
+        console.log('📝 Sistema de setlist será implementado');
+    }
+
+    _openTicketSales() {
+        this._showNotification('Abrindo venda de ingressos...', 'info');
+        console.log('🎫 Sistema de ingressos será implementado');
+    }
+
+    // Ações de merchandising
+    _createMerch() {
+        this._showNotification('Criando merchandising...', 'info');
+        console.log('👕 Sistema de merchandising será implementado');
+    }
+
+    // Ações de biblioteca
+    _openSongsLibrary() {
+        this._showNotification('Abrindo biblioteca de músicas...', 'info');
+        console.log('🎵 Biblioteca de músicas será implementada');
+    }
+
+    _openAlbumsLibrary() {
+        this._showNotification('Abrindo biblioteca de álbuns...', 'info');
+        console.log('💿 Biblioteca de álbuns será implementada');
+    }
+
+    _openVideosLibrary() {
+        this._showNotification('Abrindo biblioteca de vídeos...', 'info');
+        console.log('🎬 Biblioteca de vídeos será implementada');
+    }
+
+    // Ações de promoção social
+    _promoInstagram() {
+        this._showNotification('Promovendo no Instagram...', 'info');
+        console.log('📸 Promoção Instagram será implementada');
+    }
+
+    _promoTikTok() {
+        this._showNotification('Promovendo no TikTok...', 'info');
+        console.log('🎵 Promoção TikTok será implementada');
+    }
+
+    _promoYouTube() {
+        this._showNotification('Promovendo no YouTube...', 'info');
+        console.log('📺 Promoção YouTube será implementada');
+    }
+
+    _promoTwitter() {
+        this._showNotification('Promovendo no Twitter...', 'info');
+        console.log('🐦 Promoção Twitter será implementada');
+    }
+
+    // Ações rápidas existentes
+    _showOffers() {
+        this._showNotification('Mostrando ofertas...', 'info');
+        console.log('💼 Sistema de ofertas será implementado');
+    }
+
+    _createLabel() {
+        this._showNotification('Criando label...', 'info');
+        console.log('🏢 Sistema de criação de label será implementado');
+    }
+
+    // Método auxiliar para notificações
+    _showNotification(message, type = 'info') {
+        this.pushToast(message);
+    }
+
+    // ===== AÇÕES LEGADAS (COMPATIBILIDADE) =====
+    _handleQuickAction(action) {
+        console.log('🎮 Ação rápida (legado):', action);
+        this.invokeAction(action);
     }
 
     _handleMobileNav(view) {
@@ -403,7 +766,45 @@ export class GameHub {
             btn.classList.toggle('active', btn.dataset.view === view)
         );
         
-        // Implementar lógica de navegação futuramente
+        // Mapear views mobile para tabs desktop
+        const viewToTab = {
+            'profile': 'activity', // Home mobile = Atividade desktop
+            'activity': 'activity',
+            'overview': 'overview',
+            'studio': 'resources',
+            'social': 'feed',
+            'more': 'economy'
+        };
+        
+        const targetTab = viewToTab[view] || 'activity';
+        
+        // Atualizar tab ativa se diferente
+        if (this.currentTab !== targetTab) {
+            this.currentTab = targetTab;
+            
+            // Atualizar visualmente as tabs desktop
+            [...document.querySelectorAll('.tab-btn')].forEach(btn => 
+                btn.classList.toggle('active', btn.dataset.tab === targetTab)
+            );
+            
+            // Atualizar título
+            const titleEl = document.getElementById('currentViewTitle');
+            if (titleEl) {
+                const titles = {
+                    'activity': 'Atividade',
+                    'overview': 'Visão Geral',
+                    'resources': 'Recursos', 
+                    'goals': 'Metas',
+                    'feed': 'Feed',
+                    'career': 'Carreira',
+                    'streaming': 'Streaming',
+                    'economy': 'Economia'
+                };
+                titleEl.textContent = titles[targetTab] || 'Dashboard';
+            }
+            
+            this.renderCurrent();
+        }
     }
 
     _showNotificationsModal() {
@@ -431,9 +832,35 @@ export class GameHub {
     }
 
     _formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        if (!Number.isFinite(num)) return '0';
+        const abs = Math.abs(num);
+        if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/,'') + 'B';
+        if (abs >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/,'') + 'M';
+        if (abs >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/,'') + 'K';
         return num.toString();
+    }
+
+    _formatMoney(num) {
+        if (!Number.isFinite(num)) return '$0';
+        const abs = Math.abs(num);
+        const sign = num < 0 ? '-' : '';
+        if (abs < 1000) return sign + '$' + abs.toString();
+        if (abs < 10_000) { // 1.2K estilo $1.2K
+            return sign + '$' + (abs/1000).toFixed(2).replace(/0$/,'').replace(/\.0$/,'') + 'K';
+        }
+        if (abs < 100_000) { // $15.2K
+            return sign + '$' + (abs/1000).toFixed(1).replace(/\.0$/,'') + 'K';
+        }
+        if (abs < 1_000_000) { // $200K
+            return sign + '$' + Math.round(abs/1000) + 'K';
+        }
+        if (abs < 10_000_000) { // $1.2M
+            return sign + '$' + (abs/1_000_000).toFixed(1).replace(/\.0$/,'') + 'M';
+        }
+        if (abs < 1_000_000_000) { // $12M
+            return sign + '$' + Math.round(abs/1_000_000) + 'M';
+        }
+        return sign + '$' + (abs/1_000_000_000).toFixed(1).replace(/\.0$/,'') + 'B';
     }
 
     pushToast(message, type = 'info') {
@@ -465,7 +892,8 @@ export class GameHub {
 
     onPlayerUpdate() {
         if (this.isVisible) {
-            this.updateProfileInfo();
+        this.updateProfileInfo();
+        this._initAvatarUpload();
             this.updateMetrics();
             this.updateResources();
         }

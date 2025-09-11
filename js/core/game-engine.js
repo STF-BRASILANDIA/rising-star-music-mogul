@@ -476,6 +476,11 @@ export class RisingStarGame {
         if (this.systems.interfaceManager) {
             this.systems.interfaceManager.showMainInterface();
         }
+
+        // Garantir atualização imediata de métricas (dinheiro abreviado ou valor integral < 1000)
+        if (window.gameHub && typeof window.gameHub.updateMetrics === 'function') {
+            try { window.gameHub.updateMetrics(); } catch(e) { console.warn('⚠️ Falha updateMetrics inicial:', e); }
+        }
         
         // Gerar eventos iniciais
         if (this.systems.aiSimulation && this.systems.aiSimulation.generateInitialEvents) {

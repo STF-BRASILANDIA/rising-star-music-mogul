@@ -1,0 +1,280 @@
+/* Menu Navigation - Desktop e Mobile Responsivo */
+
+/* Visibilidade controlada globalmente */
+.mobile-bottom-nav {
+  display: none !important;
+}
+
+#gameInterface[style*="display: block"] .mobile-bottom-nav {
+  display: flex !important;
+}
+
+/* ===== MOBILE: Menu inferior tradicional ===== */
+@media (max-width: 1000px) {
+  #gameInterface .mobile-bottom-nav { 
+    position: fixed; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background: #1a1c22; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+    padding: 6px 4px; 
+    gap: 4px; 
+    z-index: 500;
+    backdrop-filter: blur(10px);
+  }
+  
+  #gameInterface .m-btn { 
+    flex: 1; 
+    background: none; 
+    border: none; 
+    color: #fff; 
+    font-size: 11px; 
+    padding: 8px 4px; 
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  #gameInterface .m-icon {
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.7;
+    font-weight: 300;
+  }
+  
+  #gameInterface .m-label {
+    font-size: 9px;
+    line-height: 1;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    transform: translateY(-2px);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  
+  #gameInterface .m-btn.active .m-label {
+    opacity: 1;
+    max-height: 20px;
+    transform: translateY(0);
+    color: #fff;
+    font-weight: 600;
+  }
+  
+  #gameInterface .m-btn.active .m-icon {
+    transform: scale(1.15);
+    opacity: 1;
+    color: #fff;
+    text-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
+  }
+  
+  #gameInterface .m-btn:not(.active) .m-icon {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  #gameInterface .m-btn:not(.active) {
+    padding: 10px 4px;
+  }
+  
+  #gameInterface .m-btn.active {
+    padding: 6px 4px 8px;
+  }
+}
+
+/* ===== DESKTOP: Dock moderno tipo Apps ===== */
+@media (min-width: 1001px) {
+  #gameInterface .mobile-bottom-nav { 
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 34, 42, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 12px 20px;
+    backdrop-filter: blur(30px);
+    box-shadow: 
+      0 10px 40px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.05) inset;
+    gap: 8px;
+    z-index: 500;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  #gameInterface .mobile-bottom-nav:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 
+      0 15px 50px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.08) inset;
+  }
+  
+  #gameInterface .m-btn { 
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8); 
+    padding: 14px 16px; 
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-height: 70px;
+    min-width: 70px;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #gameInterface .m-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+
+  #gameInterface .m-btn:active {
+    transform: translateY(0);
+    transition: all 0.1s ease;
+  }
+
+  /* Ícones modernos */
+  #gameInterface .m-icon {
+    font-size: 24px;
+    line-height: 1;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.85;
+    margin-bottom: 2px;
+  }
+  
+  #gameInterface .m-label {
+    font-size: 11px;
+    line-height: 1;
+    opacity: 0.8;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    white-space: nowrap;
+  }
+  
+  #gameInterface .m-btn:hover .m-icon {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  #gameInterface .m-btn:hover .m-label {
+    opacity: 1;
+  }
+
+  /* Estado ativo - estilo app selecionado */
+  #gameInterface .m-btn.active { 
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+    box-shadow: 
+      0 8px 25px rgba(0, 122, 255, 0.4),
+      0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  #gameInterface .m-btn.active:hover {
+    background: linear-gradient(135deg, #0056CC, #4C44CC);
+    box-shadow: 
+      0 10px 30px rgba(0, 122, 255, 0.5),
+      0 4px 12px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+  }
+  
+  #gameInterface .m-btn.active .m-icon {
+    opacity: 1;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  
+  #gameInterface .m-btn.active .m-label {
+    color: #fff;
+    font-weight: 600;
+    opacity: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* Indicador de atividade (pontinho) */
+  #gameInterface .m-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255,255,255,0.6);
+  }
+
+  /* Efeito subtle de respiração no dock */
+  @keyframes subtleGlow {
+    0%, 100% { 
+      box-shadow: 
+        0 10px 40px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.05) inset;
+    }
+    50% { 
+      box-shadow: 
+        0 12px 45px rgba(0,0,0,0.65),
+        0 0 0 1px rgba(255,255,255,0.06) inset;
+    }
+  }
+
+  #gameInterface .mobile-bottom-nav {
+    animation: subtleGlow 6s ease-in-out infinite;
+  }
+
+  #gameInterface .mobile-bottom-nav:hover {
+    animation: none;
+  }
+
+  /* Responsive para telas menores desktop */
+  @media (max-width: 1200px) {
+    #gameInterface .m-btn {
+      min-width: 65px;
+      min-height: 65px;
+      padding: 12px 14px;
+    }
+    
+    #gameInterface .m-icon {
+      font-size: 22px;
+    }
+    
+    #gameInterface .m-label {
+      font-size: 10px;
+    }
+  }
+}
+
+/* ===== ESTADOS COMUNS (apenas para mobile) ===== */
+@media (max-width: 1000px) {
+  #gameInterface .m-btn.active { 
+    background: linear-gradient(135deg, #5f3bff, #ff6b35); 
+    border-color: transparent;
+    box-shadow: 0 4px 16px rgba(95, 59, 255, 0.3);
+  }
+
+  #gameInterface .m-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+}

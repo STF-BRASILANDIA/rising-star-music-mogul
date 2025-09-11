@@ -17,10 +17,11 @@
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
     <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
+    <link rel="stylesheet" href="styles/menu-navigation.css?v=1.0.0">
 </head>
 <body class="menu-active">
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen" style="display: none;">
+    <div id="loadingScreen" class="loading-screen" style="display: block;">
         <div class="loading-content">
             <div class="logo">
                 <h1>Rising Star</h1>
@@ -819,44 +820,61 @@
         <div class="app-shell hybrid">
             <aside class="side-panel" id="sideProfile">
                 <div class="profile-header">
-                    <div class="avatar-wrapper">
-                        <div class="avatar" id="hubAvatar">🎵</div>
+                    <div class="avatar-wrapper" id="sidebarAvatarWrapper">
+                        <div class="new-avatar avatar-size-lg avatar-theme" id="newDesktopAvatar" title="Trocar Avatar">🎵</div>
                         <button class="edit-avatar-btn" id="editAvatarBtn" title="Editar Avatar">✎</button>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" />
                     </div>
                     <div class="artist-block">
-                        <h2 id="artistStageName">Artista</h2>
-                        <p class="artist-sub" id="artistRoleGenre">Cantor(a) • R&B</p>
+                        <h2 id="artistStageName">DaVinci</h2>
+                        <p class="artist-sub" id="artistRoleGenre">Rapper • R&B</p>
+                        <span class="record-label" id="recordLabel" style="display: inline-block; background: linear-gradient(135deg, #ffd700, #daa520); color: #000; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 14px; margin: 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);">Independent</span>
                     </div>
                 </div>
                 <div class="primary-stats">
                     <div class="p-stat">
-                        <span class="label">Fama</span>
+                        <span class="label">💰 Cash</span>
+                        <span class="val" id="statMoney">$0</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="label">⭐ Fama</span>
                         <span class="val" id="statFame">0</span>
                     </div>
                     <div class="p-stat">
-                        <span class="label">Seguidores</span>
+                        <span class="label">👥 Seguidores</span>
                         <span class="val" id="statListeners">0</span>
                     </div>
                     <div class="p-stat">
-                        <span class="label">Hype</span>
+                        <span class="label">🔥 Hype</span>
                         <span class="val" id="statHype">0</span>
                     </div>
-                    <div class="p-stat money">
-                        <span class="label">Cash</span>
-                        <span class="val" id="statMoney">$0</span>
+                    <div class="p-stat">
+                        <span class="label">🎯 Nível</span>
+                        <span class="val" id="statLevel">1</span>
                     </div>
-                </div>
-                <div class="quick-actions">
-                    <button class="qa-btn" data-action="create-track">Nova Música</button>
-                    <button class="qa-btn" data-action="train">Treinar</button>
-                    <button class="qa-btn" data-action="show-offers" id="offersBtn">Ofertas</button>
-                    <button class="qa-btn alt" data-action="create-label">Criar Label</button>
+                    <div class="p-stat">
+                        <span class="label">⚡ Energia</span>
+                        <span class="val" id="statEnergy">100</span>
+                    </div>
                 </div>
                 <div class="collapse-toggle" id="collapseProfile">Recolher ▲</div>
             </aside>
 
             <div class="main-area">
-        <header class="top-bar">
+                <!-- Card de Linha do Tempo -->
+                <div class="time-card-container" style="padding: 16px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div class="time-card" style="background: linear-gradient(135deg, #2a5298, #1e3a5f); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; color: #fff; box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);">
+                        <div class="time-info">
+                            <h3 style="margin: 0; font-size: 18px; font-weight: 600;">Semana 1 - Segunda-feira</h3>
+                            <p style="margin: 4px 0 0; font-size: 14px; opacity: 0.8;">15 de Junho de 2024</p>
+                        </div>
+                        <button id="advanceTimeBtn" style="padding: 12px 24px; background: linear-gradient(135deg, #ffd700, #daa520); border: none; color: #000; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);">
+                            End Week
+                        </button>
+                    </div>
+                </div>
+
+        <header class="top-bar" style="display: none;">
                     <div class="left">
                         <h1 class="view-title" id="currentViewTitle">Visão Geral</h1>
                         <div class="time-chip">
@@ -880,79 +898,207 @@
                 <!-- Perfil Inline Mobile -->
                 <div class="inline-profile-bar" id="inlineProfileBar" style="display:none;">
                     <div class="avatar-wrapper">
-                        <div class="avatar" id="hubAvatarInline">🎵</div>
+                        <div class="new-avatar avatar-size-lg avatar-theme" id="newMobileAvatar" title="Trocar Avatar">🎵</div>
                     </div>
                     <div class="inline-profile-meta">
-                        <h2 id="artistStageNameInline">Artista</h2>
-                        <p id="artistRoleGenreInline">Cantor(a) • R&B</p>
-                        <div class="inline-profile-stats">
-                            <div class="p-stat"><span class="label">Fama</span><span class="val" id="statFameInline">0</span></div>
-                            <div class="p-stat"><span class="label">Seg.</span><span class="val" id="statListenersInline">0</span></div>
-                            <div class="p-stat"><span class="label">Cash</span><span class="val" id="statMoneyInline">$0</span></div>
-                        </div>
-                        <div class="inline-actions-row">
-                            <button class="qa-btn" data-action="create-track">Música</button>
-                            <button class="qa-btn" data-action="train">Treino</button>
-                            <button class="qa-btn alt" data-action="create-label">Label</button>
-                        </div>
+                        <h2 id="artistStageNameInline" style="margin: 0; font-size: 18px; color: #fff;">DaVinci</h2>
+                        <p id="artistRoleGenreInline" style="margin: 4px 0; font-size: 14px; color: #ccc;">Rapper • R&B</p>
+                        <span class="record-label" id="recordLabelInline" style="display: inline-block; background: linear-gradient(135deg, #ffd700, #daa520); color: #000; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 12px; margin: 6px 0; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);">Independent</span>
+                    </div>
+                    <div class="inline-profile-stats">
+                        <div class="p-stat"><span class="label">💰 Cash</span><span class="val" id="statMoneyInline">$0</span></div>
+                        <div class="p-stat"><span class="label">⭐ Fama</span><span class="val" id="statFameInline">0</span></div>
+                        <div class="p-stat"><span class="label">👥 Seg.</span><span class="val" id="statListenersInline">0</span></div>
+                        <div class="p-stat"><span class="label">🔥 Hype</span><span class="val" id="statHypeInline">0</span></div>
+                        <div class="p-stat"><span class="label">🎯 Nível</span><span class="val" id="statLevelInline">1</span></div>
+                        <div class="p-stat"><span class="label">⚡ Energia</span><span class="val" id="statEnergyInline">100</span></div>
                     </div>
                 </div>
 
                 <nav class="tab-nav" id="hubTabs">
-                    <button class="tab-btn active" data-tab="overview">
-                        <span class="tab-icon">⌘</span>
-                        <span class="tab-label">Overview</span>
+                    <button class="tab-btn active" data-tab="profile">
+                        <span class="tab-icon">👤</span>
+                        <span class="tab-label">Perfil</span>
                     </button>
-                    <button class="tab-btn" data-tab="resources">
-                        <span class="tab-icon">◈</span>
-                        <span class="tab-label">Recursos</span>
+                    <button class="tab-btn" data-tab="notifications">
+                        <span class="tab-icon">🔔</span>
+                        <span class="tab-label">Notificações</span>
                     </button>
-                    <button class="tab-btn" data-tab="goals">
-                        <span class="tab-icon">★</span>
-                        <span class="tab-label">Metas</span>
+                    <button class="tab-btn" data-tab="settings">
+                        <span class="tab-icon">⚙️</span>
+                        <span class="tab-label">Configurações</span>
                     </button>
-                    <button class="tab-btn" data-tab="feed">
-                        <span class="tab-icon">≡</span>
-                        <span class="tab-label">Feed</span>
-                    </button>
-                    <button class="tab-btn" data-tab="career">
-                        <span class="tab-icon">♔</span>
-                        <span class="tab-label">Carreira</span>
-                    </button>
-                    <button class="tab-btn" data-tab="streaming">
-                        <span class="tab-icon">♫</span>
-                        <span class="tab-label">Streaming</span>
-                    </button>
-                    <button class="tab-btn" data-tab="economy">
-                        <span class="tab-icon">$</span>
-                        <span class="tab-label">Economia</span>
+                    <button class="tab-btn" data-tab="store">
+                        <span class="tab-icon">🛒</span>
+                        <span class="tab-label">Loja</span>
                     </button>
                 </nav>
 
                 <main class="hub-panels" id="hubPanels">
-                    <!-- Conteúdo populado via JS -->
+                    <!-- Painel: Perfil Detalhado -->
+                    <section class="hub-panel" id="panel-profile" data-tab="profile" style="display:block;">
+                        <div class="profile-detailed" style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+                            <div class="profile-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                
+                                <!-- Informações Básicas -->
+                                <div class="info-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-radius: 12px; color: #fff;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">📋 Informações Básicas</h3>
+                                    <div class="info-item"><strong>Nome:</strong> <span id="profileFullName">DaVinci Rodriguez</span></div>
+                                    <div class="info-item"><strong>Nome Artístico:</strong> <span id="profileStageName">DaVinci</span></div>
+                                    <div class="info-item"><strong>Gênero Musical:</strong> <span id="profileGenre">Rapper • R&B</span></div>
+                                    <div class="info-item"><strong>Status:</strong> <span id="profileStatus">Artista Independente</span></div>
+                                </div>
+
+                                <!-- Estatísticas Completas -->
+                                <div class="stats-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 20px; border-radius: 12px; color: #fff;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">📊 Estatísticas</h3>
+                                    <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                        <div><strong>Fama:</strong> <span id="detailedFame">0</span></div>
+                                        <div><strong>Popularidade:</strong> <span id="detailedPopularity">0</span></div>
+                                        <div><strong>Reputação:</strong> <span id="detailedReputation">0</span></div>
+                                        <div><strong>Seguidores:</strong> <span id="detailedFollowers">0</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Habilidades Artísticas -->
+                                <div class="skills-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">🎵 Habilidades Artísticas</h3>
+                                    <div class="skill-list">
+                                        <div class="skill-item">VOCALS: <span id="skillVocals">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">SONGWRITING: <span id="skillSongwriting">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">RHYTHM: <span id="skillRhythm">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">CHARISMA: <span id="skillCharisma">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">VIRALITY: <span id="skillVirality">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">VIDEO DIRECTING: <span id="skillVideoDirecting">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                    </div>
+                                </div>
+
+                                <!-- Habilidades de Negócios -->
+                                <div class="business-skills-card" style="background: linear-gradient(135deg, #fa709a, #fee140); padding: 20px; border-radius: 12px; color: #fff;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">💼 Habilidades de Negócios</h3>
+                                    <div class="skill-list">
+                                        <div class="skill-item">LEADERSHIP: <span id="skillLeadership">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">MARKETING: <span id="skillMarketing">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">NEGOTIATION: <span id="skillNegotiation">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">RECRUITING: <span id="skillRecruiting">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                        <div class="skill-item">SALES: <span id="skillSales">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                    </div>
+                                </div>
+
+                                <!-- Status de Vida -->
+                                <div class="life-status-card" style="background: linear-gradient(135deg, #a8edea, #fed6e3); padding: 20px; border-radius: 12px; color: #333;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">❤️ Status de Vida</h3>
+                                    <div class="status-list">
+                                        <div class="status-item">HEALTH: <span id="statusHealth">100%</span></div>
+                                        <div class="status-item">MOOD: <span id="statusMood">Feliz</span></div>
+                                        <div class="status-item">RELATIONSHIPS: <span id="statusRelationships">Solteiro</span></div>
+                                        <div class="status-item">RESIDENCE: <span id="statusResidence">Apartamento</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Conquistas -->
+                                <div class="achievements-card" style="background: linear-gradient(135deg, #ffecd2, #fcb69f); padding: 20px; border-radius: 12px; color: #333;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;">🏆 Conquistas</h3>
+                                    <div class="achievements-list" id="achievementsList">
+                                        <div class="achievement-item">🎵 Primeira Música Gravada</div>
+                                        <div class="achievement-item">🎤 Primeiro Show</div>
+                                        <div class="achievement-item">💿 Primeiro Álbum</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Notificações -->
+                    <section class="hub-panel" id="panel-notifications" data-tab="notifications" style="display: none;">
+                        <div class="notifications-container" style="padding: 20px; max-width: 800px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 20px; color: #fff; text-align: center;">🔔 Feed de Notificações</h2>
+                            <div class="notifications-feed" id="notificationsFeed">
+                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #ffd700;">
+                                    <h4 style="margin: 0 0 8px; color: #ffd700;">🏢 Nova Mensagem de Gravadora</h4>
+                                    <p style="margin: 0; color: #ccc;">Universal Music está interessada em seu trabalho.</p>
+                                    <small style="color: #999;">Há 2 horas</small>
+                                </div>
+                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #00ff88;">
+                                    <h4 style="margin: 0 0 8px; color: #00ff88;">🎪 Convite para Festival</h4>
+                                    <p style="margin: 0; color: #ccc;">Você foi convidado para o Lollapalooza 2024.</p>
+                                    <small style="color: #999;">Ontem</small>
+                                </div>
+                                <div class="notification-item" style="background: rgba(255,255,255,0.1); padding: 16px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid #ff6b35;">
+                                    <h4 style="margin: 0 0 8px; color: #ff6b35;">📰 Billboard News</h4>
+                                    <p style="margin: 0; color: #ccc;">Novos artistas de R&B estão dominando as paradas.</p>
+                                    <small style="color: #999;">2 dias atrás</small>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Configurações -->
+                    <section class="hub-panel" id="panel-settings" data-tab="settings" style="display: none;">
+                        <div class="settings-container" style="padding: 20px; max-width: 600px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 20px; color: #fff; text-align: center;">⚙️ Configurações do Jogo</h2>
+                            <div class="settings-grid" style="display: grid; gap: 16px;">
+                                <button class="settings-option" style="padding: 16px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; cursor: pointer;">
+                                    🔊 Configurações de Áudio
+                                </button>
+                                <button class="settings-option" style="padding: 16px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; cursor: pointer;">
+                                    🎨 Configurações Visuais
+                                </button>
+                                <button class="settings-option" style="padding: 16px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; cursor: pointer;">
+                                    💾 Gerenciar Salvamentos
+                                </button>
+                                <button class="settings-option" style="padding: 16px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: #fff; cursor: pointer;">
+                                    🌐 Idioma
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Loja -->
+                    <section class="hub-panel" id="panel-store" data-tab="store" style="display: none;">
+                        <div class="store-container" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 20px; color: #fff; text-align: center;">🛒 Loja/Marketplace</h2>
+                            <div class="store-categories" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                                <div class="store-category" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
+                                    <h3>🎤 Equipamentos</h3>
+                                    <p>Microfones, instrumentos e equipamentos de estúdio</p>
+                                    <button style="padding: 8px 16px; background: #fff; color: #333; border: none; border-radius: 6px; cursor: pointer;">Ver Itens</button>
+                                </div>
+                                <div class="store-category" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
+                                    <h3>👕 Roupas & Estilo</h3>
+                                    <p>Roupas de palco e acessórios para performances</p>
+                                    <button style="padding: 8px 16px; background: #fff; color: #333; border: none; border-radius: 6px; cursor: pointer;">Ver Itens</button>
+                                </div>
+                                <div class="store-category" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
+                                    <h3>🏠 Propriedades</h3>
+                                    <p>Casas, estúdios e espaços para eventos</p>
+                                    <button style="padding: 8px 16px; background: #fff; color: #333; border: none; border-radius: 6px; cursor: pointer;">Ver Itens</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </main>
 
                 <footer class="mobile-bottom-nav" id="mobileNav">
-                    <button data-view="profile" class="m-btn active">
-                        <span class="m-icon">⌂</span>
+                    <button data-view="home" class="m-btn active">
+                        <span class="m-icon">🏠</span>
                         <span class="m-label">Home</span>
                     </button>
-                    <button data-view="overview" class="m-btn">
-                        <span class="m-icon">◎</span>
-                        <span class="m-label">Visão</span>
-                    </button>
                     <button data-view="studio" class="m-btn">
-                        <span class="m-icon">♫</span>
-                        <span class="m-label">Estúdio</span>
+                        <span class="m-icon">🎵</span>
+                        <span class="m-label">Studio</span>
+                    </button>
+                    <button data-view="career" class="m-btn">
+                        <span class="m-icon">🏆</span>
+                        <span class="m-label">Career</span>
                     </button>
                     <button data-view="social" class="m-btn">
-                        <span class="m-icon">♡</span>
+                        <span class="m-icon">💬</span>
                         <span class="m-label">Social</span>
                     </button>
-                    <button data-view="more" class="m-btn">
-                        <span class="m-icon">⋯</span>
-                        <span class="m-label">Mais</span>
+                    <button data-view="finance" class="m-btn">
+                        <span class="m-icon">💰</span>
+                        <span class="m-label">Finance</span>
                     </button>
                 </footer>
             </div>
@@ -966,6 +1112,329 @@
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
+    
+    <!-- Estilos adicionais para o novo dashboard -->
+    <style>
+        /* Estilos para o card de tempo */
+        .time-card-container {
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .time-card {
+            transition: all 0.3s ease;
+        }
+        
+        .time-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+        }
+        
+        /* Estilos para informações do perfil */
+        .record-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #daa520);
+            color: #000;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 14px;
+            margin: 8px 0 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .record-label:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+        
+        /* Garantir que record-label aparece no mobile */
+        #recordLabelInline {
+            display: inline-block !important;
+            visibility: visible !important;
+        }
+        
+        /* Estilos para habilidades e upgrades */
+        .skill-item, .status-item, .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .upgrade-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .upgrade-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Responsividade para o card de tempo */
+        @media (max-width: 768px) {
+            .time-card {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .time-info {
+                text-align: center;
+            }
+            
+            #advanceTimeBtn {
+                width: 100%;
+            }
+        }
+        /* Ajuste especial mobile (ex: 430x932): manter horizontal e reduzir dimensões */
+        @media (max-width: 500px) {
+            .time-card {
+                flex-direction: row !important;
+                align-items: center !important;
+                text-align: left !important;
+                gap: 12px !important;
+                padding: 12px 14px !important; /* menor altura */
+            }
+            .time-info { text-align: left !important; flex: 1 1 auto !important; }
+            .time-card h3 { font-size: 16px !important; line-height: 1.2 !important; }
+            .time-card p { font-size: 12px !important; margin-top: 2px !important; }
+            #advanceTimeBtn {
+                width: auto !important;
+                padding: 10px 18px !important;
+                font-size: 14px !important;
+                white-space: nowrap !important;
+                flex-shrink: 0 !important;
+            }
+        }
+        /* Ultra compacto: telas muito estreitas ainda podem empilhar para não quebrar */
+        @media (max-width: 350px) {
+            .time-card { flex-direction: column !important; align-items: stretch !important; }
+            #advanceTimeBtn { width: 100% !important; }
+        }
+        
+        /* Avatar clicável */
+        .avatar {
+            transition: all 0.3s ease;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* Notificações */
+        .notification-item {
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(8px);
+            background: rgba(255,255,255,0.15) !important;
+        }
+        
+        /* Cards do perfil detalhado */
+        .info-card, .stats-card, .skills-card, .business-skills-card, 
+        .life-status-card, .achievements-card {
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover, .stats-card:hover, .skills-card:hover, 
+        .business-skills-card:hover, .life-status-card:hover, .achievements-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+    </style>
+    <script>
+    // Sincroniza altura do avatar à altura total do bloco (meta + stats) mantendo proporção quadrada
+    (function syncAvatarHeight(){
+        const bar = document.getElementById('inlineProfileBar');
+        if(!bar) return;
+        const avatar = bar.querySelector('.avatar-wrapper .avatar');
+        const meta = bar.querySelector('.inline-profile-meta');
+        const stats = bar.querySelector('.inline-profile-stats');
+        if(!avatar || !meta || !stats) return;
+        function adjust(){
+            // Altura alvo dinâmica: maior entre meta e stats
+            let target = Math.max(meta.offsetHeight, stats.offsetHeight);
+            // Apenas limite mínimo para não ficar pequeno demais
+            if (target < 60) target = 60;
+            avatar.style.height = target + 'px';
+            avatar.style.width = target + 'px';
+        }
+        const ro = new ResizeObserver(adjust);
+        ro.observe(meta); ro.observe(stats); ro.observe(bar);
+        window.addEventListener('orientationchange', ()=> setTimeout(adjust,120));
+        window.addEventListener('resize', ()=> adjust());
+        adjust();
+    })();
+    </script>
+    
+    <!-- Sidebar Card Style -->
+    <style>
+        .side-panel {
+            margin: 16px 0 16px 16px !important;
+            border-radius: 16px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        }
+        
+        /* Sidebar Mobile - Grid estável: Avatar | Info | Stats (3x2) */
+        .inline-profile-bar {
+            margin: 16px !important;
+            border-radius: 16px !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+            padding: 14px 14px 14px 11px !important; /* 1px mais à esquerda */
+            display: grid !important;
+            grid-template-columns: auto minmax(100px, 140px) 1fr !important; /* reduz espaço reservado */
+            column-gap: 10px !important; /* aproxima colunas */
+            align-items: start !important;
+            box-sizing: border-box !important;
+            max-width: 100% !important;
+        }
+        .inline-profile-bar .avatar-wrapper { grid-column:1; grid-row:1 / span 2; }
+    .inline-profile-bar .avatar-wrapper .avatar { width:64px !important; height:64px !important; transition:height .15s ease, width .15s ease; }
+    .inline-profile-bar .inline-profile-meta { grid-column:2; grid-row:1 / span 2; display:flex !important; flex-direction:column !important; gap:4px !important; min-width:0 !important; max-width:160px !important; }
+    .inline-profile-bar .inline-profile-meta h2 { margin:0 !important; font-size:clamp(15px, 2.9vw, 18px) !important; line-height:1.15 !important; overflow-wrap:anywhere !important; }
+    .inline-profile-bar .inline-profile-meta p { margin:0 !important; font-size:clamp(11px, 2.2vw, 14px) !important; line-height:1.1 !important; overflow-wrap:anywhere !important; }
+        .inline-profile-bar .inline-profile-meta .record-label { margin-top:4px !important; font-size:9px !important; padding:3px 7px !important; }
+    .inline-profile-bar > .inline-profile-stats { grid-column:3; grid-row:1 / span 2; }
+
+        /* Forçar distribuição horizontal: avatar | meta | stats */
+    .inline-profile-bar > .inline-profile-meta { min-width: 100px !important; }
+
+        .inline-profile-bar > .inline-profile-stats {
+            margin-left: auto !important;
+        }
+
+        /* Garantir alinhamento topo e não empurrar stats para baixo */
+        .inline-profile-bar .inline-profile-meta,
+        .inline-profile-bar .inline-profile-stats {
+            align-self: flex-start !important;
+        }
+
+        /* Avatar - lado esquerdo */
+        .inline-profile-bar .avatar-wrapper {
+            flex-shrink: 0 !important;
+        }
+
+        /* Nome e informações - meio */
+        .inline-profile-bar .inline-profile-meta {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+        }
+
+        .inline-profile-bar .inline-profile-meta h2 {
+            margin: 0 !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #fff !important;
+        }
+
+        .inline-profile-bar .inline-profile-meta p {
+            margin: 0 !important;
+            font-size: 14px !important;
+            color: rgba(255,255,255,0.8) !important;
+        }
+
+        .inline-profile-bar .inline-profile-meta .record-label {
+            display: inline-block !important;
+            background: linear-gradient(135deg, #ffd700, #daa520) !important;
+            color: #000 !important;
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            padding: 3px 8px !important;
+            border-radius: 12px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+            align-self: flex-start !important;
+            margin-top: 4px !important;
+        }
+
+        /* Stats 3x2 - lado direito alinhado */
+        .inline-profile-stats {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* impede overflow horizontal */
+            gap: 6px !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 4px 0 0 !important; /* puxa levemente para esquerda */
+        }
+
+    .inline-profile-stats .p-stat { display:flex !important; flex-direction:column !important; align-items:center !important; text-align:center !important; gap:2px !important; padding:4px 2px !important; min-width:0 !important; box-sizing:border-box !important; }
+
+        .inline-profile-stats .p-stat .label {
+            font-size: 10px !important;
+            color: rgba(255,255,255,0.6) !important;
+            font-weight: 500 !important;
+            line-height: 1 !important;
+        }
+
+        .inline-profile-stats .p-stat .val {
+            font-size: 13px !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+        }
+
+        /* Breakpoint até 640px mantém horizontal, ajusta apenas espaçamento */
+        @media (max-width:640px) {
+            .inline-profile-bar { grid-template-columns:auto minmax(115px,145px) 1fr !important; column-gap:8px !important; padding:12px 12px 12px 9px !important; }
+            .inline-profile-bar .avatar-wrapper .avatar { width:60px !important; height:60px !important; }
+            .inline-profile-stats { gap:5px !important; grid-template-columns:repeat(3, minmax(0,1fr)) !important; padding-right:2px !important; }
+            .inline-profile-stats .p-stat { padding:3px 2px !important; min-width:0 !important; }
+            .inline-profile-stats .p-stat .label { font-size:9px !important; }
+            .inline-profile-stats .p-stat .val { font-size:12px !important; }
+        }
+
+        /* Ultra pequeno: <=360 empilha stats abaixo */
+        @media (max-width:360px){
+            .inline-profile-bar { grid-template-columns:auto 1fr !important; grid-auto-rows:auto !important; }
+            .inline-profile-bar > .inline-profile-stats { grid-column:1 / -1; grid-row:3; margin-top:8px !important; grid-template-columns:repeat(3, minmax(0,1fr)) !important; }
+        }
+
+        /* Ajuste especial para aparelhos ~400-480px (ex: 430x932) manter layout horizontal */
+        @media (min-width: 400px) and (max-width: 480px) {
+            .inline-profile-bar { column-gap: 12px !important; padding: 12px 12px 12px 11px !important; }
+            .inline-profile-bar .avatar-wrapper .avatar { width:60px !important; height:60px !important; }
+            .inline-profile-bar .inline-profile-meta h2 { font-size:16px !important; }
+            .inline-profile-bar .inline-profile-meta p { font-size:12px !important; }
+            .inline-profile-bar > .inline-profile-stats { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap:6px !important; }
+            .inline-profile-bar .inline-profile-stats .p-stat { min-width:0 !important; padding:3px 4px !important; }
+            .inline-profile-bar .inline-profile-stats .p-stat .label { font-size:9px !important; }
+            .inline-profile-bar .inline-profile-stats .p-stat .val { font-size:12px !important; }
+        }
+
+        /* Desktop - manter sidebar principal e ocultar inline */
+        @media (min-width: 1001px) {
+            .inline-profile-bar {
+                display: none !important;
+            }
+        }
+
+        /* Mobile - ocultar sidebar principal e mostrar inline */
+        @media (max-width: 1000px) {
+            .side-panel { display: none !important; }
+            .inline-profile-bar { display: flex !important; }
+        }
+    </style>
     
     <!-- Debug & In-Game Safe Area Handling -->
     <script>
