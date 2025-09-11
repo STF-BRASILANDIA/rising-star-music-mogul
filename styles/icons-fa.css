@@ -1,0 +1,157 @@
+/* 
+ * Professional Icon System - Font Awesome Icons
+ * Ícones profissionais usando Font Awesome
+ */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  line-height: 1;
+  vertical-align: middle;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Icon Sizes */
+.icon-sm {
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+}
+
+.icon-md {
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+}
+
+.icon-lg {
+  width: 32px;
+  height: 32px;
+  font-size: 22px;
+}
+
+.icon-xl {
+  width: 48px;
+  height: 48px;
+  font-size: 32px;
+}
+
+/* Icon Colors */
+.icon-primary {
+  color: #64a8ff;
+}
+
+.icon-success {
+  color: #50c878;
+}
+
+.icon-warning {
+  color: #ffa500;
+}
+
+.icon-danger {
+  color: #ff6b6b;
+}
+
+.icon-info {
+  color: #17a2b8;
+}
+
+.icon-light {
+  color: #f8f9fa;
+}
+
+.icon-dark {
+  color: #343a40;
+}
+
+/* Mobile Icon Adjustments */
+@media (max-width: 768px) {
+  .icon {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+  }
+  
+  .icon-lg {
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+  }
+  
+  .icon-text {
+    gap: 6px;
+  }
+  
+  .achievement-item.icon-text {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+/* Hover Effects for Interactive Icons */
+.icon-interactive {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.icon-interactive:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+/* Icon with Text Alignment */
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-text .icon {
+  flex-shrink: 0;
+}
+
+/* Specific adjustments for game interface */
+.m-icon.icon {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.achievement-item.icon-text {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: rgba(100, 168, 255, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid #64a8ff;
+}
+
+/* Stats labels alignment */
+.label.icon-text {
+  font-weight: 600;
+  color: #64a8ff;
+}
+
+/* Avatar fallback icon center */
+.new-avatar .icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #64a8ff;
+}
+
+/* Navigation Icons Specific Styles */
+#gameInterface .m-icon .icon {
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+  color: #64a8ff;
+}
