@@ -93,7 +93,7 @@ body.in-game .in-game-only { display: block; }
     flex-direction: column; 
     padding: 20px 18px; 
     border-right: 1px solid rgba(255,255,255,0.08); 
-    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    background: linear-gradient(135deg, #2a2d3a, #1e2026) !important;
     backdrop-filter: blur(12px);
     position: relative; 
     z-index: 100; 
@@ -123,15 +123,29 @@ body.in-game .in-game-only { display: block; }
     height: 90px; 
     flex-shrink: 0;
     position: relative;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(45deg, #ffd600, #ff8c00, #ff4500, #ff1744, #e91e63, #9c27b0, #673ab7, #3f51b5, #2196f3);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease infinite;
+    box-shadow: 0 4px 20px rgba(156, 39, 176, 0.3);
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 100% 0%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+    100% { background-position: 0% 50%; }
   }
   
   /* Avatar container */
   .side-panel #newDesktopAvatar {
-    width: 90px;
-    height: 90px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2a2d3a, #1e2026);
-    border: 3px solid rgba(255,107,53,0.4);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -408,19 +422,88 @@ body.in-game .in-game-only { display: block; }
   box-shadow: 0 2px 6px -2px rgba(0,0,0,0.4);
 }
 
+/* Gradientes temáticos para cada estatística */
+.p-stat.stat-cash {
+  background: linear-gradient(135deg, #48bb78, #2f855a) !important; /* Verde dinheiro */
+  border: 1px solid rgba(72, 187, 120, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.2) !important;
+}
+
+.p-stat.stat-fame {
+  background: linear-gradient(135deg, #ffd700, #ff8c00) !important; /* Dourado estrela brilhante */
+  border: 1px solid rgba(255, 215, 0, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3) !important;
+}
+
+.p-stat.stat-followers {
+  background: linear-gradient(135deg, #38b2ac, #3182ce) !important; /* Azul social */
+  border: 1px solid rgba(56, 178, 172, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(56, 178, 172, 0.2) !important;
+}
+
+.p-stat.stat-hype {
+  background: linear-gradient(135deg, #e53e3e, #9c1de7) !important; /* Vermelho/roxo energia */
+  border: 1px solid rgba(229, 62, 62, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.2) !important;
+}
+
+.p-stat.stat-level {
+  background: linear-gradient(135deg, #4c51bf, #1a202c) !important; /* Azul/roxo progresso */
+  border: 1px solid rgba(76, 81, 191, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(76, 81, 191, 0.2) !important;
+}
+
+.p-stat.stat-energy {
+  background: linear-gradient(135deg, #00bfff, #1e90ff) !important; /* Azul elétrico energia */
+  border: 1px solid rgba(0, 191, 255, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3) !important;
+}
+
 .p-stat:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Efeitos hover específicos para cada estatística */
+.p-stat.stat-cash:hover {
+  background: linear-gradient(135deg, #38a169, #276749) !important;
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4) !important;
+}
+
+.p-stat.stat-fame:hover {
+  background: linear-gradient(135deg, #ffcc00, #ff6600) !important;
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5) !important;
+}
+
+.p-stat.stat-followers:hover {
+  background: linear-gradient(135deg, #2c7a7b, #2b6cb0) !important;
+  box-shadow: 0 8px 25px rgba(56, 178, 172, 0.4) !important;
+}
+
+.p-stat.stat-hype:hover {
+  background: linear-gradient(135deg, #c53030, #7c3aed) !important;
+  box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4) !important;
+}
+
+.p-stat.stat-level:hover {
+  background: linear-gradient(135deg, #553c9a, #1a202c) !important;
+  box-shadow: 0 8px 25px rgba(76, 81, 191, 0.4) !important;
+}
+
+.p-stat.stat-energy:hover {
+  background: linear-gradient(135deg, #0099cc, #0066ff) !important;
+  box-shadow: 0 8px 25px rgba(0, 191, 255, 0.5) !important;
 }
 
 .p-stat .label { 
   font-size: 10px; 
-  color: var(--color-text-faint); 
+  color: rgba(255, 255, 255, 0.9);
   display: block; 
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .p-stat .val { 
@@ -429,6 +512,8 @@ body.in-game .in-game-only { display: block; }
   display: block;
   line-height: 1;
   letter-spacing: .5px;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 /* === AJUSTES RESPONSIVOS EXTREMOS (EVITAR ESTOURO EM TELAS MUITO ESTREITAS) === */
@@ -980,7 +1065,7 @@ body.in-game .in-game-only { display: block; }
     align-items: center;
     gap: 14px;
     padding: 12px 18px 10px;
-    background: linear-gradient(145deg,#171a21,#1e222a);
+    background: linear-gradient(135deg, #2a2d3a, #1e2026) !important;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     position: sticky;
     top: 0;
@@ -988,8 +1073,60 @@ body.in-game .in-game-only { display: block; }
     backdrop-filter: blur(12px);
   transition: background .3s ease, border-color .3s ease;
   }
-  .inline-profile-bar .avatar-wrapper { width: 56px; height: 56px; }
-  .inline-profile-bar .avatar { width: 56px; height: 56px; font-size: 26px; }
+  .inline-profile-bar .avatar-wrapper { 
+    width: 56px; 
+    height: 56px; 
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(45deg, #ffd600, #ff8c00, #ff4500, #ff1744, #e91e63, #9c27b0, #673ab7, #3f51b5, #2196f3);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease infinite;
+    box-shadow: 0 3px 15px rgba(156, 39, 176, 0.3);
+  }
+
+  /* Avatar wrapper mobile específico (90px) */
+  #newMobileAvatar {
+    width: 84px !important;
+    height: 84px !important;
+    display: flex;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a2d3a, #1e2026);
+    border: none;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b35;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 24px;
+    font-weight: 600;
+    overflow: hidden;
+  }
+
+  /* Wrapper do avatar mobile para moldura gradiente */
+  #inlineProfileBar .avatar-wrapper {
+    width: 90px !important;
+    height: 90px !important;
+    padding: 3px !important;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ffd600, #ff8c00, #ff4500, #ff1744, #e91e63, #9c27b0, #673ab7, #3f51b5, #2196f3) !important;
+    background-size: 300% 300% !important;
+    animation: gradientShift 4s ease infinite !important;
+    box-shadow: 0 4px 20px rgba(156, 39, 176, 0.3) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .inline-profile-bar .avatar { 
+    width: 52px; 
+    height: 52px; 
+    font-size: 24px; 
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a2d3a, #1e2026);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .inline-profile-meta { flex: 1; min-width: 0; }
   .inline-profile-meta h2 { font-size: 16px; margin:0 0 4px; }
   .inline-profile-meta p { font-size: 11px; margin:0; color: var(--color-text-soft); }
@@ -1380,6 +1517,29 @@ body.in-game .in-game-only { display: block; }
 /* ===== ESTILOS DA ABA ATIVIDADE ===== */
 .hub-panel {
   display: none;
+  background: linear-gradient(135deg, #2a2d3a, #1e2026);
+  border-radius: 16px;
+  margin: 8px 0;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Gradientes únicos para cada painel */
+.hub-panel[data-tab="profile"] {
+  background: linear-gradient(135deg, #4c51bf, #1a202c) !important;
+}
+
+.hub-panel[data-tab="notifications"] {
+  background: linear-gradient(135deg, #e53e3e, #9c1de7) !important;
+}
+
+.hub-panel[data-tab="settings"] {
+  background: linear-gradient(135deg, #38b2ac, #3182ce) !important;
+}
+
+.hub-panel[data-tab="store"] {
+  background: linear-gradient(135deg, #48bb78, #2f855a) !important;
 }
 
 .hub-panel[data-tab="activity"] {
@@ -1480,22 +1640,6 @@ body.in-game .in-game-only { display: block; }
 .avatar-size-lg { width:90px; height:90px; font-size:24px; }
 
 /* Avatar mobile apenas */
-#newMobileAvatar {
-  width: 90px !important;
-  height: 90px !important;
-  display: flex;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2a2d3a, #1e2026);
-  border: 3px solid rgba(255,107,53,0.4);
-  align-items: center;
-  justify-content: center;
-  color: #ff6b35;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 24px;
-  font-weight: 600;
-  overflow: hidden;
-}
 
 #newMobileAvatar:hover {
   border-color: #ff8a54;

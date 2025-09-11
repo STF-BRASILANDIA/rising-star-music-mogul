@@ -116,6 +116,28 @@
   flex-shrink: 0;
 }
 
+/* Melhor visibilidade dos ícones na sidebar com gradientes escuros */
+.side-panel .icon-text .icon,
+.side-panel .icon {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  filter: brightness(1.2) contrast(1.1);
+}
+
+.side-panel .icon-text .icon:hover,
+.side-panel .icon:hover {
+  color: rgba(255, 255, 255, 1) !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  filter: brightness(1.4) contrast(1.2);
+}
+
+/* Ícones específicos para melhor contraste */
+.side-panel .p-stat .icon {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 /* Specific adjustments for game interface */
 .m-icon.icon {
   width: 24px;

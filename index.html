@@ -834,45 +834,46 @@
                     <div class="artist-block">
                         <h2 id="artistStageName">DaVinci</h2>
                         <p class="artist-sub" id="artistRoleGenre">Rapper • R&B</p>
-                        <span class="record-label" id="recordLabel" style="display: inline-block; background: linear-gradient(135deg, #ffd700, #daa520); color: #000; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 14px; margin: 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);">Independent</span>
+                        <span class="record-company-label" id="recordCompany">Independent</span>
+                        <span class="record-label fame-level-1" id="recordLabel" data-fame-level="1">Anônimo</span>
                     </div>
                 </div>
                 <div class="primary-stats">
-                    <div class="p-stat">
+                    <div class="p-stat stat-cash">
                         <span class="label icon-text">
                             <span class="icon icon-sm icon-success"><i class="fas fa-dollar-sign"></i></span>
                             Cash
                         </span>
                         <span class="val" id="statMoney">$0</span>
                     </div>
-                    <div class="p-stat">
+                    <div class="p-stat stat-fame">
                         <span class="label icon-text">
                             <span class="icon icon-sm icon-warning"><i class="fas fa-star"></i></span>
                             Fama
                         </span>
                         <span class="val" id="statFame">0</span>
                     </div>
-                    <div class="p-stat">
+                    <div class="p-stat stat-followers">
                         <span class="label icon-text">
                             <span class="icon icon-sm icon-info"><i class="fas fa-users"></i></span>
                             Seguidores
                         </span>
                         <span class="val" id="statListeners">0</span>
                     </div>
-                    <div class="p-stat">
+                    <div class="p-stat stat-hype">
                         <span class="label icon-text">
                             <span class="icon icon-sm icon-warning"><i class="fas fa-fire"></i></span>
                             Hype
                         </span>
                         <span class="val" id="statHype">0</span>
                     </div>
-                    <div class="p-stat">
+                    <div class="p-stat stat-level">
                         <span class="label icon-text">
                             <i class="fas fa-chart-line"></i> Nível
                         </span>
                         <span class="val" id="statLevel">1</span>
                     </div>
-                    <div class="p-stat">
+                    <div class="p-stat stat-energy">
                         <span class="label icon-text">
                             <span class="icon icon-sm icon-warning"><i class="fas fa-bolt"></i></span>
                             Energia
@@ -932,46 +933,49 @@
                     <div class="inline-profile-meta">
                         <h2 id="artistStageNameInline" style="margin: 0; font-size: 18px; color: #fff;">DaVinci</h2>
                         <p id="artistRoleGenreInline" style="margin: 4px 0; font-size: 14px; color: #ccc;">Rapper • R&B</p>
-                        <span class="record-label" id="recordLabelInline" style="display: inline-block; background: linear-gradient(135deg, #ffd700, #daa520); color: #000; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 12px; margin: 6px 0; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);">Independent</span>
+                        <div class="labels-container">
+                            <span class="record-company-label" id="recordCompanyInline">Independent</span>
+                            <span class="record-label fame-level-1" id="recordLabelInline" data-fame-level="1">Anônimo</span>
+                        </div>
                     </div>
                     <div class="inline-profile-stats">
-                        <div class="p-stat">
+                        <div class="p-stat stat-cash">
                             <span class="label icon-text">
-                                <span class="icon icon-cash icon-sm"></span>
+                                <i class="fas fa-dollar-sign"></i>
                                 Cash
                             </span>
                             <span class="val" id="statMoneyInline">$0</span>
                         </div>
-                        <div class="p-stat">
+                        <div class="p-stat stat-fame">
                             <span class="label icon-text">
-                                <span class="icon icon-achievement icon-sm"></span>
+                                <i class="fas fa-star"></i>
                                 Fama
                             </span>
                             <span class="val" id="statFameInline">0</span>
                         </div>
-                        <div class="p-stat">
+                        <div class="p-stat stat-followers">
                             <span class="label icon-text">
-                                <span class="icon icon-social icon-sm"></span>
+                                <i class="fas fa-users"></i>
                                 Seg.
                             </span>
                             <span class="val" id="statListenersInline">0</span>
                         </div>
-                        <div class="p-stat">
+                        <div class="p-stat stat-hype">
                             <span class="label icon-text">
-                                <span class="icon icon-hype icon-sm"></span>
+                                <i class="fas fa-fire"></i>
                                 Hype
                             </span>
                             <span class="val" id="statHypeInline">0</span>
                         </div>
-                        <div class="p-stat">
+                        <div class="p-stat stat-level">
                             <span class="label icon-text">
                                 <i class="fas fa-chart-line"></i> Nível
                             </span>
                             <span class="val" id="statLevelInline">1</span>
                         </div>
-                        <div class="p-stat">
+                        <div class="p-stat stat-energy">
                             <span class="label icon-text">
-                                <span class="icon icon-energy icon-sm"></span>
+                                <i class="fas fa-bolt"></i>
                                 Energia
                             </span>
                             <span class="val" id="statEnergyInline">100</span>
@@ -1016,7 +1020,7 @@
                                 <!-- Estatísticas Completas -->
                                 <div class="stats-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 20px; border-radius: 12px; color: #fff;">
                                     <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <span class="icon icon-stats icon-md"></span>
+                                        <i class="fas fa-chart-bar"></i>
                                         Estatísticas
                                     </h3>
                                     <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -1030,7 +1034,7 @@
                                 <!-- Habilidades Artísticas -->
                                 <div class="skills-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff;">
                                     <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <span class="icon icon-music-note icon-md"></span>
+                                        <i class="fas fa-music"></i>
                                         Habilidades Artísticas
                                     </h3>
                                     <div class="skill-list">
@@ -1058,7 +1062,7 @@
                                 <!-- Status de Vida -->
                                 <div class="life-status-card" style="background: linear-gradient(135deg, #a8edea, #fed6e3); padding: 20px; border-radius: 12px; color: #333;">
                                     <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <span class="icon icon-heart icon-md"></span>
+                                        <i class="fas fa-heart"></i>
                                         Status de Vida
                                     </h3>
                                     <div class="status-list">
@@ -1069,19 +1073,35 @@
                                     </div>
                                 </div>
 
+                                <!-- Gravadora e Status Profissional -->
+                                <div class="record-status-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-radius: 12px; color: #fff;">
+                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
+                                        <i class="fas fa-building"></i>
+                                        Gravadora
+                                    </h3>
+                                    <div class="record-info">
+                                        <div class="record-item"><strong>Gravadora Atual:</strong> <span id="recordLabelName">Independent Records</span></div>
+                                        <div class="record-item"><strong>Tipo de Contrato:</strong> <span id="contractType">Independente</span></div>
+                                        <div class="record-item">
+                                            <strong>Nível de Reconhecimento:</strong> 
+                                            <span class="record-label fame-level-1" id="recordLabelDetailed" data-fame-level="1">Anônimo</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Conquistas -->
                                 <div class="achievements-card" style="background: linear-gradient(135deg, #ffecd2, #fcb69f); padding: 20px; border-radius: 12px; color: #333;">
                                     <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <span class="icon icon-achievement icon-md"></span>
+                                        <i class="fas fa-trophy"></i>
                                         Conquistas
                                     </h3>
                                     <div class="achievements-list" id="achievementsList">
                                         <div class="achievement-item icon-text">
-                                            <span class="icon icon-music-note icon-sm"></span>
+                                            <i class="fas fa-music"></i>
                                             Primeira Música Gravada
                                         </div>
                                         <div class="achievement-item icon-text">
-                                            <span class="icon icon-microphone icon-sm"></span>
+                                            <i class="fas fa-microphone"></i>
                                             Primeiro Show
                                         </div>
                                         <div class="achievement-item">💿 Primeiro Álbum</div>
@@ -1095,7 +1115,7 @@
                     <section class="hub-panel" id="panel-notifications" data-tab="notifications" style="display: none;">
                         <div class="notifications-container" style="padding: 20px; max-width: 800px; margin: 0 auto;">
                             <h2 style="margin: 0 0 20px; color: #fff; text-align: center;" class="icon-text">
-                                <span class="icon icon-notification icon-md"></span>
+                                <i class="fas fa-bell"></i>
                                 Feed de Notificações
                             </h2>
                             <div class="notifications-feed" id="notificationsFeed">
@@ -1122,7 +1142,7 @@
                     <section class="hub-panel" id="panel-settings" data-tab="settings" style="display: none;">
                         <div class="settings-container" style="padding: 20px; max-width: 600px; margin: 0 auto;">
                             <h2 style="margin: 0 0 20px; color: #fff; text-align: center;" class="icon-text">
-                                <span class="icon icon-settings icon-md"></span>
+                                <i class="fas fa-cog"></i>
                                 Configurações do Jogo
                             </h2>
                             <div class="settings-grid" style="display: grid; gap: 16px;">
@@ -1146,13 +1166,13 @@
                     <section class="hub-panel" id="panel-store" data-tab="store" style="display: none;">
                         <div class="store-container" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
                             <h2 style="margin: 0 0 20px; color: #fff; text-align: center;" class="icon-text">
-                                <span class="icon icon-store icon-md"></span>
+                                <i class="fas fa-store"></i>
                                 Loja/Marketplace
                             </h2>
                             <div class="store-categories" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                                 <div class="store-category" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
                                     <h3 class="icon-text">
-                                        <span class="icon icon-microphone icon-md"></span>
+                                        <i class="fas fa-microphone"></i>
                                         Equipamentos
                                     </h3>
                                     <p>Microfones, instrumentos e equipamentos de estúdio</p>
@@ -1160,7 +1180,7 @@
                                 </div>
                                 <div class="store-category" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
                                     <h3 class="icon-text">
-                                        <span class="icon icon-clothes icon-sm"></span>
+                                        <i class="fas fa-tshirt"></i>
                                         Roupas & Estilo
                                     </h3>
                                     <p>Roupas de palco e acessórios para performances</p>
@@ -1168,7 +1188,7 @@
                                 </div>
                                 <div class="store-category" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
                                     <h3 class="icon-text">
-                                        <span class="icon icon-house icon-sm"></span>
+                                        <i class="fas fa-home"></i>
                                         Propriedades
                                     </h3>
                                     <p>Casas, estúdios e espaços para eventos</p>
@@ -1233,8 +1253,6 @@
         /* Estilos para informações do perfil */
         .record-label {
             display: inline-block;
-            background: linear-gradient(135deg, #ffd700, #daa520);
-            color: #000;
             font-size: 10px;
             font-weight: 600;
             padding: 4px 10px;
@@ -1242,8 +1260,89 @@
             margin: 8px 0 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
             transition: all 0.3s ease;
+        }
+
+        /* Selo da Gravadora (separado do selo de fama) */
+        .record-company-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 14px;
+            margin: 4px 0 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* Níveis de Fama - Sistema de Progressão */
+        .fame-level-1 { /* Anônimo */
+            background: linear-gradient(135deg, #6c757d, #495057) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3) !important;
+        }
+
+        .fame-level-2 { /* Notável */
+            background: linear-gradient(135deg, #28a745, #20c997) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4) !important;
+        }
+
+        .fame-level-3 { /* Reconhecido */
+            background: linear-gradient(135deg, #17a2b8, #6f42c1) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(23, 162, 184, 0.4) !important;
+        }
+
+        .fame-level-4 { /* Renomado */
+            background: linear-gradient(135deg, #fd7e14, #e83e8c) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(253, 126, 20, 0.4) !important;
+        }
+
+        .fame-level-5 { /* Celebridade */
+            background: linear-gradient(135deg, #ffd700, #ff6b35) !important;
+            color: #000 !important;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5) !important;
+        }
+
+        .fame-level-6 { /* Ícone */
+            background: linear-gradient(135deg, #dc3545, #6f42c1) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.5) !important;
+            animation: iconGlow 2s ease-in-out infinite alternate;
+        }
+
+        .fame-level-7 { /* Lenda Eterna */
+            background: linear-gradient(135deg, #ff6b35, #f093fb, #f5576c, #4facfe, #00f2fe) !important;
+            background-size: 300% 300% !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6) !important;
+            animation: legendGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes iconGlow {
+            0% { box-shadow: 0 2px 8px rgba(220, 53, 69, 0.5) !important; }
+            100% { box-shadow: 0 4px 16px rgba(220, 53, 69, 0.8) !important; }
+        }
+
+        @keyframes legendGlow {
+            0% { 
+                background-position: 0% 50%;
+                box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6) !important;
+            }
+            50% { 
+                background-position: 100% 50%;
+                box-shadow: 0 6px 20px rgba(255, 107, 53, 0.9) !important;
+            }
+            100% { 
+                background-position: 0% 50%;
+                box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6) !important;
+            }
         }
         
         .record-label:hover {
@@ -1386,7 +1485,7 @@
         .side-panel {
             margin: 16px 0 16px 16px !important;
             border-radius: 16px !important;
-            background: rgba(255,255,255,0.05) !important;
+            background: linear-gradient(135deg, #2a2d3a, #1e2026) !important;
             border: 1px solid rgba(255,255,255,0.1) !important;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
         }
@@ -1395,7 +1494,7 @@
         .inline-profile-bar {
             margin: 16px !important;
             border-radius: 16px !important;
-            background: rgba(255,255,255,0.05) !important;
+            background: linear-gradient(135deg, #2a2d3a, #1e2026) !important;
             border: 1px solid rgba(255,255,255,0.1) !important;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
             padding: 14px 14px 14px 11px !important; /* 1px mais à esquerda */
@@ -1455,17 +1554,105 @@
 
         .inline-profile-bar .inline-profile-meta .record-label {
             display: inline-block !important;
-            background: linear-gradient(135deg, #ffd700, #daa520) !important;
-            color: #000 !important;
             font-size: 10px !important;
             font-weight: 600 !important;
             padding: 3px 8px !important;
             border-radius: 12px !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
             align-self: flex-start !important;
             margin-top: 4px !important;
+        }
+
+        .inline-profile-bar .inline-profile-meta .record-company-label {
+            display: inline-block !important;
+            background: linear-gradient(135deg, #007bff, #0056b3) !important;
+            color: #fff !important;
+            font-size: 10px !important;
+            font-weight: 600 !important;
+            padding: 3px 8px !important;
+            border-radius: 12px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3) !important;
+            align-self: flex-start !important;
+            margin: 2px 0 !important;
+        }
+
+        .inline-profile-bar .inline-profile-meta .labels-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+            margin-top: 4px !important;
+        }
+
+        /* Telas maiores que 430px - Selos lado a lado naturalmente */
+        @media (min-width: 431px) {
+            /* Grid dinâmico: avatar | perfil (cresce) | stats (empurrado) */
+            .inline-profile-bar {
+                grid-template-columns: auto auto 1fr !important; /* coluna do meio auto se ajusta ao conteúdo */
+                column-gap: 14px !important;
+                align-items: start !important;
+            }
+
+            /* Permite que o bloco de perfil expanda conforme os selos em linha */
+            .inline-profile-bar .inline-profile-meta {
+                max-width: none !important;
+                position: static !important;
+                overflow: visible !important;
+                padding-right: 4px !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            
+            .inline-profile-bar .inline-profile-meta .labels-container {
+                flex-direction: row !important;
+                gap: 6px !important;
+                align-items: center !important;
+                margin-top: 6px !important;
+                flex-wrap: nowrap !important; /* mantém lado a lado */
+                width: auto !important;
+                white-space: nowrap !important;
+            }
+            
+            .inline-profile-bar .inline-profile-meta .record-company-label,
+            .inline-profile-bar .inline-profile-meta .record-label {
+                margin: 0 !important;
+                font-size: 9px !important;
+                padding: 3px 8px !important;
+                line-height: 1.1 !important;
+                flex: 0 0 auto !important; /* não quebra e empurra stats */
+            }
+
+            /* Ajusta stats: recua e limita altura para alinhar verticalmente */
+            .inline-profile-bar .inline-profile-stats {
+                align-self: stretch !important;
+                padding-left: 0 !important;
+                min-width: 190px !important; /* garante espaço mínimo das stats */
+            }
+
+            /* Se largura ainda for limitada (<600px) reduzir tipografia para caber tudo */
+            @media (min-width:431px) and (max-width:560px) {
+                .inline-profile-bar { column-gap: 10px !important; }
+                .inline-profile-bar .inline-profile-meta h2 { font-size: 14px !important; }
+                .inline-profile-bar .inline-profile-meta p { font-size: 11px !important; }
+                .inline-profile-bar .inline-profile-meta .record-company-label,
+                .inline-profile-bar .inline-profile-meta .record-label { font-size: 8px !important; padding: 2px 6px !important; }
+            }
+        }
+
+        /* Telas altas e largas: garantir selos lado a lado (sem quebra) */
+        @media (min-width: 431px) and (min-height: 932px) {
+            /* Apenas pequeno ajuste extra de folga vertical se a tela for alta */
+            .inline-profile-bar .inline-profile-meta .labels-container { margin-top: 8px !important; }
+        }
+
+        /* Apenas telas pequenas - força coluna */
+        @media (max-width: 430px) {
+            .inline-profile-bar .inline-profile-meta .labels-container {
+                flex-direction: column !important;
+                gap: 2px !important;
+            }
         }
 
         /* Stats 3x2 - lado direito alinhado */
@@ -1533,6 +1720,64 @@
         @media (max-width: 1000px) {
             .side-panel { display: none !important; }
             .inline-profile-bar { display: flex !important; }
+        }
+
+        /* Desktop: normalizar tamanho visual dos selos (gravadora x fama) */
+        @media (min-width:1001px) {
+            .side-panel .artist-block .record-company-label,
+            .side-panel .artist-block .record-label {
+                display: inline-flex !important;
+                align-items: center !important;
+                font-size:10px !important;
+                padding:4px 10px !important;
+                line-height:1 !important;
+                border-radius:14px !important;
+                letter-spacing:.5px !important;
+                font-weight:600 !important;
+                text-transform:uppercase !important;
+                height:auto !important;
+                vertical-align:middle !important;
+            }
+            /* Ajuste de espaçamento entre eles */
+            .side-panel .artist-block .record-company-label { margin-right:6px !important; }
+        }
+
+        /* OVERRIDES FINAIS: estabilizar layout dos selos */
+        @media (min-width:431px) and (max-width:1000px) {
+            /* Volta para grid fixo evitando alongar stats */
+            .inline-profile-bar {
+                display: grid !important;
+                grid-template-columns: auto minmax(150px, 190px) 1fr !important;
+                align-items: start !important;
+            }
+            .inline-profile-bar .inline-profile-meta {
+                display:flex !important;
+                flex-direction:column !important;
+                max-width:190px !important;
+            }
+            /* Selos sempre em COLUNA (um abaixo do outro) nesta faixa para zero sobreposição */
+            .inline-profile-bar .inline-profile-meta .labels-container {
+                flex-direction: column !important;
+                gap: 4px !important;
+                align-items: flex-start !important;
+                margin-top: 4px !important;
+                width: auto !important;
+                white-space: normal !important;
+            }
+            .inline-profile-bar .inline-profile-meta .record-company-label,
+            .inline-profile-bar .inline-profile-meta .record-label {
+                font-size: 10px !important;
+                padding: 4px 9px !important;
+                flex: 0 0 auto !important;
+            }
+        }
+
+        /* Opcional: acima de 600px pode voltar lado a lado sem sobrepor */
+        @media (min-width:600px) and (max-width:1000px) {
+            .inline-profile-bar .inline-profile-meta .labels-container {
+                flex-direction: row !important;
+                gap: 8px !important;
+            }
         }
     </style>
     
@@ -1786,6 +2031,97 @@
                 }
             })();
         </script>
+     
+     <script>
+        // Sistema de Progressão de Fama
+        function updateFameLevel() {
+            const fameStatElement = document.getElementById('statFame');
+            const recordLabelElements = document.querySelectorAll('.record-label');
+            
+            if (!fameStatElement) return;
+            
+            let currentFame = 0;
+            
+            // Extrai o valor numérico da fama
+            const fameText = fameStatElement.textContent;
+            const fameMatch = fameText.match(/(\d+)/);
+            if (fameMatch) {
+                currentFame = parseInt(fameMatch[1]);
+            }
+            
+            // Define os níveis de fama
+            const fameLevels = [
+                { min: 0, max: 10, level: 1, title: "Anônimo", description: "Artista desconhecido" },
+                { min: 11, max: 50, level: 2, title: "Notável", description: "Começando a ser reconhecido" },
+                { min: 51, max: 100, level: 3, title: "Reconhecido", description: "Artista emergente" },
+                { min: 101, max: 500, level: 4, title: "Renomado", description: "Artista estabelecido" },
+                { min: 501, max: 1000, level: 5, title: "Celebridade", description: "Estrela da música" },
+                { min: 1001, max: 5000, level: 6, title: "Ícone", description: "Lenda viva" },
+                { min: 5001, max: Infinity, level: 7, title: "Lenda Eterna", description: "Imortal da música" }
+            ];
+            
+            // Encontra o nível atual
+            const currentLevel = fameLevels.find(level => 
+                currentFame >= level.min && currentFame <= level.max
+            );
+            
+            if (currentLevel && recordLabelElements.length > 0) {
+                recordLabelElements.forEach(element => {
+                    // Remove todas as classes de nível anteriores
+                    for (let i = 1; i <= 7; i++) {
+                        element.classList.remove(`fame-level-${i}`);
+                    }
+                    
+                    // Adiciona a nova classe de nível
+                    element.classList.add(`fame-level-${currentLevel.level}`);
+                    
+                    // Atualiza o texto
+                    element.textContent = currentLevel.title;
+                    
+                    // Adiciona tooltip com descrição
+                    element.title = `${currentLevel.title} - ${currentLevel.description} (Fama: ${currentFame})`;
+                });
+                
+                console.log(`🌟 Nível de Fama Atualizado: ${currentLevel.title} (Fama: ${currentFame})`);
+            }
+        }
+        
+        // Observer para monitorar mudanças na estatística de fama
+        function initFameObserver() {
+            const fameStatElement = document.getElementById('statFame');
+            if (!fameStatElement) {
+                setTimeout(initFameObserver, 1000);
+                return;
+            }
+            
+            // Atualiza nível inicial
+            updateFameLevel();
+            
+            // Observa mudanças no conteúdo
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        updateFameLevel();
+                    }
+                });
+            });
+            
+            observer.observe(fameStatElement, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            
+            console.log('🎯 Sistema de Progressão de Fama inicializado');
+        }
+        
+        // Inicializa quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', initFameObserver);
+        
+        // Backup: também tenta inicializar após um delay
+        setTimeout(initFameObserver, 2000);
+        </script>
+     
      <script>
         // Guarda final: não permitir dashboard visível antes do jogo
         (function finalDashboardGuard(){
