@@ -57,6 +57,14 @@ body.in-game .in-game-only { display: block; }
   display: flex !important;
 }
 
+/* EXCEÇÃO: Menu aparece nas páginas separadas quando visíveis */
+#studioPage[style*="display: block"] .mobile-bottom-nav,
+#careerPage[style*="display: block"] .mobile-bottom-nav,
+#socialPage[style*="display: block"] .mobile-bottom-nav,
+#financePage[style*="display: block"] .mobile-bottom-nav {
+  display: flex !important;
+}
+
 /* ===== SHELL PRINCIPAL ===== */
 .app-shell.hybrid { 
   display: flex !important; 
@@ -1232,7 +1240,11 @@ body.in-game .in-game-only { display: block; }
 /* ===== NAVEGAÇÃO MOBILE/DESKTOP HÍBRIDA ===== */
 /* Mobile: Menu inferior tradicional */
 @media (max-width: 1000px) {
-  #gameInterface .mobile-bottom-nav { 
+  #gameInterface .mobile-bottom-nav,
+  #studioPage .mobile-bottom-nav,
+  #careerPage .mobile-bottom-nav,
+  #socialPage .mobile-bottom-nav,
+  #financePage .mobile-bottom-nav { 
     position: fixed; 
     left: 0; 
     right: 0; 
@@ -1246,7 +1258,11 @@ body.in-game .in-game-only { display: block; }
     display: flex;
   }
   
-  #gameInterface .m-btn { 
+  #gameInterface .m-btn,
+  #studioPage .m-btn,
+  #careerPage .m-btn,
+  #socialPage .m-btn,
+  #financePage .m-btn { 
     flex: 1; 
     background: none; 
     border: none; 
@@ -1268,7 +1284,11 @@ body.in-game .in-game-only { display: block; }
 
 /* Desktop: Menu horizontal elegante na parte superior */
 @media (min-width: 1001px) {
-  #gameInterface .mobile-bottom-nav { 
+  #gameInterface .mobile-bottom-nav,
+  #studioPage .mobile-bottom-nav,
+  #careerPage .mobile-bottom-nav,
+  #socialPage .mobile-bottom-nav,
+  #financePage .mobile-bottom-nav { 
     position: relative;
     background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
     border: 1px solid rgba(255,255,255,0.12);
@@ -1283,7 +1303,11 @@ body.in-game .in-game-only { display: block; }
     z-index: 50;
   }
   
-  #gameInterface .m-btn { 
+  #gameInterface .m-btn,
+  #studioPage .m-btn,
+  #careerPage .m-btn,
+  #socialPage .m-btn,
+  #financePage .m-btn { 
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     color: #fff; 
@@ -1321,13 +1345,21 @@ body.in-game .in-game-only { display: block; }
 }
 
 /* Estados comum mobile/desktop */
-#gameInterface .m-btn.active { 
+#gameInterface .m-btn.active,
+#studioPage .m-btn.active,
+#careerPage .m-btn.active,
+#socialPage .m-btn.active,
+#financePage .m-btn.active { 
   background: linear-gradient(135deg, #5f3bff, var(--color-accent)); 
   border-color: transparent;
   box-shadow: 0 4px 16px rgba(95, 59, 255, 0.3);
 }
 
-#gameInterface .m-btn:hover:not(.active) {
+#gameInterface .m-btn:hover:not(.active),
+#studioPage .m-btn:hover:not(.active),
+#careerPage .m-btn:hover:not(.active),
+#socialPage .m-btn:hover:not(.active),
+#financePage .m-btn:hover:not(.active) {
   background: rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.2);
   transform: translateY(-1px);
@@ -1344,7 +1376,11 @@ body.in-game .in-game-only { display: block; }
     font-weight: 300;
   }
   
-  #gameInterface .m-label {
+  #gameInterface .m-label,
+  #studioPage .m-label,
+  #careerPage .m-label,
+  #socialPage .m-label,
+  #financePage .m-label {
     font-size: 9px;
     line-height: 1;
     opacity: 0;
@@ -1357,7 +1393,11 @@ body.in-game .in-game-only { display: block; }
     letter-spacing: 0.3px;
   }
   
-  #gameInterface .m-btn.active .m-label {
+  #gameInterface .m-btn.active .m-label,
+  #studioPage .m-btn.active .m-label,
+  #careerPage .m-btn.active .m-label,
+  #socialPage .m-btn.active .m-label,
+  #financePage .m-btn.active .m-label {
     opacity: 1;
     max-height: 20px;
     transform: translateY(0);
@@ -1365,29 +1405,49 @@ body.in-game .in-game-only { display: block; }
     font-weight: 600;
   }
   
-  #gameInterface .m-btn.active .m-icon {
+  #gameInterface .m-btn.active .m-icon,
+  #studioPage .m-btn.active .m-icon,
+  #careerPage .m-btn.active .m-icon,
+  #socialPage .m-btn.active .m-icon,
+  #financePage .m-btn.active .m-icon {
     transform: scale(1.15);
     opacity: 1;
     color: #fff;
     text-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
   }
   
-  #gameInterface .m-btn:not(.active) .m-icon {
+  #gameInterface .m-btn:not(.active) .m-icon,
+  #studioPage .m-btn:not(.active) .m-icon,
+  #careerPage .m-btn:not(.active) .m-icon,
+  #socialPage .m-btn:not(.active) .m-icon,
+  #financePage .m-btn:not(.active) .m-icon {
     color: rgba(255, 255, 255, 0.6);
   }
   
-  #gameInterface .m-btn:not(.active) {
+  #gameInterface .m-btn:not(.active),
+  #studioPage .m-btn:not(.active),
+  #careerPage .m-btn:not(.active),
+  #socialPage .m-btn:not(.active),
+  #financePage .m-btn:not(.active) {
     padding: 10px 4px;
   }
   
-  #gameInterface .m-btn.active {
+  #gameInterface .m-btn.active,
+  #studioPage .m-btn.active,
+  #careerPage .m-btn.active,
+  #socialPage .m-btn.active,
+  #financePage .m-btn.active {
     padding: 6px 4px 8px;
   }
 }
 
 /* Desktop: Ícone + label sempre visíveis, layout horizontal */
 @media (min-width: 1001px) {
-  #gameInterface .m-icon {
+  #gameInterface .m-icon,
+  #studioPage .m-icon,
+  #careerPage .m-icon,
+  #socialPage .m-icon,
+  #financePage .m-icon {
     font-size: 16px;
     line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1395,7 +1455,11 @@ body.in-game .in-game-only { display: block; }
     flex-shrink: 0;
   }
   
-  #gameInterface .m-label {
+  #gameInterface .m-label,
+  #studioPage .m-label,
+  #careerPage .m-label,
+  #socialPage .m-label,
+  #financePage .m-label {
     font-size: 12px;
     line-height: 1;
     opacity: 1;
@@ -1405,24 +1469,40 @@ body.in-game .in-game-only { display: block; }
     white-space: nowrap;
   }
   
-  #gameInterface .m-btn.active .m-icon {
+  #gameInterface .m-btn.active .m-icon,
+  #studioPage .m-btn.active .m-icon,
+  #careerPage .m-btn.active .m-icon,
+  #socialPage .m-btn.active .m-icon,
+  #financePage .m-btn.active .m-icon {
     opacity: 1;
     color: #fff;
     transform: scale(1.05);
     filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.4));
   }
   
-  #gameInterface .m-btn.active .m-label {
+  #gameInterface .m-btn.active .m-label,
+  #studioPage .m-btn.active .m-label,
+  #careerPage .m-btn.active .m-label,
+  #socialPage .m-btn.active .m-label,
+  #financePage .m-btn.active .m-label {
     color: #fff;
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
   
-  #gameInterface .m-btn:not(.active) .m-icon {
+  #gameInterface .m-btn:not(.active) .m-icon,
+  #studioPage .m-btn:not(.active) .m-icon,
+  #careerPage .m-btn:not(.active) .m-icon,
+  #socialPage .m-btn:not(.active) .m-icon,
+  #financePage .m-btn:not(.active) .m-icon {
     color: rgba(255, 255, 255, 0.7);
   }
   
-  #gameInterface .m-btn:not(.active) .m-label {
+  #gameInterface .m-btn:not(.active) .m-label,
+  #studioPage .m-btn:not(.active) .m-label,
+  #careerPage .m-btn:not(.active) .m-label,
+  #socialPage .m-btn:not(.active) .m-label,
+  #financePage .m-btn:not(.active) .m-label {
     color: rgba(255, 255, 255, 0.8);
   }
 }

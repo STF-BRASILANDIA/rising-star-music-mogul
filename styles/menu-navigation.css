@@ -5,13 +5,21 @@
   display: none !important;
 }
 
-#gameInterface[style*="display: block"] .mobile-bottom-nav {
+#gameInterface[style*="display: block"] .mobile-bottom-nav,
+#studioPage[style*="display: block"] .mobile-bottom-nav,
+#careerPage[style*="display: block"] .mobile-bottom-nav,
+#socialPage[style*="display: block"] .mobile-bottom-nav,
+#financePage[style*="display: block"] .mobile-bottom-nav {
   display: flex !important;
 }
 
 /* ===== MOBILE: Menu inferior estilo desktop ===== */
 @media (max-width: 1000px) {
-  #gameInterface .mobile-bottom-nav { 
+  #gameInterface .mobile-bottom-nav,
+  #studioPage .mobile-bottom-nav,
+  #careerPage .mobile-bottom-nav,
+  #socialPage .mobile-bottom-nav,
+  #financePage .mobile-bottom-nav { 
     position: fixed !important; 
     left: 50% !important;
     right: auto !important;
@@ -32,14 +40,22 @@
     max-width: 90vw !important;
   }
 
-  #gameInterface .mobile-bottom-nav:hover {
+  #gameInterface .mobile-bottom-nav:hover,
+  #studioPage .mobile-bottom-nav:hover,
+  #careerPage .mobile-bottom-nav:hover,
+  #socialPage .mobile-bottom-nav:hover,
+  #financePage .mobile-bottom-nav:hover {
     transform: translateX(-50%) translateY(-2px);
     box-shadow: 
       0 12px 40px rgba(0,0,0,0.5),
       0 0 0 1px rgba(255,255,255,0.08) inset;
   }
   
-  #gameInterface .m-btn { 
+  #gameInterface .m-btn,
+  #studioPage .m-btn,
+  #careerPage .m-btn,
+  #socialPage .m-btn,
+  #financePage .m-btn { 
     flex: none !important;
     background: rgba(255,255,255,0.06) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
@@ -61,41 +77,65 @@
     overflow: hidden;
   }
 
-  #gameInterface .m-btn:hover {
+  #gameInterface .m-btn:hover,
+  #studioPage .m-btn:hover,
+  #careerPage .m-btn:hover,
+  #socialPage .m-btn:hover,
+  #financePage .m-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
   /* Gradientes vibrantes estilo ícones iPhone com alto contraste */
-  #gameInterface .m-btn[data-view="home"] {
+  #gameInterface .m-btn[data-view="home"],
+  #studioPage .m-btn[data-view="home"],
+  #careerPage .m-btn[data-view="home"],
+  #socialPage .m-btn[data-view="home"],
+  #financePage .m-btn[data-view="home"] {
     background: linear-gradient(135deg, #4c51bf, #1a202c) !important;
     border: none !important;
     color: white !important;
     box-shadow: 0 4px 15px rgba(76, 81, 191, 0.5) !important;
   }
 
-  #gameInterface .m-btn[data-view="studio"] {
+  #gameInterface .m-btn[data-view="studio"],
+  #studioPage .m-btn[data-view="studio"],
+  #careerPage .m-btn[data-view="studio"],
+  #socialPage .m-btn[data-view="studio"],
+  #financePage .m-btn[data-view="studio"] {
     background: linear-gradient(135deg, #e53e3e, #9c1de7) !important;
     border: none !important;
     color: white !important;
     box-shadow: 0 4px 15px rgba(229, 62, 62, 0.5) !important;
   }
 
-  #gameInterface .m-btn[data-view="career"] {
+  #gameInterface .m-btn[data-view="career"],
+  #studioPage .m-btn[data-view="career"],
+  #careerPage .m-btn[data-view="career"],
+  #socialPage .m-btn[data-view="career"],
+  #financePage .m-btn[data-view="career"] {
     background: linear-gradient(135deg, #f6ad55, #d69e2e) !important;
     border: none !important;
     color: white !important;
     box-shadow: 0 4px 15px rgba(246, 173, 85, 0.5) !important;
   }
 
-  #gameInterface .m-btn[data-view="social"] {
+  #gameInterface .m-btn[data-view="social"],
+  #studioPage .m-btn[data-view="social"],
+  #careerPage .m-btn[data-view="social"],
+  #socialPage .m-btn[data-view="social"],
+  #financePage .m-btn[data-view="social"] {
     background: linear-gradient(135deg, #38b2ac, #3182ce) !important;
     border: none !important;
     color: white !important;
     box-shadow: 0 4px 15px rgba(56, 178, 172, 0.5) !important;
   }
 
-  #gameInterface .m-btn[data-view="finance"] {
+  #gameInterface .m-btn[data-view="finance"],
+  #studioPage .m-btn[data-view="finance"],
+  #careerPage .m-btn[data-view="finance"],
+  #socialPage .m-btn[data-view="finance"],
+  #financePage .m-btn[data-view="finance"] {
     background: linear-gradient(135deg, #48bb78, #2f855a) !important;
     border: none !important;
     color: white !important;
@@ -103,37 +143,61 @@
   }
 
   /* Efeito hover mais intenso com gradientes saturados */
-  #gameInterface .m-btn[data-view="home"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="home"]:hover:not(.active),
+  #studioPage .m-btn[data-view="home"]:hover:not(.active),
+  #careerPage .m-btn[data-view="home"]:hover:not(.active),
+  #socialPage .m-btn[data-view="home"]:hover:not(.active),
+  #financePage .m-btn[data-view="home"]:hover:not(.active) {
     background: linear-gradient(135deg, #553c9a, #1a202c) !important;
     box-shadow: 0 8px 25px rgba(76, 81, 191, 0.7) !important;
     transform: translateY(-2px) scale(1.05) !important;
   }
 
-  #gameInterface .m-btn[data-view="studio"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="studio"]:hover:not(.active),
+  #studioPage .m-btn[data-view="studio"]:hover:not(.active),
+  #careerPage .m-btn[data-view="studio"]:hover:not(.active),
+  #socialPage .m-btn[data-view="studio"]:hover:not(.active),
+  #financePage .m-btn[data-view="studio"]:hover:not(.active) {
     background: linear-gradient(135deg, #c53030, #7c3aed) !important;
     box-shadow: 0 8px 25px rgba(229, 62, 62, 0.7) !important;
     transform: translateY(-2px) scale(1.05) !important;
   }
 
-  #gameInterface .m-btn[data-view="career"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="career"]:hover:not(.active),
+  #studioPage .m-btn[data-view="career"]:hover:not(.active),
+  #careerPage .m-btn[data-view="career"]:hover:not(.active),
+  #socialPage .m-btn[data-view="career"]:hover:not(.active),
+  #financePage .m-btn[data-view="career"]:hover:not(.active) {
     background: linear-gradient(135deg, #ed8936, #b7791f) !important;
     box-shadow: 0 8px 25px rgba(246, 173, 85, 0.7) !important;
     transform: translateY(-2px) scale(1.05) !important;
   }
 
-  #gameInterface .m-btn[data-view="social"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="social"]:hover:not(.active),
+  #studioPage .m-btn[data-view="social"]:hover:not(.active),
+  #careerPage .m-btn[data-view="social"]:hover:not(.active),
+  #socialPage .m-btn[data-view="social"]:hover:not(.active),
+  #financePage .m-btn[data-view="social"]:hover:not(.active) {
     background: linear-gradient(135deg, #2c7a7b, #2b6cb0) !important;
     box-shadow: 0 8px 25px rgba(56, 178, 172, 0.7) !important;
     transform: translateY(-2px) scale(1.05) !important;
   }
 
-  #gameInterface .m-btn[data-view="finance"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="finance"]:hover:not(.active),
+  #studioPage .m-btn[data-view="finance"]:hover:not(.active),
+  #careerPage .m-btn[data-view="finance"]:hover:not(.active),
+  #socialPage .m-btn[data-view="finance"]:hover:not(.active),
+  #financePage .m-btn[data-view="finance"]:hover:not(.active) {
     background: linear-gradient(135deg, #38a169, #276749) !important;
     box-shadow: 0 8px 25px rgba(72, 187, 120, 0.7) !important;
     transform: translateY(-2px) scale(1.05) !important;
   }
 
-  #gameInterface .m-icon {
+  #gameInterface .m-icon,
+  #studioPage .m-icon,
+  #careerPage .m-icon,
+  #socialPage .m-icon,
+  #financePage .m-icon {
     font-size: 16px;
     line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -148,7 +212,11 @@
   }
   
   /* Ícones profissionais na navegação */
-  #gameInterface .m-icon .icon {
+  #gameInterface .m-icon .icon,
+  #studioPage .m-icon .icon,
+  #careerPage .m-icon .icon,
+  #socialPage .m-icon .icon,
+  #financePage .m-icon .icon {
     width: 18px;
     height: 18px;
     font-size: 16px;
@@ -156,10 +224,16 @@
     opacity: 1;
   }
   
-  #gameInterface .m-label {
+  #gameInterface .m-label,
+  #studioPage .m-label,
+  #careerPage .m-label,
+  #socialPage .m-label,
+  #financePage .m-label {
     font-size: 9px;
     line-height: 1;
-    opacity: 0.95;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
     text-align: center;
     font-weight: 600;
     letter-spacing: 0.2px;
@@ -170,7 +244,11 @@
   }
   
   /* Estado ativo - gradiente azul sobrepõe o temático */
-  #gameInterface .m-btn.active {
+  #gameInterface .m-btn.active,
+  #studioPage .m-btn.active,
+  #careerPage .m-btn.active,
+  #socialPage .m-btn.active,
+  #financePage .m-btn.active {
     background: linear-gradient(135deg, #007AFF, #5856D6) !important;
     border-color: rgba(255,255,255,0.2) !important;
     color: #ffffff !important;
@@ -179,13 +257,21 @@
       0 2px 8px rgba(0,0,0,0.2) !important;
   }
 
-  #gameInterface .m-btn.active .m-label {
+  #gameInterface .m-btn.active .m-label,
+  #studioPage .m-btn.active .m-label,
+  #careerPage .m-btn.active .m-label,
+  #socialPage .m-btn.active .m-label,
+  #financePage .m-btn.active .m-label {
     opacity: 1;
     color: #ffffff;
     font-weight: 600;
   }
 
-  #gameInterface .m-btn.active:hover {
+  #gameInterface .m-btn.active:hover,
+  #studioPage .m-btn.active:hover,
+  #careerPage .m-btn.active:hover,
+  #socialPage .m-btn.active:hover,
+  #financePage .m-btn.active:hover {
     background: linear-gradient(135deg, #0056CC, #4C44CC) !important;
     box-shadow: 
       0 10px 30px rgba(0, 122, 255, 0.5),
@@ -237,7 +323,11 @@
 
 /* ===== DESKTOP: Dock moderno tipo Apps ===== */
 @media (min-width: 1001px) {
-  #gameInterface .mobile-bottom-nav { 
+  #gameInterface .mobile-bottom-nav,
+  #studioPage .mobile-bottom-nav,
+  #careerPage .mobile-bottom-nav,
+  #socialPage .mobile-bottom-nav,
+  #financePage .mobile-bottom-nav { 
     position: fixed;
     bottom: 20px;
     left: 50%;
@@ -255,14 +345,22 @@
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  #gameInterface .mobile-bottom-nav:hover {
+  #gameInterface .mobile-bottom-nav:hover,
+  #studioPage .mobile-bottom-nav:hover,
+  #careerPage .mobile-bottom-nav:hover,
+  #socialPage .mobile-bottom-nav:hover,
+  #financePage .mobile-bottom-nav:hover {
     transform: translateX(-50%) translateY(-2px);
     box-shadow: 
       0 15px 50px rgba(0,0,0,0.7),
       0 0 0 1px rgba(255,255,255,0.08) inset;
   }
   
-  #gameInterface .m-btn { 
+  #gameInterface .m-btn,
+  #studioPage .m-btn,
+  #careerPage .m-btn,
+  #socialPage .m-btn,
+  #financePage .m-btn { 
     border: none;
     color: white; 
     padding: 14px 16px; 
@@ -282,70 +380,118 @@
   }
 
   /* Gradientes vibrantes estilo ícones iPhone - Desktop */
-  #gameInterface .m-btn[data-view="home"] {
+  #gameInterface .m-btn[data-view="home"],
+  #studioPage .m-btn[data-view="home"],
+  #careerPage .m-btn[data-view="home"],
+  #socialPage .m-btn[data-view="home"],
+  #financePage .m-btn[data-view="home"] {
     background: linear-gradient(135deg, #4c51bf, #1a202c) !important;
     box-shadow: 0 8px 25px rgba(76, 81, 191, 0.5);
   }
 
-  #gameInterface .m-btn[data-view="studio"] {
+  #gameInterface .m-btn[data-view="studio"],
+  #studioPage .m-btn[data-view="studio"],
+  #careerPage .m-btn[data-view="studio"],
+  #socialPage .m-btn[data-view="studio"],
+  #financePage .m-btn[data-view="studio"] {
     background: linear-gradient(135deg, #e53e3e, #9c1de7) !important;
     box-shadow: 0 8px 25px rgba(229, 62, 62, 0.5);
   }
 
-  #gameInterface .m-btn[data-view="career"] {
+  #gameInterface .m-btn[data-view="career"],
+  #studioPage .m-btn[data-view="career"],
+  #careerPage .m-btn[data-view="career"],
+  #socialPage .m-btn[data-view="career"],
+  #financePage .m-btn[data-view="career"] {
     background: linear-gradient(135deg, #f6ad55, #d69e2e) !important;
     color: white !important;
     box-shadow: 0 8px 25px rgba(246, 173, 85, 0.5);
   }
 
-  #gameInterface .m-btn[data-view="social"] {
+  #gameInterface .m-btn[data-view="social"],
+  #studioPage .m-btn[data-view="social"],
+  #careerPage .m-btn[data-view="social"],
+  #socialPage .m-btn[data-view="social"],
+  #financePage .m-btn[data-view="social"] {
     background: linear-gradient(135deg, #38b2ac, #3182ce) !important;
     box-shadow: 0 8px 25px rgba(56, 178, 172, 0.5);
   }
 
-  #gameInterface .m-btn[data-view="finance"] {
+  #gameInterface .m-btn[data-view="finance"],
+  #studioPage .m-btn[data-view="finance"],
+  #careerPage .m-btn[data-view="finance"],
+  #socialPage .m-btn[data-view="finance"],
+  #financePage .m-btn[data-view="finance"] {
     background: linear-gradient(135deg, #48bb78, #2f855a) !important;
     box-shadow: 0 8px 25px rgba(72, 187, 120, 0.5);
   }
 
   /* Efeito hover mais intenso - Desktop */
-  #gameInterface .m-btn[data-view="home"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="home"]:hover:not(.active),
+  #studioPage .m-btn[data-view="home"]:hover:not(.active),
+  #careerPage .m-btn[data-view="home"]:hover:not(.active),
+  #socialPage .m-btn[data-view="home"]:hover:not(.active),
+  #financePage .m-btn[data-view="home"]:hover:not(.active) {
     background: linear-gradient(135deg, #553c9a, #1a202c) !important;
     box-shadow: 0 12px 35px rgba(76, 81, 191, 0.7);
     transform: translateY(-2px) scale(1.05);
   }
 
-  #gameInterface .m-btn[data-view="studio"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="studio"]:hover:not(.active),
+  #studioPage .m-btn[data-view="studio"]:hover:not(.active),
+  #careerPage .m-btn[data-view="studio"]:hover:not(.active),
+  #socialPage .m-btn[data-view="studio"]:hover:not(.active),
+  #financePage .m-btn[data-view="studio"]:hover:not(.active) {
     background: linear-gradient(135deg, #c53030, #7c3aed) !important;
     box-shadow: 0 12px 35px rgba(229, 62, 62, 0.7);
     transform: translateY(-2px) scale(1.05);
   }
 
-  #gameInterface .m-btn[data-view="career"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="career"]:hover:not(.active),
+  #studioPage .m-btn[data-view="career"]:hover:not(.active),
+  #careerPage .m-btn[data-view="career"]:hover:not(.active),
+  #socialPage .m-btn[data-view="career"]:hover:not(.active),
+  #financePage .m-btn[data-view="career"]:hover:not(.active) {
     background: linear-gradient(135deg, #ed8936, #b7791f) !important;
     box-shadow: 0 12px 35px rgba(246, 173, 85, 0.7);
     transform: translateY(-2px) scale(1.05);
   }
 
-  #gameInterface .m-btn[data-view="social"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="social"]:hover:not(.active),
+  #studioPage .m-btn[data-view="social"]:hover:not(.active),
+  #careerPage .m-btn[data-view="social"]:hover:not(.active),
+  #socialPage .m-btn[data-view="social"]:hover:not(.active),
+  #financePage .m-btn[data-view="social"]:hover:not(.active) {
     background: linear-gradient(135deg, #2c7a7b, #2b6cb0) !important;
     box-shadow: 0 12px 35px rgba(56, 178, 172, 0.7);
     transform: translateY(-2px) scale(1.05);
   }
 
-  #gameInterface .m-btn[data-view="finance"]:hover:not(.active) {
+  #gameInterface .m-btn[data-view="finance"]:hover:not(.active),
+  #studioPage .m-btn[data-view="finance"]:hover:not(.active),
+  #careerPage .m-btn[data-view="finance"]:hover:not(.active),
+  #socialPage .m-btn[data-view="finance"]:hover:not(.active),
+  #financePage .m-btn[data-view="finance"]:hover:not(.active) {
     background: linear-gradient(135deg, #38a169, #276749) !important;
     box-shadow: 0 12px 35px rgba(72, 187, 120, 0.7);
     transform: translateY(-2px) scale(1.05);
   }
 
-  #gameInterface .m-btn:active {
+  #gameInterface .m-btn:active,
+  #studioPage .m-btn:active,
+  #careerPage .m-btn:active,
+  #socialPage .m-btn:active,
+  #financePage .m-btn:active {
     transform: translateY(0);
     transition: all 0.1s ease;
   }
 
   /* Ícones modernos com alto contraste */
-  #gameInterface .m-icon {
+  #gameInterface .m-icon,
+  #studioPage .m-icon,
+  #careerPage .m-icon,
+  #socialPage .m-icon,
+  #financePage .m-icon {
     font-size: 24px;
     line-height: 1;
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -356,7 +502,11 @@
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
   }
   
-  #gameInterface .m-label {
+  #gameInterface .m-label,
+  #studioPage .m-label,
+  #careerPage .m-label,
+  #socialPage .m-label,
+  #financePage .m-label {
     font-size: 11px;
     line-height: 1;
     opacity: 0.95;
@@ -369,17 +519,29 @@
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
   }
   
-  #gameInterface .m-btn:hover .m-icon {
+  #gameInterface .m-btn:hover .m-icon,
+  #studioPage .m-btn:hover .m-icon,
+  #careerPage .m-btn:hover .m-icon,
+  #socialPage .m-btn:hover .m-icon,
+  #financePage .m-btn:hover .m-icon {
     opacity: 1;
     transform: scale(1.05);
   }
 
-  #gameInterface .m-btn:hover .m-label {
+  #gameInterface .m-btn:hover .m-label,
+  #studioPage .m-btn:hover .m-label,
+  #careerPage .m-btn:hover .m-label,
+  #socialPage .m-btn:hover .m-label,
+  #financePage .m-btn:hover .m-label {
     opacity: 1;
   }
 
   /* Estado ativo - estilo app selecionado */
-  #gameInterface .m-btn.active { 
+  #gameInterface .m-btn.active,
+  #studioPage .m-btn.active,
+  #careerPage .m-btn.active,
+  #socialPage .m-btn.active,
+  #financePage .m-btn.active { 
     background: linear-gradient(135deg, #007AFF, #5856D6);
     border-color: rgba(255,255,255,0.2);
     color: #fff;
@@ -388,7 +550,11 @@
       0 2px 8px rgba(0,0,0,0.2);
   }
 
-  #gameInterface .m-btn.active:hover {
+  #gameInterface .m-btn.active:hover,
+  #studioPage .m-btn.active:hover,
+  #careerPage .m-btn.active:hover,
+  #socialPage .m-btn.active:hover,
+  #financePage .m-btn.active:hover {
     background: linear-gradient(135deg, #0056CC, #4C44CC);
     box-shadow: 
       0 10px 30px rgba(0, 122, 255, 0.5),
@@ -396,13 +562,21 @@
     transform: translateY(-2px);
   }
   
-  #gameInterface .m-btn.active .m-icon {
+  #gameInterface .m-btn.active .m-icon,
+  #studioPage .m-btn.active .m-icon,
+  #careerPage .m-btn.active .m-icon,
+  #socialPage .m-btn.active .m-icon,
+  #financePage .m-btn.active .m-icon {
     opacity: 1;
     color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
   
-  #gameInterface .m-btn.active .m-label {
+  #gameInterface .m-btn.active .m-label,
+  #studioPage .m-btn.active .m-label,
+  #careerPage .m-btn.active .m-label,
+  #socialPage .m-btn.active .m-label,
+  #financePage .m-btn.active .m-label {
     color: #fff;
     font-weight: 600;
     opacity: 1;

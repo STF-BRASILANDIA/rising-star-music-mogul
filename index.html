@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="styles/menu-navigation.css?v=1.0.0">
     <link rel="stylesheet" href="styles/icons-fa.css?v=1.0.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
 </head>
 <body class="menu-active">
     <!-- Loading Screen -->
@@ -1014,48 +1016,18 @@
                                     <div class="info-item"><strong>Nome:</strong> <span id="profileFullName">DaVinci Rodriguez</span></div>
                                     <div class="info-item"><strong>Nome Artístico:</strong> <span id="profileStageName">DaVinci</span></div>
                                     <div class="info-item"><strong>Gênero Musical:</strong> <span id="profileGenre">Rapper • R&B</span></div>
+                                    <div class="info-item"><strong>Idade:</strong> <span id="profileAge">25 anos</span></div>
+                                    <div class="info-item"><strong>Localização:</strong> <span id="profileLocation">Estados Unidos</span></div>
                                     <div class="info-item"><strong>Status:</strong> <span id="profileStatus">Artista Independente</span></div>
-                                </div>
-
-                                <!-- Estatísticas Completas -->
-                                <div class="stats-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 20px; border-radius: 12px; color: #fff;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <i class="fas fa-chart-bar"></i>
-                                        Estatísticas
-                                    </h3>
-                                    <div class="stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                        <div><strong>Fama:</strong> <span id="detailedFame">0</span></div>
-                                        <div><strong>Popularidade:</strong> <span id="detailedPopularity">0</span></div>
-                                        <div><strong>Reputação:</strong> <span id="detailedReputation">0</span></div>
-                                        <div><strong>Seguidores:</strong> <span id="detailedFollowers">0</span></div>
-                                    </div>
-                                </div>
-
-                                <!-- Habilidades Artísticas -->
-                                <div class="skills-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <i class="fas fa-music"></i>
-                                        Habilidades Artísticas
-                                    </h3>
-                                    <div class="skill-list">
-                                        <div class="skill-item">VOCALS: <span id="skillVocals">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">SONGWRITING: <span id="skillSongwriting">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">RHYTHM: <span id="skillRhythm">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">CHARISMA: <span id="skillCharisma">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">VIRALITY: <span id="skillVirality">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">VIDEO DIRECTING: <span id="skillVideoDirecting">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                    </div>
-                                </div>
-
-                                <!-- Habilidades de Negócios -->
-                                <div class="business-skills-card" style="background: linear-gradient(135deg, #fa709a, #fee140); padding: 20px; border-radius: 12px; color: #fff;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;">💼 Habilidades de Negócios</h3>
-                                    <div class="skill-list">
-                                        <div class="skill-item">LEADERSHIP: <span id="skillLeadership">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">MARKETING: <span id="skillMarketing">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">NEGOTIATION: <span id="skillNegotiation">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">RECRUITING: <span id="skillRecruiting">1</span> <button class="upgrade-btn">⬆️</button></div>
-                                        <div class="skill-item">SALES: <span id="skillSales">1</span> <button class="upgrade-btn">⬆️</button></div>
+                                    
+                                    <!-- Botões de Ação -->
+                                    <div class="profile-actions" style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                        <button class="action-btn" id="openSkillsBtn" style="flex: 1; min-width: 120px; padding: 12px 16px; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                                            <i class="fas fa-star"></i> Habilidades
+                                        </button>
+                                        <button class="action-btn" id="openAchievementsBtn" style="flex: 1; min-width: 120px; padding: 12px 16px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                                            <i class="fas fa-trophy"></i> Conquistas
+                                        </button>
                                     </div>
                                 </div>
 
@@ -1066,45 +1038,25 @@
                                         Status de Vida
                                     </h3>
                                     <div class="status-list">
-                                        <div class="status-item">HEALTH: <span id="statusHealth">100%</span></div>
-                                        <div class="status-item">MOOD: <span id="statusMood">Feliz</span></div>
-                                        <div class="status-item">RELATIONSHIPS: <span id="statusRelationships">Solteiro</span></div>
-                                        <div class="status-item">RESIDENCE: <span id="statusResidence">Apartamento</span></div>
-                                    </div>
-                                </div>
-
-                                <!-- Gravadora e Status Profissional -->
-                                <div class="record-status-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; border-radius: 12px; color: #fff;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <i class="fas fa-building"></i>
-                                        Gravadora
-                                    </h3>
-                                    <div class="record-info">
-                                        <div class="record-item"><strong>Gravadora Atual:</strong> <span id="recordLabelName">Independent Records</span></div>
-                                        <div class="record-item"><strong>Tipo de Contrato:</strong> <span id="contractType">Independente</span></div>
-                                        <div class="record-item">
-                                            <strong>Nível de Reconhecimento:</strong> 
-                                            <span class="record-label fame-level-1" id="recordLabelDetailed" data-fame-level="1">Anônimo</span>
+                                        <div class="status-item">
+                                            <strong>HEALTH:</strong> 
+                                            <span id="statusHealth" style="color: #28a745; font-weight: 600;">100%</span>
+                                            <div class="status-bar" style="width: 100px; height: 8px; background: rgba(0,0,0,0.2); border-radius: 4px; margin-left: 8px; overflow: hidden;">
+                                                <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #28a745, #20c997);"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Conquistas -->
-                                <div class="achievements-card" style="background: linear-gradient(135deg, #ffecd2, #fcb69f); padding: 20px; border-radius: 12px; color: #333;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <i class="fas fa-trophy"></i>
-                                        Conquistas
-                                    </h3>
-                                    <div class="achievements-list" id="achievementsList">
-                                        <div class="achievement-item icon-text">
-                                            <i class="fas fa-music"></i>
-                                            Primeira Música Gravada
+                                        <div class="status-item">
+                                            <strong>MOOD:</strong> 
+                                            <span id="statusMood" style="color: #17a2b8; font-weight: 600;">😊 Feliz</span>
                                         </div>
-                                        <div class="achievement-item icon-text">
-                                            <i class="fas fa-microphone"></i>
-                                            Primeiro Show
+                                        <div class="status-item">
+                                            <strong>RELATIONSHIPS:</strong> 
+                                            <span id="statusRelationships" style="color: #6f42c1; font-weight: 600;">💔 Solteiro</span>
                                         </div>
-                                        <div class="achievement-item">💿 Primeiro Álbum</div>
+                                        <div class="status-item">
+                                            <strong>RESIDENCE:</strong> 
+                                            <span id="statusResidence" style="color: #fd7e14; font-weight: 600;">🏠 Apartamento</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1224,6 +1176,664 @@
             </div>
         </div>
         <div id="hubNotificationContainer" class="hub-toast-stack"></div>
+    </div>
+
+    <!-- Studio Page -->
+    <div id="studioPage" class="screen" style="display: none;">
+        <div class="page-container">
+            <div class="page-content">
+                <div style="padding: 20px;">
+                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
+                        <i class="fas fa-music"></i> Studio
+                    </h1>
+                    <p style="color: #ccc; margin-bottom: 30px;">Crie suas músicas e gerencie sua produção musical</p>
+                    
+                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-record-vinyl"></i> Gravar Música
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Crie uma nova faixa musical</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Iniciar Gravação</button>
+                        </div>
+                        
+                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-microphone"></i> Estúdio Vocal
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Grave vocais e harmonias</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Acessar Estúdio</button>
+                        </div>
+                        
+                        <div class="studio-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-sliders-h"></i> Mixagem
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Mixe e masterize suas faixas</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Abrir Mixer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="mobile-bottom-nav" id="studioMobileNav">
+                <button data-view="home" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-home"></i></span>
+                    <span class="m-label">Home</span>
+                </button>
+                <button data-view="studio" class="m-btn active">
+                    <span class="m-icon icon icon-md"><i class="fas fa-music"></i></span>
+                    <span class="m-label">Studio</span>
+                </button>
+                <button data-view="career" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-trophy"></i></span>
+                    <span class="m-label">Career</span>
+                </button>
+                <button data-view="social" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-users"></i></span>
+                    <span class="m-label">Social</span>
+                </button>
+                <button data-view="finance" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-dollar-sign"></i></span>
+                    <span class="m-label">Finance</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Career Page -->
+    <div id="careerPage" class="screen" style="display: none;">
+        <div class="page-container">
+            <div class="page-content">
+                <div style="padding: 20px;">
+                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
+                        <i class="fas fa-trophy"></i> Career
+                    </h1>
+                    <p style="color: #ccc; margin-bottom: 30px;">Acompanhe sua carreira e conquistas musicais</p>
+                    
+                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-chart-line"></i> Estatísticas
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Visualize seu progresso na carreira</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Estatísticas</button>
+                        </div>
+                        
+                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-award"></i> Conquistas
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Veja seus troféus e marcos</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Conquistas</button>
+                        </div>
+                        
+                        <div class="career-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-calendar-alt"></i> Agenda
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Gerencie eventos e compromissos</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Agenda</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="mobile-bottom-nav" id="careerMobileNav">
+                <button data-view="home" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-home"></i></span>
+                    <span class="m-label">Home</span>
+                </button>
+                <button data-view="studio" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-music"></i></span>
+                    <span class="m-label">Studio</span>
+                </button>
+                <button data-view="career" class="m-btn active">
+                    <span class="m-icon icon icon-md"><i class="fas fa-trophy"></i></span>
+                    <span class="m-label">Career</span>
+                </button>
+                <button data-view="social" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-users"></i></span>
+                    <span class="m-label">Social</span>
+                </button>
+                <button data-view="finance" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-dollar-sign"></i></span>
+                    <span class="m-label">Finance</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Social Page -->
+    <div id="socialPage" class="screen" style="display: none;">
+        <div class="page-container">
+            <div class="page-content">
+                <div style="padding: 20px;">
+                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
+                        <i class="fas fa-users"></i> Social
+                    </h1>
+                    <p style="color: #ccc; margin-bottom: 30px;">Conecte-se com fãs e outros artistas</p>
+                    
+                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-heart"></i> Fãs
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Interaja com sua base de fãs</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Fãs</button>
+                        </div>
+                        
+                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-handshake"></i> Colaborações
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Encontre outros artistas para colaborar</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Buscar Artistas</button>
+                        </div>
+                        
+                        <div class="social-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-share-alt"></i> Redes Sociais
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Gerencie suas redes sociais</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Gerenciar Redes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="mobile-bottom-nav" id="socialMobileNav">
+                <button data-view="home" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-home"></i></span>
+                    <span class="m-label">Home</span>
+                </button>
+                <button data-view="studio" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-music"></i></span>
+                    <span class="m-label">Studio</span>
+                </button>
+                <button data-view="career" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-trophy"></i></span>
+                    <span class="m-label">Career</span>
+                </button>
+                <button data-view="social" class="m-btn active">
+                    <span class="m-icon icon icon-md"><i class="fas fa-users"></i></span>
+                    <span class="m-label">Social</span>
+                </button>
+                <button data-view="finance" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-dollar-sign"></i></span>
+                    <span class="m-label">Finance</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Finance Page -->
+    <div id="financePage" class="screen" style="display: none;">
+        <div class="page-container">
+            <div class="page-content">
+                <div style="padding: 20px;">
+                    <h1 style="color: #ff6b35; margin-bottom: 20px;">
+                        <i class="fas fa-dollar-sign"></i> Finance
+                    </h1>
+                    <p style="color: #ccc; margin-bottom: 30px;">Gerencie suas finanças e investimentos</p>
+                    
+                    <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-wallet"></i> Receitas
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Acompanhe suas receitas musicais</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Receitas</button>
+                        </div>
+                        
+                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-chart-pie"></i> Despesas
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Controle seus gastos e investimentos</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Ver Despesas</button>
+                        </div>
+                        
+                        <div class="finance-card" style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b35; margin-bottom: 15px;">
+                                <i class="fas fa-piggy-bank"></i> Investimentos
+                            </h3>
+                            <p style="color: #ccc; margin-bottom: 15px;">Invista em equipamentos e marketing</p>
+                            <button style="background: #ff6b35; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Investir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="mobile-bottom-nav" id="financeMobileNav">
+                <button data-view="home" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-home"></i></span>
+                    <span class="m-label">Home</span>
+                </button>
+                <button data-view="studio" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-music"></i></span>
+                    <span class="m-label">Studio</span>
+                </button>
+                <button data-view="career" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-trophy"></i></span>
+                    <span class="m-label">Career</span>
+                </button>
+                <button data-view="social" class="m-btn">
+                    <span class="m-icon icon icon-md"><i class="fas fa-users"></i></span>
+                    <span class="m-label">Social</span>
+                </button>
+                <button data-view="finance" class="m-btn active">
+                    <span class="m-icon icon icon-md"><i class="fas fa-dollar-sign"></i></span>
+                    <span class="m-label">Finance</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal de Habilidades -->
+    <div id="skillsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px; background: linear-gradient(135deg, #2a2d3a, #1e2026); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header">
+                <h2 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-star" style="color: #4facfe;"></i>
+                    Sistema de Habilidades
+                </h2>
+                <button class="close-btn" id="closeSkillsBtn" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                
+                <!-- Informações de Status -->
+                <div class="skills-status" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="status-item">
+                        <span style="color: #ffd700; font-weight: 600;">💰 Dinheiro:</span>
+                        <span id="modalPlayerMoney" style="color: #fff; font-weight: 700;">$0</span>
+                    </div>
+                    <div class="status-item">
+                        <span style="color: #00ff88; font-weight: 600;">⚡ Energia:</span>
+                        <span id="modalPlayerEnergy" style="color: #fff; font-weight: 700;">100</span>
+                    </div>
+                    <div class="status-item">
+                        <span style="color: #ff6b35; font-weight: 600;">📈 Pontos Skill:</span>
+                        <span id="modalSkillPoints" style="color: #fff; font-weight: 700;">0</span>
+                    </div>
+                </div>
+
+                <!-- Habilidades Artísticas -->
+                <div class="skills-section" style="margin-bottom: 30px;">
+                    <h3 style="color: #4facfe; margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-music"></i>
+                        Habilidades Artísticas
+                    </h3>
+                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                        
+                        <div class="skill-row" data-skill="vocals" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VOCALS</div>
+                                <div style="color: #ccc; font-size: 12px;">Qualidade vocal e técnica</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $500 | Energia: 10</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="vocals" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="songwriting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">SONGWRITING</div>
+                                <div style="color: #ccc; font-size: 12px;">Criação e composição</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $750 | Energia: 15</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="songwriting" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="rhythm" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">RHYTHM</div>
+                                <div style="color: #ccc; font-size: 12px;">Senso de ritmo musical</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $400 | Energia: 8</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="rhythm" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="charisma" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">CHARISMA</div>
+                                <div style="color: #ccc; font-size: 12px;">Presença de palco</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $600 | Energia: 12</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="charisma" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="virality" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VIRALITY</div>
+                                <div style="color: #ccc; font-size: 12px;">Conteúdo viral</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $1000 | Energia: 20</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="virality" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="videoDirecting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VIDEO DIRECTING</div>
+                                <div style="color: #ccc; font-size: 12px;">Direção de videoclipes</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $1200 | Energia: 25</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="videoDirecting" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habilidades de Negócios -->
+                <div class="skills-section">
+                    <h3 style="color: #fa709a; margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-briefcase"></i>
+                        Habilidades de Negócios
+                    </h3>
+                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                        
+                        <div class="skill-row" data-skill="leadership" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">LEADERSHIP</div>
+                                <div style="color: #ccc; font-size: 12px;">Liderança de equipe</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $800 | Energia: 15</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="leadership" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="marketing" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">MARKETING</div>
+                                <div style="color: #ccc; font-size: 12px;">Promoção e publicidade</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $900 | Energia: 18</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="marketing" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="negotiation" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">NEGOTIATION</div>
+                                <div style="color: #ccc; font-size: 12px;">Negociação de contratos</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $700 | Energia: 12</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="negotiation" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="recruiting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">RECRUITING</div>
+                                <div style="color: #ccc; font-size: 12px;">Recrutamento de talentos</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $650 | Energia: 10</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="recruiting" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="sales" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">SALES</div>
+                                <div style="color: #ccc; font-size: 12px;">Vendas e comercialização</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $550 | Energia: 8</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="sales" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn primary" id="closeSkillsFooterBtn" style="background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Conquistas -->
+    <div id="achievementsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; background: linear-gradient(135deg, #2a2d3a, #1e2026); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header">
+                <h2 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-trophy" style="color: #ffd700;"></i>
+                    Conquistas e Achievements
+                </h2>
+                <button class="close-btn" id="closeAchievementsBtn" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                
+                <!-- Progresso Geral -->
+                <div class="achievements-progress" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                    <h3 style="color: #ffd700; margin: 0 0 12px;">Progresso Geral</h3>
+                    <div class="progress-bar" style="width: 100%; height: 12px; background: rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; margin: 8px 0;">
+                        <div class="progress-fill" style="width: 15%; height: 100%; background: linear-gradient(90deg, #ffd700, #ff8c00); transition: width 0.8s ease;"></div>
+                    </div>
+                    <p style="color: #ccc; margin: 8px 0 0; font-size: 14px;">3 de 20 conquistas desbloqueadas (15%)</p>
+                </div>
+
+                <!-- Lista de Conquistas -->
+                <div class="achievements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    
+                    <!-- Conquistas Desbloqueadas -->
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎵</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeira Música</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Grave sua primeira música no estúdio</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎤</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeiro Show</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Realize sua primeira apresentação ao vivo</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">👥</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeiros Seguidores</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance 100 seguidores nas redes sociais</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conquistas Bloqueadas -->
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💿</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Primeiro Álbum</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Lance seu primeiro álbum completo</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💰</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Milionário</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Acumule $1,000,000 em dinheiro</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌟</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Estrela Rising</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance 10,000 de fama</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🏆</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Grammy Winner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Ganhe seu primeiro Grammy</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎪</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Festival Headliner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Seja headliner de um grande festival</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌍</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Tour Mundial</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Complete um tour mundial com 50+ shows</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">📱</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Viral Sensation</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Tenha uma música com +1M de streams</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🏢</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Label Owner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Crie sua própria gravadora</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💎</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Disco de Diamante</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Venda 10+ milhões de cópias de um álbum</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎬</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Hollywood Star</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Atue em um filme de Hollywood</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">👑</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Lenda da Música</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance o nível máximo de fama</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌈</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Hall of Fame</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Entre para o Hall da Fama da Música</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎭</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Renaissance Artist</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Domine todas as habilidades (nível 10)</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🚀</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Conquistador dos Sonhos</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Complete o jogo com 100% de conquistas</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn primary" id="closeAchievementsFooterBtn" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">Fechar</button>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="js/ui/game-hub.js"></script>
@@ -2120,6 +2730,496 @@
         
         // Backup: também tenta inicializar após um delay
         setTimeout(initFameObserver, 2000);
+        </script>
+     
+     <script>
+        // Sistema de Modais - Habilidades e Conquistas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos dos modais
+            const skillsModal = document.getElementById('skillsModal');
+            const achievementsModal = document.getElementById('achievementsModal');
+            
+            // Botões para abrir modais
+            const openSkillsBtn = document.getElementById('openSkillsBtn');
+            const openAchievementsBtn = document.getElementById('openAchievementsBtn');
+            
+            // Botões para fechar modais
+            const closeSkillsBtns = document.querySelectorAll('#closeSkillsBtn, #closeSkillsFooterBtn');
+            const closeAchievementsBtns = document.querySelectorAll('#closeAchievementsBtn, #closeAchievementsFooterBtn');
+            
+            // Função para abrir modal
+            function openModal(modal) {
+                if (modal) {
+                    modal.style.display = 'flex';
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            // Função para fechar modal
+            function closeModal(modal) {
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }, 200);
+                }
+            }
+            
+            // Event listeners para abrir modais
+            if (openSkillsBtn) {
+                openSkillsBtn.addEventListener('click', function() {
+                    updateSkillsModalData();
+                    openModal(skillsModal);
+                });
+            }
+            
+            if (openAchievementsBtn) {
+                openAchievementsBtn.addEventListener('click', function() {
+                    updateAchievementsModalData();
+                    openModal(achievementsModal);
+                });
+            }
+            
+            // Event listeners para fechar modais
+            closeSkillsBtns.forEach(btn => {
+                btn.addEventListener('click', () => closeModal(skillsModal));
+            });
+            
+            closeAchievementsBtns.forEach(btn => {
+                btn.addEventListener('click', () => closeModal(achievementsModal));
+            });
+            
+            // Fechar modal ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (e.target === skillsModal) {
+                    closeModal(skillsModal);
+                }
+                if (e.target === achievementsModal) {
+                    closeModal(achievementsModal);
+                }
+            });
+            
+            // Função para atualizar dados do modal de habilidades
+            function updateSkillsModalData() {
+                // Atualizar status do jogador
+                const money = document.getElementById('statMoney')?.textContent || '$0';
+                const energy = document.getElementById('statEnergy')?.textContent || '100';
+                
+                const modalMoney = document.getElementById('modalPlayerMoney');
+                const modalEnergy = document.getElementById('modalPlayerEnergy');
+                const modalSkillPoints = document.getElementById('modalSkillPoints');
+                
+                if (modalMoney) modalMoney.textContent = money;
+                if (modalEnergy) modalEnergy.textContent = energy;
+                if (modalSkillPoints) modalSkillPoints.textContent = '0'; // Placeholder
+                
+                // Atualizar níveis das habilidades
+                const skills = ['vocals', 'songwriting', 'rhythm', 'charisma', 'virality', 'videoDirecting', 
+                              'leadership', 'marketing', 'negotiation', 'recruiting', 'sales'];
+                
+                skills.forEach(skill => {
+                    const levelElement = document.querySelector(`[data-skill="${skill}"] .skill-level`);
+                    if (levelElement) {
+                        // Placeholder - aqui você conectaria com o sistema real do jogo
+                        levelElement.textContent = '1';
+                    }
+                });
+                
+                console.log('📊 Dados do modal de habilidades atualizados');
+            }
+            
+            // Função para atualizar dados do modal de conquistas
+            function updateAchievementsModalData() {
+                // Aqui você conectaria com o sistema real de conquistas
+                console.log('🏆 Dados do modal de conquistas atualizados');
+                
+                // Placeholder para progresso
+                const progressBar = document.querySelector('.progress-fill');
+                if (progressBar) {
+                    // Simula progresso baseado em conquistas desbloqueadas
+                    const unlockedCount = document.querySelectorAll('.achievement-item.unlocked').length;
+                    const totalCount = document.querySelectorAll('.achievement-item').length;
+                    const percentage = (unlockedCount / totalCount) * 100;
+                    progressBar.style.width = percentage + '%';
+                }
+            }
+            
+            // Funcionalidade de upgrade de habilidades
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('upgrade-skill-btn')) {
+                    const skill = e.target.getAttribute('data-skill');
+                    const levelElement = e.target.closest('.skill-row').querySelector('.skill-level');
+                    
+                    if (levelElement && skill) {
+                        // Placeholder para sistema de upgrade
+                        const currentLevel = parseInt(levelElement.textContent);
+                        const newLevel = currentLevel + 1;
+                        
+                        // Aqui você validaria se o jogador tem dinheiro/energia suficiente
+                        const canUpgrade = true; // Placeholder
+                        
+                        if (canUpgrade && newLevel <= 10) {
+                            levelElement.textContent = newLevel;
+                            
+                            // Feedback visual
+                            e.target.style.transform = 'scale(0.9)';
+                            setTimeout(() => {
+                                e.target.style.transform = 'scale(1)';
+                            }, 150);
+                            
+                            // Notificação de upgrade
+                            showUpgradeNotification(skill, newLevel);
+                            
+                            console.log(`⬆️ ${skill.toUpperCase()} upgradado para nível ${newLevel}`);
+                        } else {
+                            // Feedback de erro
+                            e.target.style.backgroundColor = '#ff4444';
+                            setTimeout(() => {
+                                e.target.style.backgroundColor = '';
+                            }, 500);
+                            console.log(`❌ Não foi possível upgradar ${skill}`);
+                        }
+                    }
+                }
+            });
+            
+            // Função para mostrar notificação de upgrade
+            function showUpgradeNotification(skill, level) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #00ff88, #00cc6a);
+                    color: #000;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+                `;
+                notification.innerHTML = `🎉 ${skill.toUpperCase()} → Nível ${level}!`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+            
+            console.log('🎮 Sistema de modais de habilidades e conquistas inicializado');
+        });
+        </script>
+     
+     <script>
+        // CSS para animações dos modals
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                backdrop-filter: blur(5px);
+            }
+            
+            .modal.show {
+                opacity: 1;
+            }
+            
+            .modal .modal-content {
+                background: linear-gradient(135deg, #2a2d3a, #1e2026);
+                border-radius: 12px;
+                max-height: 90vh;
+                overflow: hidden;
+                transform: translateY(20px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            }
+            
+            .modal.show .modal-content {
+                transform: translateY(0);
+            }
+            
+            .modal-header {
+                padding: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .close-btn:hover {
+                color: #ff6b35 !important;
+                transform: scale(1.1);
+            }
+            
+            .upgrade-skill-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            }
+            
+            .achievement-item:hover {
+                transform: translateY(-2px);
+            }
+            
+            .achievement-item.unlocked:hover {
+                box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+            }
+            
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+            }
+            
+            .action-btn:nth-child(2):hover {
+                box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            }
+            
+            @keyframes slideInRight {
+                from { 
+                    opacity: 0; 
+                    transform: translateX(100px); 
+                }
+                to { 
+                    opacity: 1; 
+                    transform: translateX(0); 
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from { 
+                    opacity: 1; 
+                    transform: translateX(0); 
+                }
+                to { 
+                    opacity: 0; 
+                    transform: translateX(100px); 
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .modal .modal-content {
+                    margin: 10px;
+                    max-width: calc(100% - 20px);
+                    max-height: calc(100% - 20px);
+                }
+                
+                .skills-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .achievements-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .profile-actions {
+                    flex-direction: column !important;
+                }
+                
+                .action-btn {
+                    min-width: 100% !important;
+                }
+            }
+        `;
+        document.head.appendChild(modalStyles);
+        </script>
+     
+     <script>
+        // Sistema de Navegação por Abas do Hub
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const hubPanels = document.querySelectorAll('.hub-panel');
+            
+            console.log(`🔍 Sistema de abas encontrou: ${tabButtons.length} botões e ${hubPanels.length} painéis`);
+            
+            // Listar todos os botões e painéis encontrados
+            tabButtons.forEach((btn, index) => {
+                const tabName = btn.getAttribute('data-tab');
+                console.log(`📱 Botão ${index + 1}: ${tabName}`, btn);
+            });
+            
+            hubPanels.forEach((panel, index) => {
+                const panelName = panel.getAttribute('data-tab');
+                console.log(`🗂️ Painel ${index + 1}: ${panelName}`, panel);
+            });
+            
+            // Função para alternar entre abas
+            function switchTab(targetTab) {
+                console.log(`🎯 Alternando para aba: ${targetTab}`);
+                
+                // Remove active de todos os botões
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Esconde todos os painéis
+                hubPanels.forEach(panel => {
+                    panel.style.display = 'none';
+                });
+                
+                // Ativa o botão clicado
+                const activeButton = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                    console.log(`✅ Botão ${targetTab} ativado`);
+                } else {
+                    console.error(`❌ Botão ${targetTab} não encontrado`);
+                }
+                
+                // Mostra o painel correspondente
+                const activePanel = document.getElementById(`panel-${targetTab}`);
+                if (activePanel) {
+                    activePanel.style.display = 'block';
+                    console.log(`✅ Painel panel-${targetTab} exibido`);
+                } else {
+                    console.error(`❌ Painel panel-${targetTab} não encontrado`);
+                }
+            }
+            
+            // Adicionar event listeners para os botões das abas
+            tabButtons.forEach((button) => {
+                const tabName = button.getAttribute('data-tab');
+                console.log(`🔗 Adicionando listener para aba: ${tabName}`);
+                
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(`🖱️ Clique detectado na aba: ${tabName}`);
+                    switchTab(tabName);
+                });
+            });
+            
+            // Garantir que a aba de perfil esteja ativa por padrão
+            setTimeout(() => {
+                const profileTab = document.querySelector('.tab-btn[data-tab="profile"]');
+                if (profileTab && !profileTab.classList.contains('active')) {
+                    console.log('🔄 Ativando aba de perfil por padrão');
+                    switchTab('profile');
+                }
+                console.log('✅ Sistema de navegação por abas inicializado!');
+            }, 100);
+            
+            // Teste manual via console
+            window.testTab = function(tabName) {
+                console.log(`🧪 Teste manual da aba: ${tabName}`);
+                switchTab(tabName);
+            };
+            
+            console.log('🔧 Digite window.testTab("profile") no console para testar');
+        });
+        </script>
+     
+     <script>
+        // Sistema de Navegação Principal entre Páginas (Corrigido)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧭 Sistema de navegação principal ativo...');
+            
+            // Elementos da navegação (apenas do gameInterface)
+            const navigationButtons = document.querySelectorAll('#gameInterface .mobile-bottom-nav .m-btn[data-view]');
+            const allScreens = document.querySelectorAll('.screen');
+            
+            console.log(`📱 Menu original com ${navigationButtons.length} botões funcionando`);
+            
+            // Função para alternar entre páginas principais
+            function switchToPage(targetPage) {
+                console.log(`🎯 Navegando para: ${targetPage}`);
+                
+                // Esconder todas as telas
+                allScreens.forEach(screen => {
+                    screen.style.display = 'none';
+                });
+                
+                // Mostrar a tela correspondente
+                let targetScreen;
+                switch(targetPage) {
+                    case 'home':
+                        targetScreen = document.getElementById('gameInterface');
+                        // Para Home: esconder todos os painéis e desativar todas as abas
+                        setTimeout(() => {
+                            const allPanels = document.querySelectorAll('#gameInterface .hub-panel');
+                            const allTabBtns = document.querySelectorAll('#gameInterface .tab-btn');
+                            allPanels.forEach(panel => panel.style.display = 'none');
+                            allTabBtns.forEach(btn => btn.classList.remove('active'));
+                            console.log('🏠 Home ativado - interface principal sem abas abertas');
+                        }, 50);
+                        break;
+                    case 'studio':
+                        targetScreen = document.getElementById('studioPage');
+                        break;
+                    case 'career':
+                        targetScreen = document.getElementById('careerPage');
+                        break;
+                    case 'social':
+                        targetScreen = document.getElementById('socialPage');
+                        break;
+                    case 'finance':
+                        targetScreen = document.getElementById('financePage');
+                        break;
+                    default:
+                        console.warn(`❌ Página ${targetPage} não encontrada`);
+                        return;
+                }
+                
+                if (targetScreen) {
+                    targetScreen.style.display = 'block';
+                    console.log(`✅ Página ${targetPage} exibida`);
+                } else {
+                    console.warn(`❌ Elemento da página ${targetPage} não encontrado`);
+                }
+                
+                // Atualizar estado dos botões em TODOS os menus inferiores
+                const allMobileNavs = document.querySelectorAll('.mobile-bottom-nav');
+                allMobileNavs.forEach(nav => {
+                    const buttons = nav.querySelectorAll('.m-btn[data-view]');
+                    buttons.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-view') === targetPage) {
+                            btn.classList.add('active');
+                        }
+                    });
+                });
+            }
+            
+            // Adicionar event listeners para TODOS os menus inferiores
+            const allMobileNavs = document.querySelectorAll('.mobile-bottom-nav');
+            allMobileNavs.forEach(nav => {
+                const buttons = nav.querySelectorAll('.m-btn[data-view]');
+                buttons.forEach(button => {
+                    const viewName = button.getAttribute('data-view');
+                    
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log(`🖱️ Clique em: ${viewName} (menu: ${nav.id})`);
+                        switchToPage(viewName);
+                    });
+                });
+            });
+            
+            // Função de teste
+            window.testNavigation = function(pageName) {
+                console.log(`🧪 Teste: navegando para ${pageName}`);
+                switchToPage(pageName);
+            };
+            
+            console.log('✅ Menu original restaurado e funcionando!');
+            console.log('🎮 Use apenas o menu da Home para navegar');
+        });
         </script>
      
      <script>
