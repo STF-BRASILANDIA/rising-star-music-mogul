@@ -414,7 +414,7 @@ export class GameHub {
         const applyAvatar = (containerId) => {
             const el = document.getElementById(containerId);
             if (!el) return;
-            const artistLetter = (p.artistName || p.name || '🎵').charAt(0).toUpperCase();
+            const artistLetter = (p.artistName || p.name || 'M').charAt(0).toUpperCase();
             if (p.avatarImage) {
                 let img = el.querySelector('img.player-avatar-img');
                 if (!img) {

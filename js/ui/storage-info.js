@@ -101,7 +101,7 @@ export class StorageInfo {
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>💾 Armazenamento Local</h2>
+                    <h2><i class="fas fa-save"></i> Armazenamento Local</h2>
                 </div>
                 <div class="modal-body">
                     <div class="storage-section">
@@ -129,7 +129,7 @@ export class StorageInfo {
                     </div>
                     
                     <div class="storage-tips">
-                        <h3>💡 Dicas:</h3>
+                        <h3><i class="fas fa-lightbulb"></i> Dicas:</h3>
                         <ul>
                             <li>🔄 Seus dados salvam automaticamente</li>
                             <li>📱 Funciona offline após instalar</li>
@@ -140,7 +140,7 @@ export class StorageInfo {
                         <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
                             <p><strong>🧪 Teste o Save Local:</strong></p>
                             <button class="menu-btn" onclick="StorageInfo.testLocalSave()" style="margin: 0.5rem 0; padding: 8px 16px; font-size: 0.9rem;">
-                                💾 Criar Save de Teste
+                                <i class="fas fa-save"></i> Criar Save de Teste
                             </button>
                             <button class="menu-btn" onclick="StorageInfo.showSavedData()" style="margin: 0.5rem 0; padding: 8px 16px; font-size: 0.9rem;">
                                 📋 Ver Dados Salvos
@@ -148,12 +148,12 @@ export class StorageInfo {
                         </div>
                         
                         <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.2); border-radius: 6px;">
-                            <p><strong>⚙️ Configurar Modo de Save:</strong></p>
+                            <p><strong><i class="fas fa-cog"></i> Configurar Modo de Save:</strong></p>
                             <button class="menu-btn" onclick="SaveModeManager.showInfoModal()" style="margin: 0.5rem 0.5rem 0.5rem 0; padding: 8px 16px; font-size: 0.9rem;">
                                 ❓ Local vs Sincronizado
                             </button>
                             <button class="menu-btn new-game" onclick="new SaveModeManager().showSaveModeModal()" style="margin: 0.5rem 0; padding: 8px 16px; font-size: 0.9rem;">
-                                ⚙️ Escolher Modo
+                                <i class="fas fa-cog"></i> Escolher Modo
                             </button>
                         </div>
                     </div>
