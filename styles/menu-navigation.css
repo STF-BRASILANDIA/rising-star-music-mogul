@@ -9,98 +9,229 @@
   display: flex !important;
 }
 
-/* ===== MOBILE: Menu inferior tradicional ===== */
+/* ===== MOBILE: Menu inferior estilo desktop ===== */
 @media (max-width: 1000px) {
   #gameInterface .mobile-bottom-nav { 
-    position: fixed; 
-    left: 0; 
-    right: 0; 
-    bottom: 0; 
-    background: #1a1c22; 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-    padding: 6px 4px; 
-    gap: 4px; 
+    position: fixed !important; 
+    left: 50% !important;
+    right: auto !important;
+    bottom: 20px !important;
+    transform: translateX(-50%) !important;
+    background: rgba(26, 28, 34, 0.95) !important; 
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 20px !important;
+    padding: 12px 18px !important; 
+    gap: 6px !important; 
     z-index: 500;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px) !important;
+    box-shadow: 
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(255,255,255,0.05) inset !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: auto !important;
+    max-width: 90vw !important;
+  }
+
+  #gameInterface .mobile-bottom-nav:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 
+      0 12px 40px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.08) inset;
   }
   
   #gameInterface .m-btn { 
-    flex: 1; 
-    background: none; 
-    border: none; 
-    color: #fff; 
-    font-size: 11px; 
-    padding: 8px 4px; 
-    border-radius: 10px;
+    flex: none !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: rgba(255,255,255,0.75) !important; 
+    font-size: 10px !important; 
+    padding: 10px 12px !important; 
+    border-radius: 14px !important;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     display: flex;
-    flex-direction: column;
+    flex-direction: column !important;
     align-items: center;
-    gap: 2px;
-    min-height: 44px;
+    gap: 4px !important;
+    min-height: 58px !important;
+    min-width: 64px !important;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #gameInterface .m-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  /* Gradientes vibrantes estilo ícones iPhone com alto contraste */
+  #gameInterface .m-btn[data-view="home"] {
+    background: linear-gradient(135deg, #4c51bf, #1a202c) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(76, 81, 191, 0.5) !important;
+  }
+
+  #gameInterface .m-btn[data-view="studio"] {
+    background: linear-gradient(135deg, #e53e3e, #9c1de7) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.5) !important;
+  }
+
+  #gameInterface .m-btn[data-view="career"] {
+    background: linear-gradient(135deg, #f6ad55, #d69e2e) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(246, 173, 85, 0.5) !important;
+  }
+
+  #gameInterface .m-btn[data-view="social"] {
+    background: linear-gradient(135deg, #38b2ac, #3182ce) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(56, 178, 172, 0.5) !important;
+  }
+
+  #gameInterface .m-btn[data-view="finance"] {
+    background: linear-gradient(135deg, #48bb78, #2f855a) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.5) !important;
+  }
+
+  /* Efeito hover mais intenso com gradientes saturados */
+  #gameInterface .m-btn[data-view="home"]:hover:not(.active) {
+    background: linear-gradient(135deg, #553c9a, #1a202c) !important;
+    box-shadow: 0 8px 25px rgba(76, 81, 191, 0.7) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+
+  #gameInterface .m-btn[data-view="studio"]:hover:not(.active) {
+    background: linear-gradient(135deg, #c53030, #7c3aed) !important;
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.7) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+
+  #gameInterface .m-btn[data-view="career"]:hover:not(.active) {
+    background: linear-gradient(135deg, #ed8936, #b7791f) !important;
+    box-shadow: 0 8px 25px rgba(246, 173, 85, 0.7) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+
+  #gameInterface .m-btn[data-view="social"]:hover:not(.active) {
+    background: linear-gradient(135deg, #2c7a7b, #2b6cb0) !important;
+    box-shadow: 0 8px 25px rgba(56, 178, 172, 0.7) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+  }
+
+  #gameInterface .m-btn[data-view="finance"]:hover:not(.active) {
+    background: linear-gradient(135deg, #38a169, #276749) !important;
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.7) !important;
+    transform: translateY(-2px) scale(1.05) !important;
   }
 
   #gameInterface .m-icon {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.7;
+    opacity: 1;
     font-weight: 300;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: inherit;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
   }
   
   /* Ícones profissionais na navegação */
   #gameInterface .m-icon .icon {
-    width: 20px;
-    height: 20px;
-    font-size: 14px;
+    width: 18px;
+    height: 18px;
+    font-size: 16px;
     margin: 0;
-    opacity: 0.8;
+    opacity: 1;
   }
   
   #gameInterface .m-label {
     font-size: 9px;
     line-height: 1;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.95;
     text-align: center;
-    transform: translateY(-2px);
-    font-weight: 500;
-    letter-spacing: 0.3px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
   }
   
+  /* Estado ativo - gradiente azul sobrepõe o temático */
+  #gameInterface .m-btn.active {
+    background: linear-gradient(135deg, #007AFF, #5856D6) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+    box-shadow: 
+      0 8px 25px rgba(0, 122, 255, 0.4),
+      0 2px 8px rgba(0,0,0,0.2) !important;
+  }
+
   #gameInterface .m-btn.active .m-label {
     opacity: 1;
-    max-height: 20px;
-    transform: translateY(0);
-    color: #fff;
+    color: #ffffff;
     font-weight: 600;
+  }
+
+  #gameInterface .m-btn.active:hover {
+    background: linear-gradient(135deg, #0056CC, #4C44CC) !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 122, 255, 0.5),
+      0 4px 12px rgba(0,0,0,0.3) !important;
+    transform: translateY(-1px) !important;
   }
   
   #gameInterface .m-btn.active .m-icon {
-    transform: scale(1.15);
     opacity: 1;
-    color: #fff;
-    text-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
+    color: #ffffff;
+    transform: scale(1.1);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  /* Hover específico para cada botão não ativo */
+  #gameInterface .m-btn[data-view="home"]:hover:not(.active) {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.25), rgba(48, 176, 199, 0.25)) !important;
+    border-color: rgba(52, 199, 89, 0.4) !important;
+  }
+
+  #gameInterface .m-btn[data-view="studio"]:hover:not(.active) {
+    background: linear-gradient(135deg, rgba(175, 82, 222, 0.25), rgba(142, 68, 173, 0.25)) !important;
+    border-color: rgba(175, 82, 222, 0.4) !important;
+  }
+
+  #gameInterface .m-btn[data-view="career"]:hover:not(.active) {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.25), rgba(255, 149, 0, 0.25)) !important;
+    border-color: rgba(255, 204, 0, 0.4) !important;
+  }
+
+  #gameInterface .m-btn[data-view="social"]:hover:not(.active) {
+    background: linear-gradient(135deg, rgba(255, 45, 85, 0.25), rgba(255, 55, 95, 0.25)) !important;
+    border-color: rgba(255, 45, 85, 0.4) !important;
+  }
+
+  #gameInterface .m-btn[data-view="finance"]:hover:not(.active) {
+    background: linear-gradient(135deg, rgba(50, 215, 75, 0.25), rgba(52, 199, 89, 0.25)) !important;
+    border-color: rgba(50, 215, 75, 0.4) !important;
   }
   
   #gameInterface .m-btn:not(.active) .m-icon {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.65);
   }
   
-  #gameInterface .m-btn:not(.active) {
-    padding: 10px 4px;
-  }
-  
-  #gameInterface .m-btn.active {
-    padding: 6px 4px 8px;
+  #gameInterface .m-btn:not(.active) .m-label {
+    color: rgba(255, 255, 255, 0.65);
   }
 }
 
@@ -132,9 +263,8 @@
   }
   
   #gameInterface .m-btn { 
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.8); 
+    border: none;
+    color: white; 
     padding: 14px 16px; 
     border-radius: 14px;
     cursor: pointer;
@@ -151,12 +281,62 @@
     overflow: hidden;
   }
 
-  #gameInterface .m-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.12);
-    color: #fff;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  /* Gradientes vibrantes estilo ícones iPhone - Desktop */
+  #gameInterface .m-btn[data-view="home"] {
+    background: linear-gradient(135deg, #4c51bf, #1a202c) !important;
+    box-shadow: 0 8px 25px rgba(76, 81, 191, 0.5);
+  }
+
+  #gameInterface .m-btn[data-view="studio"] {
+    background: linear-gradient(135deg, #e53e3e, #9c1de7) !important;
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.5);
+  }
+
+  #gameInterface .m-btn[data-view="career"] {
+    background: linear-gradient(135deg, #f6ad55, #d69e2e) !important;
+    color: white !important;
+    box-shadow: 0 8px 25px rgba(246, 173, 85, 0.5);
+  }
+
+  #gameInterface .m-btn[data-view="social"] {
+    background: linear-gradient(135deg, #38b2ac, #3182ce) !important;
+    box-shadow: 0 8px 25px rgba(56, 178, 172, 0.5);
+  }
+
+  #gameInterface .m-btn[data-view="finance"] {
+    background: linear-gradient(135deg, #48bb78, #2f855a) !important;
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.5);
+  }
+
+  /* Efeito hover mais intenso - Desktop */
+  #gameInterface .m-btn[data-view="home"]:hover:not(.active) {
+    background: linear-gradient(135deg, #553c9a, #1a202c) !important;
+    box-shadow: 0 12px 35px rgba(76, 81, 191, 0.7);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  #gameInterface .m-btn[data-view="studio"]:hover:not(.active) {
+    background: linear-gradient(135deg, #c53030, #7c3aed) !important;
+    box-shadow: 0 12px 35px rgba(229, 62, 62, 0.7);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  #gameInterface .m-btn[data-view="career"]:hover:not(.active) {
+    background: linear-gradient(135deg, #ed8936, #b7791f) !important;
+    box-shadow: 0 12px 35px rgba(246, 173, 85, 0.7);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  #gameInterface .m-btn[data-view="social"]:hover:not(.active) {
+    background: linear-gradient(135deg, #2c7a7b, #2b6cb0) !important;
+    box-shadow: 0 12px 35px rgba(56, 178, 172, 0.7);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  #gameInterface .m-btn[data-view="finance"]:hover:not(.active) {
+    background: linear-gradient(135deg, #38a169, #276749) !important;
+    box-shadow: 0 12px 35px rgba(72, 187, 120, 0.7);
+    transform: translateY(-2px) scale(1.05);
   }
 
   #gameInterface .m-btn:active {
@@ -164,23 +344,29 @@
     transition: all 0.1s ease;
   }
 
-  /* Ícones modernos */
+  /* Ícones modernos com alto contraste */
   #gameInterface .m-icon {
     font-size: 24px;
     line-height: 1;
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0.85;
+    opacity: 1;
     margin-bottom: 2px;
+    color: inherit;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
   }
   
   #gameInterface .m-label {
     font-size: 11px;
     line-height: 1;
-    opacity: 0.8;
-    font-weight: 500;
+    opacity: 0.95;
+    font-weight: 600;
     letter-spacing: 0.2px;
     transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     white-space: nowrap;
+    color: inherit;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
   }
   
   #gameInterface .m-btn:hover .m-icon {
