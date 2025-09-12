@@ -2166,8 +2166,9 @@ body.in-game #mainMenu {
 /* Logo harmonizado com estética dourada elegante */
 .game-logo {
     text-align: center;
-    margin-bottom: 2.5rem;
-    z-index: 2;
+    margin-bottom: -1rem; /* Overlap negativo para sobrepor ao reflexo */
+    margin-top: 3rem; /* Movido ainda mais para baixo */
+    z-index: 3; /* Acima do reflexo */
     position: relative;
     padding: 0.5rem;
 }
@@ -2200,17 +2201,17 @@ body.in-game #mainMenu {
 .main-menu::before {
     content: '';
     position: absolute;
-    top: 20px;
+    top: -350px; /* Alinhado com os holofotes laterais */
     left: 50%;
     transform: translateX(-50%);
     width: 4px;
     height: 4px;
-    background: rgba(255, 255, 255, 1);
+    background: rgba(255, 215, 0, 1); /* Dourado */
     border-radius: 50%;
     box-shadow: 
-        0 0 20px rgba(255, 255, 255, 1),
-        0 0 40px rgba(255, 255, 255, 0.8),
-        0 0 80px rgba(255, 255, 255, 0.6);
+        0 0 20px rgba(255, 215, 0, 1),
+        0 0 40px rgba(255, 215, 0, 0.8),
+        0 0 80px rgba(255, 215, 0, 0.6);
     pointer-events: none;
     z-index: 10;
     animation: centralSpotlight 3s ease-in-out infinite;
@@ -2220,16 +2221,16 @@ body.in-game #mainMenu {
     0%, 100% { 
         opacity: 0.8;
         box-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 0.8),
-            0 0 80px rgba(255, 255, 255, 0.6);
+            0 0 20px rgba(255, 215, 0, 1),
+            0 0 40px rgba(255, 215, 0, 0.8),
+            0 0 80px rgba(255, 215, 0, 0.6);
     }
     50% { 
         opacity: 1;
         box-shadow: 
-            0 0 25px rgba(255, 255, 255, 1),
-            0 0 50px rgba(255, 255, 255, 0.9),
-            0 0 100px rgba(255, 255, 255, 0.7);
+            0 0 25px rgba(255, 215, 0, 1),
+            0 0 50px rgba(255, 215, 0, 0.9),
+            0 0 100px rgba(255, 215, 0, 0.7);
     }
 }
 
@@ -2237,10 +2238,28 @@ body.in-game #mainMenu {
     0%, 100% { 
         opacity: 0.6;
         transform: translateX(-50%) scale(1);
+        background:
+          linear-gradient(to bottom,
+            rgba(255, 215, 0, 0.15) 0%,
+            rgba(255, 215, 0, 0.12) 20%,
+            rgba(255, 215, 0, 0.08) 40%,
+            rgba(255, 215, 0, 0.05) 60%,
+            rgba(255, 215, 0, 0.025) 80%,
+            transparent 100%);
+        clip-path: polygon(45% 0%, 55% 0%, 100% 100%, 0% 100%);
     }
     50% { 
-        opacity: 0.8;
-        transform: translateX(-50%) scale(1.02);
+        opacity: 0.9;
+        transform: translateX(-50%) scale(1.05);
+        background:
+          linear-gradient(to bottom,
+            rgba(255, 215, 0, 0.25) 0%,
+            rgba(255, 215, 0, 0.20) 20%,
+            rgba(255, 215, 0, 0.15) 40%,
+            rgba(255, 215, 0, 0.10) 60%,
+            rgba(255, 215, 0, 0.05) 80%,
+            transparent 100%);
+        clip-path: polygon(43% 0%, 57% 0%, 100% 100%, 0% 100%);
     }
 }
 
@@ -2257,10 +2276,22 @@ body.in-game #mainMenu {
     0%, 100% { 
         opacity: 0.4;
         transform: rotate(-12deg) scale(1);
+        background: 
+            radial-gradient(ellipse 160px 350px at center top,
+                rgba(255, 215, 0, 0.12) 0%,
+                rgba(255, 215, 0, 0.09) 40%,
+                rgba(255, 215, 0, 0.05) 70%,
+                transparent 100%);
     }
     50% { 
-        opacity: 0.6;
+        opacity: 0.7;
         transform: rotate(-10deg) scale(1.01);
+        background: 
+            radial-gradient(ellipse 160px 350px at center top,
+                rgba(255, 215, 0, 0.18) 0%,
+                rgba(255, 215, 0, 0.14) 40%,
+                rgba(255, 215, 0, 0.08) 70%,
+                transparent 100%);
     }
 }
 
@@ -2268,10 +2299,22 @@ body.in-game #mainMenu {
     0%, 100% { 
         opacity: 0.4;
         transform: rotate(12deg) scale(1);
+        background: 
+            radial-gradient(ellipse 160px 350px at center top,
+                rgba(255, 215, 0, 0.12) 0%,
+                rgba(255, 215, 0, 0.09) 40%,
+                rgba(255, 215, 0, 0.05) 70%,
+                transparent 100%);
     }
     50% { 
-        opacity: 0.6;
+        opacity: 0.7;
         transform: rotate(10deg) scale(1.01);
+        background: 
+            radial-gradient(ellipse 160px 350px at center top,
+                rgba(255, 215, 0, 0.18) 0%,
+                rgba(255, 215, 0, 0.14) 40%,
+                rgba(255, 215, 0, 0.08) 70%,
+                transparent 100%);
     }
 }
 
@@ -2281,9 +2324,9 @@ body.in-game #mainMenu {
 }
 
 .game-logo .logo-image {
-    /* Tamanho agora escala de forma fluida conforme largura da viewport */
-    width: clamp(160px, 22vw, 240px);
-    max-width: 240px;
+    /* Tamanho reduzido e ajustado para ficar menor */
+    width: clamp(140px, 18vw, 200px);
+    max-width: 200px;
     height: auto;
     filter: drop-shadow(0 6px 14px rgba(0,0,0,0.55))
             drop-shadow(0 3px 8px rgba(0,0,0,0.35))
@@ -2305,9 +2348,9 @@ body.in-game #mainMenu {
     height: 120%;
     background: 
         radial-gradient(ellipse at center,
-            rgba(255, 255, 255, 0.04) 0%,
-            rgba(255, 215, 0, 0.02) 30%,
-            rgba(64, 156, 255, 0.015) 60%,
+            rgba(255, 215, 0, 0.06) 0%, /* Dourado */
+            rgba(255, 215, 0, 0.04) 30%,
+            rgba(255, 215, 0, 0.025) 60%,
             transparent 80%);
     border-radius: 50%;
     animation: stageLight 6s ease-in-out infinite;
@@ -2330,9 +2373,9 @@ body.in-game #mainMenu {
     filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6))
             drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))
             drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))
-            drop-shadow(0 0 15px rgba(255, 255, 255, 0.4))
-            drop-shadow(0 0 25px rgba(255, 255, 255, 0.3))
-            drop-shadow(0 0 35px rgba(255, 255, 255, 0.2));
+            drop-shadow(0 0 15px rgba(255, 223, 0, 0.8)) /* Dourado brilhante */
+            drop-shadow(0 0 25px rgba(255, 215, 0, 0.6))
+            drop-shadow(0 0 35px rgba(255, 200, 0, 0.4));
     transform: scale(1.02) translateY(-1px);
 }
 
@@ -2341,48 +2384,51 @@ body.in-game #mainMenu {
     filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6))
             drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))
             drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))
-            drop-shadow(0 0 20px rgba(255, 255, 255, 0.6))
-            drop-shadow(0 0 35px rgba(255, 255, 255, 0.4))
-            drop-shadow(0 0 50px rgba(255, 255, 255, 0.3));
+            drop-shadow(0 0 20px rgba(255, 223, 0, 0.9)) /* Dourado mais brilhante */
+            drop-shadow(0 0 35px rgba(255, 215, 0, 0.7))
+            drop-shadow(0 0 50px rgba(255, 200, 0, 0.5));
     transform: scale(1.02) translateY(-1px);
 }
 
 .game-logo:hover::before {
     background: 
-        radial-gradient(ellipse 250px 400px at center top,
-            rgba(255, 255, 255, 0.30) 0%,
-            rgba(255, 255, 255, 0.25) 30%,
-            rgba(255, 255, 255, 0.15) 60%,
-            rgba(255, 255, 255, 0.08) 80%,
+        linear-gradient(to bottom,
+            rgba(255, 223, 0, 0.35) 0%, /* Dourado brilhante */
+            rgba(255, 215, 0, 0.30) 20%,
+            rgba(255, 200, 0, 0.20) 40%,
+            rgba(255, 215, 0, 0.15) 60%,
+            rgba(255, 215, 0, 0.08) 80%,
             transparent 100%) !important;
+    transform: translateX(-50%) scale(1.15) !important;
+    clip-path: polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%) !important;
 }
 
 .game-logo:hover::after {
     box-shadow: 
-        0 0 40px rgba(255, 255, 255, 1.5),
-        0 0 70px rgba(255, 255, 255, 1.2),
-        80px 0 40px rgba(255, 255, 255, 1.5),
-        80px 0 70px rgba(255, 255, 255, 1.2) !important;
+        0 0 40px rgba(255, 223, 0, 1.8), /* Dourado super brilhante */
+        0 0 70px rgba(255, 215, 0, 1.4),
+        80px 0 40px rgba(255, 223, 0, 1.8),
+        80px 0 70px rgba(255, 215, 0, 1.4) !important;
 }
 
 /* Intensificar reflexo do chão quando hover no logo - intensidade alta */
 .game-logo:hover + .floor-reflection {
     background: 
         radial-gradient(ellipse 320px 50px at center,
-            rgba(255, 255, 255, 0.50) 0%,
-            rgba(255, 255, 255, 0.45) 8%,
-            rgba(255, 255, 255, 0.40) 15%,
-            rgba(255, 255, 255, 0.35) 22%,
-            rgba(255, 255, 255, 0.30) 30%,
-            rgba(255, 255, 255, 0.25) 38%,
-            rgba(255, 255, 255, 0.20) 45%,
-            rgba(255, 255, 255, 0.16) 52%,
-            rgba(255, 255, 255, 0.12) 60%,
-            rgba(255, 255, 255, 0.09) 68%,
-            rgba(255, 255, 255, 0.06) 75%,
-            rgba(255, 255, 255, 0.04) 82%,
-            rgba(255, 255, 255, 0.025) 88%,
-            rgba(255, 255, 255, 0.015) 94%,
+            rgba(255, 223, 0, 0.60) 0%, /* Dourado brilhante */
+            rgba(255, 215, 0, 0.55) 8%,
+            rgba(255, 200, 0, 0.50) 15%,
+            rgba(255, 215, 0, 0.45) 22%,
+            rgba(255, 215, 0, 0.40) 30%,
+            rgba(255, 215, 0, 0.35) 38%,
+            rgba(255, 215, 0, 0.30) 45%,
+            rgba(255, 215, 0, 0.25) 52%,
+            rgba(255, 215, 0, 0.20) 60%,
+            rgba(255, 215, 0, 0.15) 68%,
+            rgba(255, 215, 0, 0.10) 75%,
+            rgba(255, 215, 0, 0.06) 82%,
+            rgba(255, 215, 0, 0.035) 88%,
+            rgba(255, 215, 0, 0.020) 94%,
             transparent 100%) !important;
     filter: blur(7px);
     opacity: 1.4;
@@ -2504,20 +2550,20 @@ body.in-game #mainMenu {
 .floor-reflection {
   position: relative;
   display: block;
-  margin: -0.35rem auto 1.1rem; /* pequeno overlap para parecer encostado na base do logo */
+  margin: 0 auto 2rem; /* Espaço para o logo sobrepor e depois espaço para os botões */
   width: clamp(180px, 52%, 340px);
   height: 34px;
   background: radial-gradient(ellipse 75% 55% at center,
-      rgba(255,255,255,0.22) 0%,
-      rgba(255,255,255,0.16) 26%,
-      rgba(255,255,255,0.09) 48%,
-      rgba(255,255,255,0.05) 65%,
-      rgba(255,255,255,0.03) 78%,
+      rgba(255, 215, 0, 0.25) 0%, /* Dourado */
+      rgba(255, 215, 0, 0.18) 26%,
+      rgba(255, 215, 0, 0.11) 48%,
+      rgba(255, 215, 0, 0.07) 65%,
+      rgba(255, 215, 0, 0.04) 78%,
       transparent 90%);
   border-radius: 50%;
   filter: blur(6px);
   pointer-events: none;
-  z-index: 1;
+  z-index: 1; /* Abaixo do logo */
   opacity: 0.85;
   animation: floorReflection 5s ease-in-out infinite;
   transition: width 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
@@ -2578,20 +2624,24 @@ body.in-game #mainMenu {
 .game-logo::before {
     content: '';
     position: absolute;
-    top: -300px;
+    top: -350px; /* Alinhado com holofotes */
     left: 50%;
     transform: translateX(-50%);
-    width: 250px;
+    width: 120px; /* Largura da base do cone */
+    height: 400px; /* Altura do cone */
     background:
-      radial-gradient(ellipse 85% 60% at center,
-        rgba(255,255,255,0.12) 0%,
-        rgba(255,255,255,0.09) 25%,
-        rgba(255,255,255,0.05) 55%,
-        rgba(255,255,255,0.025) 75%,
-        transparent 90%);
+      linear-gradient(to bottom,
+        rgba(255, 215, 0, 0.15) 0%, /* Dourado no topo */
+        rgba(255, 215, 0, 0.12) 20%,
+        rgba(255, 215, 0, 0.08) 40%,
+        rgba(255, 215, 0, 0.05) 60%,
+        rgba(255, 215, 0, 0.025) 80%,
+        transparent 100%);
+    clip-path: polygon(45% 0%, 55% 0%, 100% 100%, 0% 100%); /* Início pequeno, ponta larga */
     z-index: 1;
     animation: centralBeam 4s ease-in-out infinite;
     transition: background 0.3s ease;
+    filter: blur(3px);
 }
 
 /* Holofotes laterais - fontes de luz mais intensas e suaves */
@@ -2603,15 +2653,15 @@ body.in-game #mainMenu {
     left: -80px;
     width: 4px;
     height: 4px;
-    background: rgba(255, 255, 255, 1);
+    background: rgba(255, 215, 0, 1); /* Dourado */
     border-radius: 50%;
     box-shadow: 
-        0 0 25px rgba(255, 255, 255, 1),
-        0 0 45px rgba(255, 255, 255, 0.8),
-        0 0 60px rgba(255, 255, 255, 0.6),
-        80px 0 25px rgba(255, 255, 255, 1),
-        80px 0 45px rgba(255, 255, 255, 0.8),
-        80px 0 60px rgba(255, 255, 255, 0.6);
+        0 0 25px rgba(255, 215, 0, 1),
+        0 0 45px rgba(255, 215, 0, 0.8),
+        0 0 60px rgba(255, 215, 0, 0.6),
+        80px 0 25px rgba(255, 215, 0, 1),
+        80px 0 45px rgba(255, 215, 0, 0.8),
+        80px 0 60px rgba(255, 215, 0, 0.6);
     pointer-events: none;
     z-index: 10;
     animation: sideSpotlights 5s ease-in-out infinite;
@@ -2629,9 +2679,9 @@ body.in-game #mainMenu {
     height: 350px;
     background: 
         radial-gradient(ellipse 160px 350px at center top,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(255, 255, 255, 0.09) 40%,
-            rgba(255, 255, 255, 0.05) 70%,
+            rgba(255, 215, 0, 0.12) 0%, /* Dourado */
+            rgba(255, 215, 0, 0.09) 40%,
+            rgba(255, 215, 0, 0.05) 70%,
             transparent 100%);
     transform: rotate(-3deg);
     clip-path: polygon(42% 0%, 58% 0%, 85% 100%, 15% 100%);
@@ -2651,9 +2701,9 @@ body.in-game #mainMenu {
     height: 350px;
     background: 
         radial-gradient(ellipse 160px 350px at center top,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(255, 255, 255, 0.09) 40%,
-            rgba(255, 255, 255, 0.05) 70%,
+            rgba(255, 215, 0, 0.12) 0%, /* Dourado */
+            rgba(255, 215, 0, 0.09) 40%,
+            rgba(255, 215, 0, 0.05) 70%,
             transparent 100%);
     transform: rotate(3deg);
     clip-path: polygon(42% 0%, 58% 0%, 85% 100%, 15% 100%);
@@ -2668,18 +2718,18 @@ body.in-game #mainMenu {
 .game-logo:hover ~ .menu-buttons::before {
     background: 
         radial-gradient(ellipse 160px 350px at center top,
-            rgba(255, 255, 255, 0.18) 0%,
-            rgba(255, 255, 255, 0.15) 40%,
-            rgba(255, 255, 255, 0.10) 70%,
+            rgba(255, 223, 0, 0.22) 0%, /* Dourado brilhante */
+            rgba(255, 215, 0, 0.18) 40%,
+            rgba(255, 200, 0, 0.12) 70%,
             transparent 100%) !important;
 }
 
 .game-logo:hover ~ .menu-buttons::after {
     background: 
         radial-gradient(ellipse 160px 350px at center top,
-            rgba(255, 255, 255, 0.18) 0%,
-            rgba(255, 255, 255, 0.15) 40%,
-            rgba(255, 255, 255, 0.10) 70%,
+            rgba(255, 223, 0, 0.22) 0%, /* Dourado brilhante */
+            rgba(255, 215, 0, 0.18) 40%,
+            rgba(255, 200, 0, 0.12) 70%,
             transparent 100%) !important;
 }
 
@@ -3755,7 +3805,7 @@ body.in-game #mainMenu {
 /* Mobile até 480px */
 @media (max-width: 480px) {
   .main-menu { padding: 0.75rem 0.75rem 1.1rem; }
-  .game-logo { margin-bottom: 1.1rem; }
+  .game-logo { margin-top: 3rem; margin-bottom: -0.5rem; }
   .game-logo .logo-image { width: clamp(140px, 50vw, 185px); }
   .menu-buttons { max-width: 250px; gap: 0.6rem; padding: 0.5rem 0.4rem; }
   .menu-btn { padding: 10px 16px !important; font-size: 0.9rem !important; }
@@ -3766,7 +3816,7 @@ body.in-game #mainMenu {
 /* 481px a 768px */
 @media (min-width: 481px) and (max-width: 768px) {
   .main-menu { padding: 1rem 1rem 1.75rem; }
-  .game-logo { margin-bottom: 1.5rem; }
+  .game-logo { margin-top: 3rem; margin-bottom: -0.8rem; }
   .game-logo .logo-image { width: clamp(170px, 28vw, 215px); }
   .menu-buttons { max-width: 290px; gap: 0.75rem; padding: 0.8rem 0.6rem; }
   .menu-btn { padding: 12px 20px !important; font-size: 0.95rem !important; }
@@ -3836,7 +3886,7 @@ body.in-game #mainMenu {
     overflow-y: auto;
     padding-top: 1rem;
   }
-  .game-logo { margin-bottom: 1rem; }
+  .game-logo { margin-top: 3rem; margin-bottom: -0.5rem; }
 }
 
 /* ===== NEW MODALS STYLES ===== */
