@@ -3,9 +3,9 @@
  * Provides PWA functionality, offline support, and caching
  */
 
-const CACHE_NAME = 'rising-star-v1.3.1';
-const STATIC_CACHE = 'rising-star-static-v1.1.1';
-const DYNAMIC_CACHE = 'rising-star-dynamic-v1.1.1';
+const CACHE_NAME = 'rising-star-v1.4.0';
+const STATIC_CACHE = 'rising-star-static-v1.2.0';
+const DYNAMIC_CACHE = 'rising-star-dynamic-v1.2.0';
 
 // Files to cache immediately
 const STATIC_FILES = [
@@ -15,15 +15,25 @@ const STATIC_FILES = [
     '/styles/main.css',
     '/styles/components.css',
     '/styles/responsive.css',
+    '/styles/notifications.css',
+    '/styles/game-hybrid.css',
+    '/styles/menu-navigation.css',
+    '/styles/pages-design.css',
     '/js/main.js',
     '/js/core/game-engine.js',
     '/js/core/ai-simulation.js',
     '/js/core/data-manager.js',
     '/js/ui/interface-manager.js',
     '/js/ui/main-menu.js',
-    // Ajustado para usar ícones existentes no projeto
-    '/assets/icons/favicon.png',
-    '/assets/icons/favicon.svg'
+    // Ícones e manifest
+    '/assets/icons/favicon.ico',
+    '/assets/icons/favicon-16x16.png',
+    '/assets/icons/favicon-32x32.png',
+    '/assets/icons/favicon-96x96.png',
+    '/assets/icons/apple-touch-icon.png',
+    '/assets/icons/favicon.svg',
+    '/assets/icons/icon-192.png',
+    '/assets/icons/icon-512.png'
 ];
 
 // Install event - cache static files
@@ -321,9 +331,9 @@ self.addEventListener('push', (event) => {
     const options = {
         title: data.title || 'Rising Star: Music Mogul',
         body: data.body || 'Nova atualização disponível!',
-        // Ajustado para arquivos existentes
-        icon: '/assets/icons/favicon.png',
-        badge: '/assets/icons/favicon.png',
+    // Ícones de notificação (usar 192px para melhor visual em Android)
+    icon: '/assets/icons/icon-192.png',
+    badge: '/assets/icons/icon-192.png',
         tag: data.tag || 'general',
         requireInteraction: data.requireInteraction || false,
         actions: data.actions || [],
