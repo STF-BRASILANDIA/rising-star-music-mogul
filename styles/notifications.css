@@ -136,41 +136,29 @@
 .notification-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
     margin-bottom: 12px;
 }
 
 .notification-source {
     display: flex;
     align-items: center;
-    gap: 10px;
-    /* garante área vertical para logos maiores */
-    min-height: clamp(28px, 4.5vh, 42px);
-    flex-wrap: nowrap;
+    gap: 8px;
 }
 
 .source-logo {
-    /* aumenta o tamanho e preserva proporção para wordmarks */
-    height: clamp(28px, 4.5vh, 42px);
-    width: auto;
-    max-width: min(45%, 180px);
-    object-fit: contain;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .source-name {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 13px;
     font-weight: 500;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
-    /* evita quebra feia quando logo é muito largo */
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .notification-time {
@@ -399,15 +387,4 @@
     .empty-feed p {
         font-size: 14px;
     }
-}
-
-/* Variação opcional para logos mais largos (wordmarks) */
-.source-logo.logo-wide {
-        max-width: min(60%, 260px);
-        height: clamp(28px, 4.5vh, 48px);
-}
-
-/* Responsividade: em telas menores, conceder mais largura ao logo */
-@media (max-width: 480px) {
-    .source-logo { max-width: min(60%, 200px); }
 }
