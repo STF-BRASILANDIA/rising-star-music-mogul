@@ -29,6 +29,173 @@ export class MainMenu {
         setInterval(() => {
             this.updateSyncStatus();
         }, 5000);
+
+        // Verificar se existe save game e atualizar botão continuar
+        this.checkContinueGameStatus();
+    }
+
+    /**
+     * Verifica se existe um save game principal e atualiza o botão continuar
+     */
+    async checkContinueGameStatus() {
+        try {
+            const continueBtn = document.getElementById('continueGameBtn');
+            if (!continueBtn) return;
+
+            // Verificar se existe save game através do data manager
+            if (this.gameEngine?.systems?.dataManager) {
+                const saveData = await this.gameEngine.systems.dataManager.loadGame();
+                if (saveData && saveData.data) {
+                    // Tem save game - habilitar botão
+                    continueBtn.style.display = 'block';
+                    continueBtn.disabled = false;
+                    continueBtn.classList.remove('disabled');
+                    console.log('✅ Save game encontrado - botão continuar habilitado');
+                } else {
+                    // Sem save game - esconder botão
+                    continueBtn.style.display = 'none';
+                    console.log('❌ Nenhum save game encontrado - botão continuar oculto');
+                }
+            } else {
+                // DataManager não disponível - usar fallback com localStorage
+                const hasSave = this.checkLocalStorageSave();
+                if (hasSave) {
+                    continueBtn.style.display = 'block';
+                    continueBtn.disabled = false;
+                    continueBtn.classList.remove('disabled');
+                    console.log('✅ Save game local encontrado - botão continuar habilitado');
+                } else {
+                    continueBtn.style.display = 'none';
+                    console.log('❌ Nenhum save game local encontrado - botão continuar oculto');
+                }
+            }
+        } catch (error) {
+            console.error('❌ Erro ao verificar status do save game:', error);
+            // Em caso de erro, esconder o botão por segurança
+            const continueBtn = document.getElementById('continueGameBtn');
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
+        }
+    }
+
+    /**
+     * Verifica se existe save game no localStorage (fallback)
+     */
+    checkLocalStorageSave() {
+        try {
+            // Verificar diferentes chaves de save que podem existir
+            const saveKeys = [
+                'risingstar_save',
+                'risingstar_current_save',
+                'game_save_data',
+                'current_save'
+            ];
+
+            for (const key of saveKeys) {
+                const saveData = localStorage.getItem(key);
+                if (saveData) {
+                    try {
+                        const parsed = JSON.parse(saveData);
+                        if (parsed && (parsed.data || parsed.player || parsed.gameData)) {
+                            return true;
+                        }
+                    } catch (e) {
+                        // Ignorar erros de parse e continuar verificando outras chaves
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('❌ Erro ao verificar localStorage:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Continua o jogo carregando o save principal
+     */
+    async continueGame() {
+        try {
+            console.log('🎮 Continuando jogo...');
+            
+            if (this.gameEngine?.systems?.dataManager) {
+                // Usar data manager para carregar o jogo
+                const saveData = await this.gameEngine.systems.dataManager.loadGame();
+                if (saveData && saveData.data) {
+                    console.log('📁 Save game carregado com sucesso');
+                    // Inicializar o jogo com os dados carregados
+                    await this.gameEngine.loadGameFromSave(saveData);
+                    console.log('✅ Jogo continuado com sucesso');
+                } else {
+                    throw new Error('Save game não encontrado');
+                }
+            } else {
+                // Fallback: tentar carregar do localStorage
+                console.log('⚠️ DataManager não disponível, usando fallback localStorage');
+                const loaded = this.loadFromLocalStorage();
+                if (loaded) {
+                    console.log('✅ Jogo carregado do localStorage');
+                } else {
+                    throw new Error('Não foi possível carregar o save game');
+                }
+            }
+        } catch (error) {
+            console.error('❌ Erro ao continuar jogo:', error);
+            
+            // Mostrar notificação de erro para o usuário
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'error',
+                    title: 'Erro ao Carregar',
+                    message: 'Não foi possível carregar o save game. Tente criar um novo jogo.',
+                    duration: 5000
+                });
+            } else {
+                alert('Erro ao carregar o save game. Tente criar um novo jogo.');
+            }
+            
+            // Reexaminar status do botão continuar
+            this.checkContinueGameStatus();
+        }
+    }
+
+    /**
+     * Carrega jogo do localStorage (método fallback)
+     */
+    loadFromLocalStorage() {
+        try {
+            const saveKeys = [
+                'risingstar_save',
+                'risingstar_current_save',
+                'game_save_data',
+                'current_save'
+            ];
+
+            for (const key of saveKeys) {
+                const saveData = localStorage.getItem(key);
+                if (saveData) {
+                    try {
+                        const parsed = JSON.parse(saveData);
+                        if (parsed && (parsed.data || parsed.player || parsed.gameData)) {
+                            console.log(`📁 Carregando save do localStorage (${key})`);
+                            // Aqui você implementaria a lógica específica de carregar do save
+                            // Por enquanto, apenas redireciona para o dashboard
+                            if (this.gameEngine && typeof this.gameEngine.showDashboard === 'function') {
+                                this.gameEngine.showDashboard();
+                                return true;
+                            }
+                        }
+                    } catch (e) {
+                        console.error(`❌ Erro ao parsear save ${key}:`, e);
+                    }
+                }
+            }
+            return false;
+        } catch (error) {
+            console.error('❌ Erro ao carregar do localStorage:', error);
+            return false;
+        }
     }
     
     show() {
@@ -40,6 +207,8 @@ export class MainMenu {
             mainMenuElement.style.display = 'block';
             console.log('✅ Menu principal exibido');
             this.updateSavedGamesList();
+            // Verificar status do botão continuar sempre que o menu for exibido
+            this.checkContinueGameStatus();
         } else {
             console.error('❌ Elemento #mainMenu não encontrado no DOM!');
         }
@@ -83,6 +252,16 @@ export class MainMenu {
             loadGameBtn.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 this.showLoadGameModal();
+            });
+        }
+        
+        // Botão Continuar Jogo
+        const continueGameBtn = document.getElementById('continueGameBtn');
+        if (continueGameBtn) {
+            continueGameBtn.addEventListener('click', () => this.continueGame());
+            continueGameBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.continueGame();
             });
         }
         

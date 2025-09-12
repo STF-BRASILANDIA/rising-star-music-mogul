@@ -891,6 +891,16 @@ class NotificationModals {
                         <div class="toggle-switch" onclick="notificationModals.toggleSetting(this, 'darkmode')"></div>
                     </div>
                 </div>
+
+                <div class="settings-section">
+                    <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">💾 Dados e Armazenamento</h4>
+                    <div class="settings-option" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Gerenciar Dados do Jogo</span>
+                        <button class="notification-btn secondary" onclick="notificationModals.openStorageModal()">
+                            <i class="fas fa-database"></i> Abrir
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="notification-actions">
                     <button class="notification-btn success" onclick="notificationModals.saveSettings()">
@@ -1546,6 +1556,370 @@ class NotificationModals {
             }
         };
         this.openNewsModal(newsData);
+    }
+
+    /**
+     * 💾 Modal para Gerenciamento de Armazenamento
+     */
+    openStorageModal() {
+        // Calcular dados de armazenamento
+        const storageData = this.calculateStorageInfo();
+        
+        const content = `
+            <div class="notification-card">
+                <div class="notification-header">
+                    <div class="notification-icon achievement">💾</div>
+                    <div class="notification-meta">
+                        <div class="notification-source">Gerenciamento de Dados</div>
+                        <div class="notification-timestamp">Controle seu armazenamento local</div>
+                    </div>
+                </div>
+                
+                <h3 class="notification-title">Informações de Armazenamento</h3>
+                
+                <div class="settings-section">
+                    <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">📊 Uso de Armazenamento</h4>
+                    
+                    <div class="storage-info" style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; margin-bottom: 16px; backdrop-filter: blur(10px);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-bottom: 4px;">Total Usado</div>
+                                <div style="font-size: 18px; font-weight: 600; color: #007AFF;">${storageData.totalSizeFormatted}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-bottom: 4px;">Saves do Jogo</div>
+                                <div style="font-size: 18px; font-weight: 600; color: #34C759;">${storageData.gameDataCount} saves</div>
+                            </div>
+                        </div>
+                        
+                        <div class="storage-breakdown" style="font-size: 14px; opacity: 0.8;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>• Dados do Jogador:</span>
+                                <span>${(storageData.playerDataSize / 1024).toFixed(1)} KB</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>• Saves do Jogo:</span>
+                                <span>${(storageData.gameDataSize / 1024).toFixed(1)} KB</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>• Configurações:</span>
+                                <span>${(storageData.settingsSize / 1024).toFixed(1)} KB</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>• Outros dados:</span>
+                                <span>${(storageData.otherSize / 1024).toFixed(1)} KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">⚡ Ações Rápidas</h4>
+                    
+                    <div class="storage-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button class="notification-btn primary" onclick="notificationModals.exportGameData()">
+                            <i class="fas fa-download"></i> Exportar Dados
+                        </button>
+                        <button class="notification-btn secondary" onclick="notificationModals.importGameData()">
+                            <i class="fas fa-upload"></i> Importar Dados
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-actions">
+                    <button class="notification-btn secondary" onclick="notificationModals.clearOldSaves()">
+                        <i class="fas fa-broom"></i> Limpar Saves Antigos
+                    </button>
+                    <button class="notification-btn danger" onclick="notificationModals.confirmClearAllData()">
+                        <i class="fas fa-trash"></i> Limpar Todos os Dados
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const modal = this.modalSystem.createModal({
+            id: 'storage-modal',
+            title: 'Gerenciamento de Armazenamento',
+            content,
+            size: 'notif-modal'
+        });
+
+        this.modalSystem.openModal(modal);
+        return modal;
+    }
+
+    /**
+     * Calcula informações de armazenamento
+     */
+    calculateStorageInfo() {
+        let totalSize = 0;
+        let gameDataSize = 0;
+        let playerDataSize = 0;
+        let settingsSize = 0;
+        let otherSize = 0;
+        let gameDataCount = 0;
+
+        // Analisar localStorage
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                const itemSize = localStorage.getItem(key).length;
+                totalSize += itemSize;
+
+                if (key.includes('save') || key.includes('game_data')) {
+                    gameDataSize += itemSize;
+                    gameDataCount++;
+                } else if (key.includes('player') || key.includes('character')) {
+                    playerDataSize += itemSize;
+                } else if (key.includes('settings') || key.includes('config')) {
+                    settingsSize += itemSize;
+                } else {
+                    otherSize += itemSize;
+                }
+            }
+        }
+
+        return {
+            totalSize,
+            totalSizeFormatted: totalSize > 1024 * 1024 ? 
+                (totalSize / (1024 * 1024)).toFixed(1) + ' MB' : 
+                (totalSize / 1024).toFixed(1) + ' KB',
+            gameDataSize,
+            playerDataSize,
+            settingsSize,
+            otherSize,
+            gameDataCount
+        };
+    }
+
+    /**
+     * Exporta dados do jogo
+     */
+    exportGameData() {
+        try {
+            const gameData = {};
+            
+            // Coletar dados relevantes do localStorage
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key) && 
+                    (key.includes('risingstar') || key.includes('save') || key.includes('game'))) {
+                    gameData[key] = localStorage.getItem(key);
+                }
+            }
+
+            const dataStr = JSON.stringify(gameData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(dataBlob);
+            downloadLink.download = `rising-star-backup-${new Date().toISOString().split('T')[0]}.json`;
+            downloadLink.click();
+            
+            // Mostrar confirmação
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'success',
+                    title: 'Dados Exportados',
+                    message: 'Backup dos seus dados criado com sucesso!',
+                    duration: 3000
+                });
+            }
+        } catch (error) {
+            console.error('❌ Erro ao exportar dados:', error);
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'error',
+                    title: 'Erro na Exportação',
+                    message: 'Não foi possível criar o backup dos dados.',
+                    duration: 3000
+                });
+            }
+        }
+    }
+
+    /**
+     * Importa dados do jogo
+     */
+    importGameData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const gameData = JSON.parse(e.target.result);
+                    
+                    // Confirmar antes de importar
+                    if (confirm('Importar dados irá sobrescrever seus dados atuais. Continuar?')) {
+                        for (let key in gameData) {
+                            localStorage.setItem(key, gameData[key]);
+                        }
+                        
+                        if (window.notificationSystem) {
+                            window.notificationSystem.show({
+                                type: 'success',
+                                title: 'Dados Importados',
+                                message: 'Dados restaurados com sucesso! Recarregue a página.',
+                                duration: 5000
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Erro ao importar dados:', error);
+                    if (window.notificationSystem) {
+                        window.notificationSystem.show({
+                            type: 'error',
+                            title: 'Erro na Importação',
+                            message: 'Arquivo de backup inválido.',
+                            duration: 3000
+                        });
+                    }
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    /**
+     * Remove saves antigos (mantém apenas os 3 mais recentes)
+     */
+    clearOldSaves() {
+        try {
+            const saves = [];
+            
+            // Coletar todos os saves
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key) && 
+                    (key.includes('save') || key.includes('backup'))) {
+                    const data = localStorage.getItem(key);
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (parsed.timestamp || parsed.lastUpdated) {
+                            saves.push({
+                                key,
+                                timestamp: parsed.timestamp || parsed.lastUpdated || 0
+                            });
+                        }
+                    } catch (e) {
+                        // Se não conseguir parsear, adicionar com timestamp 0
+                        saves.push({ key, timestamp: 0 });
+                    }
+                }
+            }
+            
+            // Ordenar por timestamp (mais recente primeiro)
+            saves.sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Remover saves antigos (manter apenas os 3 mais recentes)
+            const savesToRemove = saves.slice(3);
+            
+            if (savesToRemove.length > 0) {
+                savesToRemove.forEach(save => {
+                    localStorage.removeItem(save.key);
+                });
+                
+                if (window.notificationSystem) {
+                    window.notificationSystem.show({
+                        type: 'success',
+                        title: 'Limpeza Concluída',
+                        message: `${savesToRemove.length} saves antigos foram removidos.`,
+                        duration: 3000
+                    });
+                }
+            } else {
+                if (window.notificationSystem) {
+                    window.notificationSystem.show({
+                        type: 'info',
+                        title: 'Nenhuma Ação Necessária',
+                        message: 'Não há saves antigos para remover.',
+                        duration: 3000
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('❌ Erro ao limpar saves antigos:', error);
+        }
+    }
+
+    /**
+     * Confirma limpeza de todos os dados
+     */
+    confirmClearAllData() {
+        const confirmed = confirm(
+            'ATENÇÃO: Esta ação irá apagar TODOS os seus dados do jogo, incluindo saves, configurações e progresso.\n\n' +
+            'Esta ação é IRREVERSÍVEL!\n\n' +
+            'Tem certeza de que deseja continuar?'
+        );
+        
+        if (confirmed) {
+            const doubleConfirm = confirm('Última confirmação: Realmente deseja apagar TODOS os dados?');
+            
+            if (doubleConfirm) {
+                this.clearAllGameData();
+            }
+        }
+    }
+
+    /**
+     * Remove todos os dados do jogo
+     */
+    clearAllGameData() {
+        try {
+            // Identificar e remover chaves relacionadas ao jogo
+            const keysToRemove = [];
+            
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key) && 
+                    (key.includes('risingstar') || key.includes('save') || 
+                     key.includes('game') || key.includes('player') ||
+                     key.includes('character'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+            
+            // Limpar IndexedDB se disponível
+            if (window.game?.systems?.dataManager?.clearAllData) {
+                window.game.systems.dataManager.clearAllData();
+            }
+            
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'success',
+                    title: 'Dados Removidos',
+                    message: `${keysToRemove.length} entradas foram removidas. Recarregue a página.`,
+                    duration: 5000
+                });
+            }
+            
+            // Fechar modal
+            this.modalSystem.closeCurrentModal();
+            
+            // Recarregar a página após 2 segundos
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Erro ao limpar dados:', error);
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'error',
+                    title: 'Erro na Limpeza',
+                    message: 'Não foi possível remover todos os dados.',
+                    duration: 3000
+                });
+            }
+        }
     }
 }
 

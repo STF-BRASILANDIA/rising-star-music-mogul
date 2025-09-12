@@ -2815,6 +2815,111 @@ body.in-game #mainMenu {
     transform: translateY(-2px) scale(1.01);
 }
 
+/* Botão "Continuar Jogo" estilo especial */
+.menu-btn.continue-game {
+    background: 
+        linear-gradient(135deg, 
+            rgba(34, 197, 94, 0.9) 0%, 
+            rgba(22, 163, 74, 0.85) 25%,
+            rgba(21, 128, 61, 0.8) 50%,
+            rgba(34, 197, 94, 0.9) 100%);
+    border: 2px solid rgba(34, 197, 94, 0.8);
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 
+        0 1px 3px rgba(0, 0, 0, 0.3),
+        0 0 10px rgba(34, 197, 94, 0.5);
+    box-shadow: 
+        0 12px 40px rgba(34, 197, 94, 0.3),
+        0 0 60px rgba(22, 163, 74, 0.2),
+        0 0 100px rgba(21, 128, 61, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    animation: continueButtonPulse 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn.continue-game::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle, 
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 70%);
+    animation: continueGlow 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes continueButtonPulse {
+    0%, 100% { 
+        box-shadow: 
+            0 12px 40px rgba(34, 197, 94, 0.3),
+            0 0 60px rgba(22, 163, 74, 0.2),
+            0 0 100px rgba(21, 128, 61, 0.1),
+            inset 0 2px 0 rgba(255, 255, 255, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 
+            0 16px 50px rgba(34, 197, 94, 0.4),
+            0 0 80px rgba(22, 163, 74, 0.3),
+            0 0 120px rgba(21, 128, 61, 0.2),
+            inset 0 2px 0 rgba(255, 255, 255, 0.4);
+        transform: scale(1.01);
+    }
+}
+
+@keyframes continueGlow {
+    0%, 100% { 
+        opacity: 0.2;
+        transform: rotate(0deg) scale(1);
+    }
+    50% { 
+        opacity: 0.4;
+        transform: rotate(180deg) scale(1.05);
+    }
+}
+
+.menu-btn.continue-game:hover {
+    background: 
+        linear-gradient(135deg, 
+            rgba(34, 197, 94, 0.95) 0%, 
+            rgba(22, 163, 74, 0.9) 25%,
+            rgba(21, 128, 61, 0.85) 50%,
+            rgba(34, 197, 94, 0.95) 100%);
+    border-color: rgba(34, 197, 94, 1);
+    box-shadow: 
+        0 20px 60px rgba(34, 197, 94, 0.5),
+        0 0 100px rgba(22, 163, 74, 0.4),
+        0 0 140px rgba(21, 128, 61, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px) scale(1.02);
+}
+
+.menu-btn.continue-game.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    animation: none;
+}
+
+.menu-btn.continue-game.disabled::after {
+    display: none;
+}
+
+.menu-btn.continue-game.disabled:hover {
+    transform: none;
+    box-shadow: 
+        0 12px 40px rgba(34, 197, 94, 0.2),
+        0 0 60px rgba(22, 163, 74, 0.1),
+        0 0 100px rgba(21, 128, 61, 0.05),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
 /* Botão especial "Novo Jogo" estilo premium */
 .menu-btn.new-game {
     background: 
