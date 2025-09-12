@@ -1113,3 +1113,23 @@
     opacity: 1 !important;
   }
 }
+
+/* ===== GLOBAL ANTI-CARET / ANTI-SELECTION GUARD ===== */
+/* Versão simples - deixar o anti-cursor-final.css fazer o trabalho pesado */
+html, body {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  caret-color: transparent !important;
+}
+
+/* Exceções básicas */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  caret-color: auto !important;
+}
+
+/* Cursor pointer para botões */
+button, .btn, [onclick] {
+  cursor: pointer !important;
+}

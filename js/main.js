@@ -114,20 +114,32 @@ setTimeout(() => {
     }
 }, 6000);
 
-// Service Worker registration - DISABLED FOR DEBUGGING
-/* 
+// Service Worker registration - REATIVADO PARA PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
             const registration = await navigator.serviceWorker.register('/sw.js');
             console.log('✅ Service Worker registered:', registration);
+            
+            // Listen for SW updates
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New content available, could show update notification
+                            console.log('🔄 Nova versão disponível! Recarregue para atualizar.');
+                        }
+                    });
+                }
+            });
         } catch (error) {
             console.log('❌ Service Worker registration failed:', error);
         }
     });
+} else {
+    console.log('⚠️ Service Worker não suportado neste browser');
 }
-*/
-console.log('⚠️ Service Worker temporarily disabled for debugging');
 
 // Loading screen management
 function showLoadingScreen() {

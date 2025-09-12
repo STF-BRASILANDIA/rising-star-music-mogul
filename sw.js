@@ -3,9 +3,9 @@
  * Provides PWA functionality, offline support, and caching
  */
 
-const CACHE_NAME = 'rising-star-v1.3.0';
-const STATIC_CACHE = 'rising-star-static-v1.1.0';
-const DYNAMIC_CACHE = 'rising-star-dynamic-v1.1.0';
+const CACHE_NAME = 'rising-star-v1.3.1';
+const STATIC_CACHE = 'rising-star-static-v1.1.1';
+const DYNAMIC_CACHE = 'rising-star-dynamic-v1.1.1';
 
 // Files to cache immediately
 const STATIC_FILES = [
@@ -21,8 +21,9 @@ const STATIC_FILES = [
     '/js/core/data-manager.js',
     '/js/ui/interface-manager.js',
     '/js/ui/main-menu.js',
-    '/assets/icons/icon-192.png',
-    '/assets/icons/icon-512.png'
+    // Ajustado para usar ícones existentes no projeto
+    '/assets/icons/favicon.png',
+    '/assets/icons/favicon.svg'
 ];
 
 // Install event - cache static files
@@ -320,8 +321,9 @@ self.addEventListener('push', (event) => {
     const options = {
         title: data.title || 'Rising Star: Music Mogul',
         body: data.body || 'Nova atualização disponível!',
-        icon: '/assets/icons/icon-192.png',
-        badge: '/assets/icons/icon-72.png',
+        // Ajustado para arquivos existentes
+        icon: '/assets/icons/favicon.png',
+        badge: '/assets/icons/favicon.png',
         tag: data.tag || 'general',
         requireInteraction: data.requireInteraction || false,
         actions: data.actions || [],

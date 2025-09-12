@@ -1,0 +1,96 @@
+/**
+ * CORREÇÃO ESPECÍFICA PARA MOBILE - Anti-cursor
+ * Foco em resolver o bug visual do cursor aparecendo no mobile
+ */
+
+/* MOBILE: Bloquear todos os comportamentos de seleção */
+html, body {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -moz-tap-highlight-color: transparent !important;
+}
+
+/* MOBILE: Aplicar em TODOS os elementos */
+* {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    caret-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -moz-tap-highlight-color: transparent !important;
+    /* Adicionar propriedades específicas mobile */
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+}
+
+/* EXCEÇÕES: Apenas inputs reais podem ter cursor */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    caret-color: auto !important;
+    -webkit-touch-callout: default !important;
+}
+
+/* MOBILE: Forçar cursor pointer em elementos clicáveis */
+button, .btn, .button,
+a, [onclick], [role="button"],
+.clickable, .menu-btn, .nav-btn,
+div[onclick], span[onclick] {
+    cursor: pointer !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    caret-color: transparent !important;
+    -webkit-touch-callout: none !important;
+}
+
+/* MOBILE: Elementos específicos do jogo */
+.screen, .screen *,
+#mainMenu, #mainMenu *,
+#gameInterface, #gameInterface *,
+.game-container, .game-container *,
+.menu-container, .menu-container *,
+.dashboard-container, .dashboard-container *,
+.notification-card, .notification-card *,
+.news-item, .news-item *,
+.modal, .modal *,
+.tab-button, .filter-tab,
+h1, h2, h3, h4, h5, h6,
+p, span, div, section, article {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    caret-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* MOBILE: Prevenir zoom duplo-toque */
+* {
+    touch-action: manipulation !important;
+}
+
+/* MOBILE: Remover outline de foco que pode causar cursor */
+*:focus {
+    outline: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    caret-color: transparent !important;
+}

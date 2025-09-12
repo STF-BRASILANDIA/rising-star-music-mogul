@@ -489,7 +489,7 @@ export class RisingStarGame {
         
         console.log('✅ Jogo iniciado com sucesso!');
         console.log('💰 Dinheiro inicial:', this.gameData.player.money);
-    console.log('� Habilidades:', this.gameData.player.skills);
+        console.log('🎯 Habilidades:', this.gameData.player.skills);
     }
     
     pauseGame() {

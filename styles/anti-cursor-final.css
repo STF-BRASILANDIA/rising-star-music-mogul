@@ -1,0 +1,35 @@
+/**
+ * SOLUÇÃO SIMPLES E DIRETA ANTI-CURSOR
+ * Abordagem minimalista e eficaz
+ */
+
+/* Regra universal simples - BLOQUEAR TUDO */
+* {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    caret-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* EXCEÇÕES - apenas permitir nos campos essenciais */
+input[type="text"],
+input[type="password"], 
+input[type="email"],
+input[type="search"],
+input[type="number"],
+textarea,
+[contenteditable="true"] {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    caret-color: auto !important;
+}
+
+/* Cursor pointer para elementos clicáveis */
+button, .btn, [onclick], a {
+    cursor: pointer !important;
+}

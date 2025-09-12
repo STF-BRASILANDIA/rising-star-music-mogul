@@ -1,0 +1,93 @@
+/* Correções de layout/scroll para a aba de Notificações sem alterar o design dos cards */
+
+/* Nunca prenda a rolagem do painel de notificações */
+#panel-notifications {
+  position: relative;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-bottom: calc(var(--mobile-nav-h, 96px) + env(safe-area-inset-bottom, 0px) + 8px) !important;
+  padding-bottom: calc(var(--mobile-nav-h, 96px) + constant(safe-area-inset-bottom, 0px) + 8px) !important; /* iOS legacy */
+}
+
+/* Fallback: em celulares pequenos, quando a página não tem scroll, o painel vira o scroller */
+#panel-notifications.notif-fallback-scroll {
+  height: 100dvh !important; /* viewport dinâmica para iOS Safari */
+  max-height: 100dvh !important;
+  overflow: hidden !important; /* o conteúdo interno irá rolar */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#panel-notifications.notif-fallback-scroll .news-feed-content,
+#panel-notifications.notif-fallback-scroll #notificationFeedContent,
+#panel-notifications.notif-fallback-scroll .notification-list {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Espaçador de rolagem de página para evitar que o último card fique "grudado" no menu */
+#notif-scroll-spacer {
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Container do feed deve expandir e deixar a página rolar */
+#panel-notifications .news-feed-container,
+#panel-notifications .news-feed,
+#panel-notifications .news-feed-wrapper {
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  min-height: 0 !important;
+}
+
+/* Área onde os cards são inseridos (IDs usados nas versões anteriores) */
+#notificationFeedContent,
+#panel-notifications .news-feed-content,
+#panel-notifications .notification-list {
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important; /* rolagem fica com a página, igual Perfil */
+  min-height: 0 !important;
+  padding-bottom: calc(var(--mobile-nav-h, 96px) + env(safe-area-inset-bottom, 0px) + 12px) !important;
+  padding-bottom: calc(var(--mobile-nav-h, 96px) + constant(safe-area-inset-bottom, 0px) + 12px) !important; /* iOS legacy */
+  scroll-padding-bottom: calc(var(--mobile-nav-h, 96px) + env(safe-area-inset-bottom, 0px) + 12px) !important;
+  scroll-padding-bottom: calc(var(--mobile-nav-h, 96px) + constant(safe-area-inset-bottom, 0px) + 12px) !important; /* iOS legacy */
+}
+
+/* Cards nunca devem ter altura fixa */
+#panel-notifications .notification-card,
+#panel-notifications .news-card,
+#panel-notifications .feed-card {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+}
+
+/* Evitar clipes por ancestrais em mobile */
+@media (max-width: 1000px) {
+  html, body {
+    height: auto !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #panel-notifications .news-feed-header {
+    position: relative;
+    z-index: 1;        /* header acima dos cards */
+    flex-shrink: 0;
+  }
+
+  /* Garante largura total e evita cortes laterais */
+  #panel-notifications,
+  #panel-notifications .news-feed-container,
+  #panel-notifications .news-feed-content {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+}

@@ -8,6 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
+    <!-- Meta tags específicas para prevenir seleção de texto no mobile -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="apple-touch-fullscreen" content="yes">
     <title>Rising Star: Music Mogul v2.0</title>
     <meta name="description" content="Simulação de carreira musical com IA dinâmica">
     <link rel="manifest" href="manifest.json">
@@ -16,11 +19,18 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0.0">
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
+    <link rel="stylesheet" href="styles/notifications.css?v=1.0.0">
     <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
     <link rel="stylesheet" href="styles/menu-navigation.css?v=1.0.0">
     <link rel="stylesheet" href="styles/pages-design.css?v=1.0.0">
     <link rel="stylesheet" href="styles/icons-fa.css?v=1.0.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GUARDA FINAL ANTI-CURSOR - DEVE SER O ÚLTIMO CSS -->
+    <link rel="stylesheet" href="styles/anti-cursor-final.css?v=1.0.0">
+    
+    <!-- NUCLEAR ANTI-CURSOR - ÚLTIMA LINHA DE DEFESA -->
+    <link rel="stylesheet" href="styles/nuclear-anti-cursor.css?v=1.0.0">
 
 
 </head>
@@ -1067,50 +1077,51 @@
                         </div>
                     </section>
 
-                    <!-- Painel: Notificações -->
-                    <!-- Painel: Feed de Notificações/Eventos - NOVO DESIGN CLEAN -->
+                    <!-- Painel: Notificações (PADRÃO IGUAL PERFIL/LOJA/CONFIG) -->
                     <section class="hub-panel" id="panel-notifications" data-tab="notifications" style="display: none;">
-                        <div class="news-feed-container">
-                            <header class="news-feed-header">
-                                <div class="header-title">
-                                    <i class="fas fa-bell"></i>
-                                    <h2>Feed de Notificações</h2>
-                                    <span id="unreadCounter" class="unread-counter">0</span>
+                        <div class="notifications-detailed" style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+                            <!-- Header com título -->
+                            <div class="notifications-header" style="margin-bottom: 24px; text-align: center;">
+                                <h2 style="margin: 0 0 8px; color: #fff; font-size: 24px;" class="icon-text">
+                                    <i class="fas fa-bell" style="color: #4facfe;"></i>
+                                    Feed de Notificações
+                                </h2>
+                                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px;">Últimas atualizações e eventos importantes</p>
+                            </div>
+
+                            <!-- Filtros -->
+                            <div class="filter-section" style="margin-bottom: 20px;">
+                                <div class="feed-filters" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                    <button class="filter-tab active" data-filter="all" style="padding: 8px 16px; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                        <i class="fas fa-th-large"></i> Todas
+                                    </button>
+                                    <button class="filter-tab" data-filter="news" style="padding: 8px 16px; background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                        <i class="fas fa-newspaper"></i> Notícias
+                                    </button>
+                                    <button class="filter-tab" data-filter="messages" style="padding: 8px 16px; background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                        <i class="fas fa-envelope"></i> Mensagens
+                                    </button>
+                                    <button class="filter-tab" data-filter="events" style="padding: 8px 16px; background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                        <i class="fas fa-calendar-alt"></i> Eventos
+                                    </button>
+                                    <button class="filter-tab" data-filter="achievements" style="padding: 8px 16px; background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                        <i class="fas fa-trophy"></i> Conquistas
+                                    </button>
                                 </div>
-                                <div class="feed-filters">
-                                    <button class="filter-tab active" data-filter="all">
-                                        <i class="fas fa-th-large"></i>
-                                        Todas
-                                    </button>
-                                    <button class="filter-tab" data-filter="news">
-                                        <i class="fas fa-newspaper"></i>
-                                        Notícias da Indústria
-                                    </button>
-                                    <button class="filter-tab" data-filter="messages">
-                                        <i class="fas fa-envelope"></i>
-                                        Mensagens
-                                    </button>
-                                    <button class="filter-tab" data-filter="events">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        Eventos
-                                    </button>
-                                    <button class="filter-tab" data-filter="achievements">
-                                        <i class="fas fa-trophy"></i>
-                                        Conquistas
-                                    </button>
-                                </div>
-                            </header>
-                            
-                            <main class="news-feed-content" id="notificationFeedContent">
+                            </div>
+
+                            <!-- Grid de Notificações (estilo cards como no perfil) -->
+                            <div class="notifications-grid" id="notificationFeedContent" style="display: grid; gap: 16px;">
                                 <!-- Notificações serão inseridas dinamicamente aqui -->
-                            </main>
-                            
-                            <div class="empty-state" id="emptyState" style="display: none;">
-                                <div class="empty-icon">
+                            </div>
+
+                            <!-- Estado vazio -->
+                            <div class="empty-state" id="emptyState" style="display: none; text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                                <div class="empty-icon" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">
                                     <i class="fas fa-bell-slash"></i>
                                 </div>
-                                <h3>Nenhuma notificação encontrada</h3>
-                                <p>Quando houver novidades importantes, elas aparecerão aqui.</p>
+                                <h3 style="margin: 0 0 8px; color: rgba(255,255,255,0.8);">Nenhuma notificação encontrada</h3>
+                                <p style="margin: 0;">Quando houver novidades importantes, elas aparecerão aqui.</p>
                             </div>
                         </div>
                     </section>
@@ -2705,470 +2716,42 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
         }
 
-        .notification-action-btn:hover {
-            background: rgba(0, 122, 255, 0.25);
-            border-color: rgba(0, 122, 255, 0.5);
-            color: #0056D6;
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.2);
+        /* Impedir cursor de texto e seleção no painel de notificações (mobile/desktop) */
+        #panel-notifications,
+        #panel-notifications .notifications-detailed,
+        #panel-notifications .news-feed-content,
+        #panel-notifications .notification-card,
+        #panel-notifications .notification-card *,
+        #panel-notifications .empty-feed,
+        #panel-notifications .empty-feed * {
+            cursor: default !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+            caret-color: transparent !important;
+            -webkit-tap-highlight-color: transparent !important;
         }
 
-        .notification-action-btn i {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, #4facfe, #00d4ff);
-            border-color: transparent;
-            color: white;
-        }
-
-        .action-btn.primary:hover {
-            background: linear-gradient(135deg, #3d8bfe, #00b8e6);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-        }
-
-        .empty-feed {
-            text-align: center;
-            padding: 80px 40px;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .empty-feed i {
-            font-size: 64px;
-            margin-bottom: 24px;
-            opacity: 0.3;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .empty-feed h3 {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            letter-spacing: -0.3px;
-        }
-
-        .empty-feed p {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.5);
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+        /* Elementos clicáveis no painel mantêm cursor de ação */
+        #panel-notifications .notification-card,
+        #panel-notifications .filter-tab,
+        #panel-notifications .notification-action-btn {
+            cursor: pointer !important;
         }
 
         /* Responsive Design para Notificações */
         @media (max-width: 768px) {
             #panel-notifications {
                 padding: 0 !important;
-                overflow: hidden;
-            }
-
-            .news-feed-container {
-                margin: 0;
-                border-radius: 0;
-                max-height: 100vh;
-                height: 100vh;
-                width: 100%;
-            }
-
-            .news-feed-header {
-                padding: 16px 20px 14px 20px;
-            }
-
-            .header-title h2 {
-                font-size: 24px;
-            }
-
-            .feed-filters {
-                gap: 3px;
-                padding: 3px;
-                overflow-x: auto;
+                overflow: visible !important; /* Permitir scroll da página */
                 -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                -ms-overflow-style: none;
             }
 
-            .feed-filters::-webkit-scrollbar {
-                display: none;
+            /* Adicionar padding inferior para não ficar atrás do menu */
+            #panel-notifications .notifications-detailed,
+            #notificationFeedContent {
+                padding-bottom: calc(var(--mobile-nav-h, 96px) + env(safe-area-inset-bottom, 0px) + 20px) !important;
             }
-
-            .filter-tab {
-                padding: 8px 12px;
-                font-size: 12px;
-                min-width: auto;
-                flex-shrink: 0;
-            }
-
-            .filter-tab span {
-                display: none;
-            }
-
-            .news-feed-content {
-                padding: 12px 20px 20px 20px;
-                flex: 1;
-                overflow-y: auto;
-            }
-
-            .notification-card {
-                padding: 16px;
-                border-radius: 12px;
-                margin-bottom: 10px;
-            }
-
-            .notification-title {
-                font-size: 15px;
-                line-height: 1.3;
-            }
-
-            .notification-summary {
-                font-size: 13px;
-            }
-
-            .notification-source {
-                font-size: 12px;
-            }
-
-            .notification-time {
-                font-size: 11px;
-            }
-
-            .empty-feed {
-                padding: 40px 20px;
-            }
-
-            .empty-feed i {
-                font-size: 40px;
-            }
-
-            .empty-feed h3 {
-                font-size: 18px;
-            }
-
-            .empty-feed p {
-                font-size: 14px;
-            }
-        }
-        
-        /* =====================================
-           MODAL DETALHADO DE NOTIFICAÇÃO 
-        ===================================== */
-        
-        .notification-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-        }
-        
-        .modal-container {
-            position: relative;
-            background: rgba(28, 28, 30, 0.95);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            max-width: 700px;
-            max-height: 90vh;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6),
-                0 1px 0 rgba(255, 255, 255, 0.05) inset;
-            animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.85) translateY(30px);
-                filter: blur(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-                filter: blur(0);
-            }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 28px;
-            background: linear-gradient(180deg, 
-                rgba(0, 122, 255, 0.15) 0%, 
-                rgba(0, 122, 255, 0.08) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .modal-source {
-            font-size: 15px;
-            font-weight: 600;
-            color: #007AFF;
-            text-transform: none;
-            letter-spacing: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .modal-close {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.8);
-            width: 32px;
-            height: 32px;
-            border-radius: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-        
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-        
-        .modal-body {
-            padding: 30px;
-            overflow-y: auto;
-            max-height: calc(90vh - 200px);
-        }
-        
-        .modal-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #FFFFFF;
-            margin: 0 0 16px 0;
-            line-height: 1.25;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            letter-spacing: -0.5px;
-        }
-        
-        .modal-timestamp {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 28px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .modal-timestamp::before {
-            content: "🕒";
-            font-size: 14px;
-        }
-        
-        .modal-content {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #ddd;
-            margin-bottom: 25px;
-        }
-        
-        .modal-content p {
-            margin-bottom: 15px;
-        }
-        
-        .modal-impacts {
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 25px;
-        }
-        
-        .modal-impacts h4 {
-            color: #8B5CF6;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0 0 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .impacts-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .impact-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border-left: 3px solid;
-        }
-        
-        .impact-item.positive {
-            border-left-color: #10B981;
-        }
-        
-        .impact-item.negative {
-            border-left-color: #EF4444;
-        }
-        
-        .impact-item.neutral {
-            border-left-color: #6B7280;
-        }
-        
-        .impact-label {
-            color: #ddd;
-            font-weight: 500;
-        }
-        
-        .impact-value {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .impact-value.positive {
-            color: #10B981;
-        }
-        
-        .impact-value.negative {
-            color: #EF4444;
-        }
-        
-        .impact-value.neutral {
-            color: #6B7280;
-        }
-        
-        .modal-footer {
-            padding: 20px 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 1px solid #444;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-        
-        .modal-action-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .modal-action-btn.primary {
-            background: linear-gradient(90deg, #8B5CF6 0%, #A855F7 100%);
-            color: white;
-        }
-        
-        .modal-action-btn.primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-        }
-        
-        .modal-action-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ddd;
-            border: 1px solid #444;
-        }
-        
-        .modal-action-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #666;
-        }
-        
-        /* Responsividade do Modal */
-        @media (max-width: 768px) {
-            .notification-modal {
-                padding: 10px;
-            }
-            
-            .modal-container {
-                max-height: 95vh;
-                border-radius: 12px;
-            }
-            
-            .modal-header {
-                padding: 15px;
-            }
-            
-            .modal-body {
-                padding: 20px;
-                max-height: calc(95vh - 160px);
-            }
-            
-            .modal-title {
-                font-size: 20px;
-            }
-            
-            .modal-actions {
-                flex-direction: column;
-            }
-            
-            .modal-action-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-        
-        /* Estado Vazio do Feed */
-        .empty-feed {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
-        }
-        
-        .empty-feed h3 {
-            color: #ccc;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-        
-        .empty-feed p {
-            font-size: 16px;
-            color: #666;
-        }
-        
-        /* Indicador de não lida */
-        .unread-indicator {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 8px;
-            height: 8px;
-            background: #8B5CF6;
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
         }
         
         /* Badge de notificação na aba */
@@ -4399,6 +3982,24 @@
                 this.updateUnreadIndicator();
                 
                 console.log('🔔 Sistema de Notificações inicializado');
+                
+                // Script para detectar altura do menu móvel e aplicar padding
+                this.setupMobileNavPadding();
+            }
+            
+            setupMobileNavPadding() {
+                const mobileNav = document.querySelector('.mobile-bottom-nav');
+                if (mobileNav) {
+                    const navHeight = mobileNav.offsetHeight;
+                    document.documentElement.style.setProperty('--mobile-nav-h', `${navHeight}px`);
+                    console.log('📱 Altura do menu móvel detectada:', navHeight + 'px');
+                }
+                
+                // Reaplicar quando necessário
+                window.addEventListener('resize', () => this.setupMobileNavPadding());
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => this.setupMobileNavPadding(), 100);
+                });
             }
             
             setupModal() {
@@ -4423,15 +4024,19 @@
             }
             
             setupFilters() {
-                const filterBtns = document.querySelectorAll('.filter-btn');
+                const filterBtns = document.querySelectorAll('.filter-tab');
                 filterBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
                         const filter = btn.dataset.filter;
                         this.setFilter(filter);
                         
-                        // Atualizar UI dos filtros
-                        filterBtns.forEach(b => b.classList.remove('active'));
+                        // Atualizar UI dos filtros (estilo aba ativo)
+                        filterBtns.forEach(b => {
+                            b.classList.remove('active');
+                            b.style.background = 'rgba(255,255,255,0.1)';
+                        });
                         btn.classList.add('active');
+                        btn.style.background = 'linear-gradient(135deg, #4facfe, #00f2fe)';
                     });
                 });
             }
@@ -4441,9 +4046,19 @@
                 const notificationsTab = document.getElementById('notificationsTabBtn');
                 if (notificationsTab) {
                     notificationsTab.addEventListener('click', () => {
-                        setTimeout(() => this.render(), 100);
+                        setTimeout(() => {
+                            this.render();
+                            this.setupMobileNavPadding(); // Reaplicar padding
+                        }, 100);
                     });
                 }
+                
+                // Listener geral para qualquer botão que abra notificações
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('[data-tab="notifications"]')) {
+                        setTimeout(() => this.setupMobileNavPadding(), 50);
+                    }
+                });
             }
             
             generateSampleData() {
@@ -4802,10 +4417,12 @@
                 
                 if (filtered.length === 0) {
                     container.innerHTML = `
-                        <div class="empty-feed">
-                            <i class="fas fa-inbox" style="font-size: 48px; color: #666; margin-bottom: 16px;"></i>
-                            <h3>Nenhuma notificação encontrada</h3>
-                            <p>Não há itens para este filtro no momento.</p>
+                        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6); grid-column: 1 / -1;">
+                            <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">
+                                <i class="fas fa-bell-slash"></i>
+                            </div>
+                            <h3 style="margin: 0 0 8px; color: rgba(255,255,255,0.8);">Nenhuma notificação encontrada</h3>
+                            <p style="margin: 0;">Não há itens para este filtro no momento.</p>
                         </div>
                     `;
                     return;
@@ -4820,58 +4437,75 @@
             
             renderNotificationCard(notification) {
                 const timeAgo = this.formatTimeAgo(notification.timestamp);
-                const unreadClass = notification.isRead ? '' : 'unread';
+                const source = notification.source || 'Sistema';
                 
+                // Mapear ícones para fontes reais (mantendo design atual)
                 const sourceIcons = {
-                    'Billboard News': '<div style="background: linear-gradient(45deg, #FF1744, #E91E63); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">BB</div>',
-                    'Pitchfork Reviews': '<div style="background: linear-gradient(45deg, #FF5722, #FF9800); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">P</div>',
-                    'Rolling Stone': '<div style="background: linear-gradient(45deg, #E53935, #D32F2F); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">RS</div>',
-                    'Forbes Music Mogul': '<div style="background: linear-gradient(45deg, #1565C0, #0277BD); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">F</div>',
-                    'The Verge: Music Tech': '<div style="background: linear-gradient(45deg, #7B1FA2, #8E24AA); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 8px;">V</div>',
-                    'Sistema do Jogo': '🏆',
-                    'Universal Music Group': '<div style="background: linear-gradient(45deg, #424242, #616161); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 7px;">UMG</div>',
-                    'CAA (Creative Artists Agency)': '<div style="background: linear-gradient(45deg, #FF6F00, #FF8F00); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 7px;">CAA</div>',
-                    'Produtor Marcus Silva': '🎛️',
-                    'Rock in Rio Organization': '<div style="background: linear-gradient(45deg, #C62828, #AD1457); width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 6px;">RIR</div>'
+                    'Billboard News': 'https://logo.clearbit.com/billboard.com',
+                    'Pitchfork Reviews': 'https://logo.clearbit.com/pitchfork.com',
+                    'Rolling Stone': 'https://logo.clearbit.com/rollingstone.com',
+                    'Variety Entertainment': 'https://logo.clearbit.com/variety.com',
+                    'Music Business Worldwide': 'https://logo.clearbit.com/musicbusinessworldwide.com',
+                    'Digital Music News': 'https://logo.clearbit.com/digitalmusicnews.com',
+                    'Complex Media': 'https://logo.clearbit.com/complex.com',
+                    'Grammy Awards': 'https://logo.clearbit.com/grammy.com',
+                    'Spotify Updates': 'https://logo.clearbit.com/spotify.com',
+                    'Apple Music': 'https://logo.clearbit.com/apple.com',
+                    'YouTube Music': 'https://logo.clearbit.com/youtube.com',
+                    'TikTok Trends': 'https://logo.clearbit.com/tiktok.com',
+                    'Instagram': 'https://logo.clearbit.com/instagram.com',
+                    'Twitter': 'https://logo.clearbit.com/twitter.com',
+                    'Facebook': 'https://logo.clearbit.com/facebook.com',
+                    'Universal Music Group': 'https://logo.clearbit.com/umusic.com',
+                    'CAA (Creative Artists Agency)': 'https://logo.clearbit.com/caa.com',
+                    'Rock in Rio Organization': 'https://logo.clearbit.com/rockinrio.com',
+                    'Sistema do Jogo': 'https://logo.clearbit.com/google.com'
                 };
-                
-                const typeIcons = {
-                    'news': '📰',
-                    'message': '💬',
-                    'event': '🎊',
-                    'achievement': '🏆'
+
+                // Cores baseadas no tipo (igual ao Perfil/Loja)
+                const typeColors = {
+                    news: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    message: 'linear-gradient(135deg, #f093fb, #f5576c)', 
+                    event: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+                    achievement: 'linear-gradient(135deg, #ffd700, #ff8c00)',
+                    system: 'linear-gradient(135deg, #a8edea, #fed6e3)'
                 };
-                
-                const icon = sourceIcons[notification.source] || typeIcons[notification.type] || '📋';
-                
+
+                const bgColor = typeColors[notification.type] || typeColors.system;
+                const iconUrl = sourceIcons[source] || sourceIcons['Sistema do Jogo'];
+
                 return `
-                    <div class="notification-card ${unreadClass}" data-id="${notification.id}">
-                        <div class="notification-header">
-                            <div class="notification-source">
-                                <span class="source-icon">${icon}</span>
-                                <span class="source-name">${notification.source}</span>
+                    <div class="notification-card" data-id="${notification.id}" style="background: ${bgColor}; padding: 20px; border-radius: 12px; color: #fff; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                        <div class="notification-header" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                            <div class="source-icon" style="width: 24px; height: 24px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <img src="${iconUrl}" alt="${source}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <i class="fas fa-bell" style="display: none; font-size: 12px; color: rgba(255,255,255,0.8);"></i>
                             </div>
-                            <div class="notification-time">${timeAgo}</div>
+                            <div class="notification-meta" style="flex: 1; min-width: 0;">
+                                <div class="source-name" style="font-size: 12px; font-weight: 600; opacity: 0.9; margin-bottom: 2px;">${source}</div>
+                                <div class="timestamp" style="font-size: 11px; opacity: 0.7;">${timeAgo}</div>
+                            </div>
+                            ${!notification.isRead ? '<div class="unread-dot" style="width: 8px; height: 8px; background: #fff; border-radius: 50%; opacity: 0.9;"></div>' : ''}
                         </div>
                         
-                        <div class="notification-body">
-                            <h3 class="notification-title">${notification.title}</h3>
-                            <p class="notification-summary">${notification.summary}</p>
-                        </div>
+                        <h3 class="notification-title" style="margin: 0 0 8px; font-size: 16px; font-weight: 700; line-height: 1.3;">${notification.title}</h3>
+                        <p class="notification-summary" style="margin: 0 0 16px; font-size: 14px; opacity: 0.9; line-height: 1.4;">${notification.summary}</p>
                         
-                        <div class="notification-footer">
-                            <button class="notification-action-btn" data-action="read-more" data-id="${notification.id}">
-                                <i class="fas fa-arrow-right"></i>
-                                Ler Mais
+                        <!-- Botão de ação principal (estilo das outras abas) -->
+                        <div class="notification-actions" style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <button class="action-btn" data-action="read-more" data-id="${notification.id}" style="padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+                                <i class="fas fa-arrow-right"></i> Ler Mais
                             </button>
-                            ${!notification.isRead ? '<span class="unread-indicator"></span>' : ''}
                         </div>
+                        
+                        <!-- Hover effect -->
+                        <div class="notification-hover-overlay" style="position: absolute; inset: 0; background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
                     </div>
                 `;
             }
             
             setupCardListeners() {
-                const actionBtns = document.querySelectorAll('.notification-action-btn[data-action="read-more"]');
+                const actionBtns = document.querySelectorAll('.action-btn[data-action="read-more"]');
                 actionBtns.forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -4886,6 +4520,21 @@
                     card.addEventListener('click', () => {
                         const id = parseInt(card.dataset.id);
                         this.openModal(id);
+                    });
+                    
+                    // Hover effect
+                    card.addEventListener('mouseenter', () => {
+                        const overlay = card.querySelector('.notification-hover-overlay');
+                        if (overlay) overlay.style.opacity = '1';
+                        card.style.transform = 'translateY(-2px)';
+                        card.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        const overlay = card.querySelector('.notification-hover-overlay');
+                        if (overlay) overlay.style.opacity = '0';
+                        card.style.transform = 'translateY(0)';
+                        card.style.boxShadow = 'none';
                     });
                 });
             }
@@ -5130,6 +4779,18 @@
         });
         </script>
 
+    <!-- Utilitários Gerais -->
+    <script src="js/utils/utils.js"></script>
+    
+    <!-- Sistema de Configuração Centralizado -->
+    <script src="js/utils/config-manager.js"></script>
+    
+    <!-- Sistema de Debug e Logging -->
+    <script src="js/utils/debug-manager.js"></script>
+    
+    <!-- Sistema Unificado de Toast/Notificações -->
+    <script src="js/utils/toast-manager.js"></script>
+    
     <script>
         // Guarda final: não permitir dashboard visível antes do jogo
         (function finalDashboardGuard(){
@@ -5142,6 +4803,77 @@
                 if (!window.game || window.game.gameState !== 'playing') gi.style.display='none';
             });
         })();
+        
+        // CORREÇÃO MOBILE ANTI-CURSOR - Foco específico no problema mobile
+        (function mobileAntiCursor(){
+            console.log('📱 Mobile Anti-cursor ativo');
+            
+            // Detectar se é mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                console.log('� Dispositivo mobile detectado - aplicando correções específicas');
+                
+                // Prevenir comportamentos de seleção específicos do mobile
+                document.addEventListener('touchstart', function(e) {
+                    const target = e.target;
+                    if (target.tagName !== 'INPUT' && 
+                        target.tagName !== 'TEXTAREA' && 
+                        target.contentEditable !== 'true') {
+                        
+                        // Forçar propriedades anti-cursor
+                        target.style.webkitUserSelect = 'none';
+                        target.style.userSelect = 'none';
+                        target.style.caretColor = 'transparent';
+                        target.style.webkitTouchCallout = 'none';
+                    }
+                }, { passive: false });
+                
+                // Prevenir seleção de texto no mobile
+                document.addEventListener('selectstart', function(e) {
+                    if (e.target.tagName !== 'INPUT' && 
+                        e.target.tagName !== 'TEXTAREA' && 
+                        e.target.contentEditable !== 'true') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }, { passive: false });
+                
+                // Aplicar CSS específico mobile via JavaScript
+                const mobileStyle = document.createElement('style');
+                mobileStyle.textContent = `
+                    @media (max-width: 768px) {
+                        * {
+                            -webkit-user-select: none !important;
+                            user-select: none !important;
+                            caret-color: transparent !important;
+                            -webkit-touch-callout: none !important;
+                            -webkit-tap-highlight-color: transparent !important;
+                        }
+                        
+                        input, textarea {
+                            -webkit-user-select: text !important;
+                            user-select: text !important;
+                            caret-color: auto !important;
+                        }
+                    }
+                `;
+                document.head.appendChild(mobileStyle);
+            }
+        })();
+        
+        // GUARDA BÁSICO ANTI-CURSOR (reduzido)
+        (function basicAntiCursor(){
+            document.addEventListener('selectstart', function(e) {
+                if (e.target.tagName !== 'INPUT' && 
+                    e.target.tagName !== 'TEXTAREA' && 
+                    e.target.contentEditable !== 'true') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
     </script>
-</body>
+    </body>
 </html>
