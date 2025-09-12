@@ -1,0 +1,19 @@
+/**
+ * 🚫 DEBUG BLOCKER SELETIVO - Remove vazamentos específicos de código
+ * Remove apenas elementos muito específicos de debug sem afetar o jogo
+ */
+
+/* Remove apenas elementos órfãos muito específicos */
+body > div:not([id]):not([class]):not(.loading-screen):not(.game-container):not(.modern-modal):not(.modern-modal-backdrop) {
+    display: none !important;
+}
+
+/* Remove elementos com z-index suspeito que não são do jogo */
+div[style*="z-index: 10000"]:not(.modern-modal):not(.modern-modal-backdrop):not(.loading-screen):not(.toast-container) {
+    display: none !important;
+}
+
+/* Remove apenas elementos com texto de código muito específico */
+div[style*="position: fixed"][style*="color: #000"]:not(.modern-modal *):not(.game-container *):not(#gameInterface *) {
+    display: none !important;
+}

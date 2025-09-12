@@ -102,7 +102,10 @@
     -webkit-overflow-scrolling: touch;
 }
 
-.notification-card {
+/* 🚫 NOTIFICATION CARD LEGACY STYLES DISABLED FOR MODALS 
+   Only apply to notification panels, not modal contexts */
+#panel-notifications .notification-card,
+.notifications-sidebar .notification-card {
     background: rgba(58, 58, 60, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 12px;
@@ -115,7 +118,8 @@
     overflow: hidden;
 }
 
-.notification-card:hover {
+#panel-notifications .notification-card:hover,
+.notifications-sidebar .notification-card:hover {
     background: rgba(58, 58, 60, 0.6);
     border-color: rgba(255, 255, 255, 0.12);
     transform: translateY(-2px) scale(1.01);

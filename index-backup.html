@@ -26,9 +26,9 @@
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
     <link rel="stylesheet" href="styles/notifications.css?v=1.0.0">
+    <link rel="stylesheet" href="styles/modal-system-ios.css?v=1.0.0">
     <link rel="stylesheet" href="styles/game-hybrid.css?v=1.0.0">
     <link rel="stylesheet" href="styles/menu-navigation.css?v=1.0.0">
-    <link rel="stylesheet" href="styles/modern-modals.css?v=1.0.0">
     <link rel="stylesheet" href="styles/pages-design.css?v=1.0.0">
     <link rel="stylesheet" href="styles/icons-fa.css?v=1.0.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -260,34 +260,6 @@
             <style>
                 .profile-form::-webkit-scrollbar {
                     display: none !important;
-                }
-                
-                /* Animação para o card de habilidades */
-                @keyframes pulse {
-                    0% { opacity: 0.3; transform: scale(1); }
-                    50% { opacity: 0.5; transform: scale(1.05); }
-                    100% { opacity: 0.3; transform: scale(1); }
-                }
-                
-                /* Hover effect especial para o botão principal de habilidades */
-                .skills-main-btn {
-                    position: relative;
-                    overflow: hidden;
-                }
-                
-                .skills-main-btn::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                    transition: left 0.5s ease;
-                }
-                
-                .skills-main-btn:hover::before {
-                    left: 100%;
                 }
             </style>
 
@@ -761,76 +733,14 @@
                                     <div class="info-item"><strong>Idade:</strong> <span id="profileAge">25 anos</span></div>
                                     <div class="info-item"><strong>Localização:</strong> <span id="profileLocation">Estados Unidos</span></div>
                                     <div class="info-item"><strong>Status:</strong> <span id="profileStatus">Artista Independente</span></div>
-                                </div>
-
-                                <!-- Card Destacado: Habilidades -->
-                                <div class="skills-highlight-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 20px; border-radius: 12px; color: #fff; margin-bottom: 20px; position: relative; overflow: hidden;">
-                                    <!-- Efeito de brilho de fundo -->
-                                    <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: pulse 3s ease-in-out infinite;"></div>
                                     
-                                    <div style="position: relative; z-index: 2;">
-                                        <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;" class="icon-text">
-                                            <i class="fas fa-star" style="color: #ffd700; font-size: 22px;"></i>
-                                            Sistema de Habilidades
-                                        </h3>
-                                        <p style="margin: 0 0 16px; font-size: 14px; opacity: 0.9; line-height: 1.4;">
-                                            Desenvolva suas habilidades artísticas e de negócios para dominar a indústria musical
-                                        </p>
-                                        
-                                        <!-- Prévia das habilidades -->
-                                        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>🎤</span> Vocals
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>✍️</span> Songwriting
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>💼</span> Marketing
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>🤝</span> Negotiation
-                                            </div>
-                                        </div>
-                                        
-                                        <button class="skills-main-btn" id="openProfileSkillsBtn" style="width: 100%; padding: 14px 20px; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.4); color: #fff; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 700; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; backdrop-filter: blur(15px); text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.background='rgba(255,255,255,0.35)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                            <i class="fas fa-star" style="font-size: 18px;"></i>
-                                            Gerenciar Habilidades
-                                            <i class="fas fa-arrow-right" style="font-size: 14px;"></i>
+                                    <!-- Botões de Ação -->
+                                    <div class="profile-actions" style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                        <button class="action-btn" id="openSkillsBtn" style="flex: 1; min-width: 120px; padding: 12px 16px; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                                            <i class="fas fa-star"></i> Habilidades
                                         </button>
-                                    </div>
-                                </div>
-
-                                <!-- Botões de Ação Rápida (outros) -->
-                                <div class="actions-card" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f); padding: 20px; border-radius: 12px; color: #fff;">
-                                    <h3 style="margin: 0 0 16px; font-size: 20px;" class="icon-text">
-                                        <i class="fas fa-bolt"></i>
-                                        Ações Rápidas
-                                    </h3>
-                                    <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                        <button class="action-btn" id="openProfileNewsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-newspaper"></i>
-                                            Últimas Notícias
-                                        </button>
-                                        <button class="action-btn" id="openProfileContractsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-handshake"></i>
-                                            Contratos
-                                        </button>
-                                        <button class="action-btn" id="openProfileEventsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-calendar-star"></i>
-                                            Eventos
-                                        </button>
-                                        <button class="action-btn" id="openProfileAchievementsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-trophy"></i>
-                                            Conquistas
-                                        </button>
-                                        <button class="action-btn" id="openProfileStatsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-chart-bar"></i>
-                                            Estatísticas
-                                        </button>
-                                        <button class="action-btn" id="openProfileSettingsBtn" style="padding: 12px 16px; background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
-                                            <i class="fas fa-user-cog"></i>
-                                            Configurações
+                                        <button class="action-btn" id="openAchievementsBtn" style="flex: 1; min-width: 120px; padding: 12px 16px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                                            <i class="fas fa-trophy"></i> Conquistas
                                         </button>
                                     </div>
                                 </div>
@@ -1525,36 +1435,6 @@
                         <button class="card-action">Calcular Impostos</button>
                     </div>
                 </div>
-                
-                <!-- 🧪 SEÇÃO DE TESTE DOS MODAIS DE NOTIFICAÇÕES (Temporária) -->
-                <div style="margin: 40px 20px; padding: 24px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <h3 style="color: #fff; margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-vial"></i> Testes do Sistema de Modais
-                    </h3>
-                    <p style="color: #ccc; font-size: 14px; margin: 0 0 20px;">Demonstração dos novos modais com glassmorphism + iOS aesthetic:</p>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                        <button onclick="notificationTestData.testNewsModal()" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: #fff; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-newspaper"></i> Teste Notícias
-                        </button>
-                        
-                        <button onclick="notificationTestData.testMessageModal()" style="padding: 12px 16px; background: linear-gradient(135deg, #f093fb, #f5576c); border: none; color: #fff; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-envelope"></i> Teste Mensagens
-                        </button>
-                        
-                        <button onclick="notificationTestData.testEventModal()" style="padding: 12px 16px; background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-calendar-alt"></i> Teste Eventos
-                        </button>
-                        
-                        <button onclick="notificationTestData.testAchievementModal()" style="padding: 12px 16px; background: linear-gradient(135deg, #43e97b, #38f9d7); border: none; color: #fff; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-trophy"></i> Teste Conquistas
-                        </button>
-                        
-                        <button onclick="notificationTestData.testAllModals()" style="padding: 12px 16px; background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; grid-column: 1 / -1;">
-                            <i class="fas fa-magic"></i> Testar Todos os Modais
-                        </button>
-                    </div>
-                </div>
             </div>
             
             <footer class="mobile-bottom-nav" id="financeMobileNav">
@@ -1582,17 +1462,418 @@
         </div>
     </div>
 
+    <!-- Modal de Habilidades -->
+    <div id="skillsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px; background: linear-gradient(135deg, #2a2d3a, #1e2026); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header">
+                <h2 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-star" style="color: #4facfe;"></i>
+                    Sistema de Habilidades
+                </h2>
+                <button class="close-btn" id="closeSkillsBtn" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                
+                <!-- Informações de Status -->
+                <div class="skills-status" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="status-item">
+                        <span style="color: #ffd700; font-weight: 600;">💰 Dinheiro:</span>
+                        <span id="modalPlayerMoney" style="color: #fff; font-weight: 700;">$0</span>
+                    </div>
+                    <div class="status-item">
+                        <span style="color: #00ff88; font-weight: 600;">⚡ Energia:</span>
+                        <span id="modalPlayerEnergy" style="color: #fff; font-weight: 700;">100</span>
+                    </div>
+                    <div class="status-item">
+                        <span style="color: #ff6b35; font-weight: 600;">📈 Pontos Skill:</span>
+                        <span id="modalSkillPoints" style="color: #fff; font-weight: 700;">0</span>
+                    </div>
+                </div>
+
+                <!-- Habilidades Artísticas -->
+                <div class="skills-section" style="margin-bottom: 30px;">
+                    <h3 style="color: #4facfe; margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-music"></i>
+                        Habilidades Artísticas
+                    </h3>
+                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                        
+                        <div class="skill-row" data-skill="vocals" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VOCALS</div>
+                                <div style="color: #ccc; font-size: 12px;">Qualidade vocal e técnica</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $500 | Energia: 10</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="vocals" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="songwriting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">SONGWRITING</div>
+                                <div style="color: #ccc; font-size: 12px;">Criação e composição</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $750 | Energia: 15</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="songwriting" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="rhythm" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">RHYTHM</div>
+                                <div style="color: #ccc; font-size: 12px;">Senso de ritmo musical</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $400 | Energia: 8</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="rhythm" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="charisma" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">CHARISMA</div>
+                                <div style="color: #ccc; font-size: 12px;">Presença de palco</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $600 | Energia: 12</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="charisma" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="virality" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VIRALITY</div>
+                                <div style="color: #ccc; font-size: 12px;">Conteúdo viral</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $1000 | Energia: 20</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="virality" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="videoDirecting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">VIDEO DIRECTING</div>
+                                <div style="color: #ccc; font-size: 12px;">Direção de videoclipes</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $1200 | Energia: 25</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #4facfe; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="videoDirecting" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habilidades de Negócios -->
+                <div class="skills-section">
+                    <h3 style="color: #fa709a; margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-briefcase"></i>
+                        Habilidades de Negócios
+                    </h3>
+                    <div class="skills-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                        
+                        <div class="skill-row" data-skill="leadership" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">LEADERSHIP</div>
+                                <div style="color: #ccc; font-size: 12px;">Liderança de equipe</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $800 | Energia: 15</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="leadership" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="marketing" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">MARKETING</div>
+                                <div style="color: #ccc; font-size: 12px;">Promoção e publicidade</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $900 | Energia: 18</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="marketing" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="negotiation" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">NEGOTIATION</div>
+                                <div style="color: #ccc; font-size: 12px;">Negociação de contratos</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $700 | Energia: 12</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="negotiation" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="recruiting" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">RECRUITING</div>
+                                <div style="color: #ccc; font-size: 12px;">Recrutamento de talentos</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $650 | Energia: 10</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="recruiting" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+
+                        <div class="skill-row" data-skill="sales" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div class="skill-info">
+                                <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">SALES</div>
+                                <div style="color: #ccc; font-size: 12px;">Vendas e comercialização</div>
+                                <div style="color: #ffd700; font-size: 12px;">Custo: $550 | Energia: 8</div>
+                            </div>
+                            <div class="skill-controls" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="skill-level" style="color: #fa709a; font-weight: 700; font-size: 18px;">1</span>
+                                <button class="upgrade-skill-btn" data-skill="sales" style="background: linear-gradient(135deg, #fa709a, #fee140); border: none; color: #000; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600;">⬆️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn primary" id="closeSkillsFooterBtn" style="background: linear-gradient(135deg, #4facfe, #00f2fe); border: none; color: #fff; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Conquistas -->
+    <div id="achievementsModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; background: linear-gradient(135deg, #2a2d3a, #1e2026); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="modal-header">
+                <h2 style="color: #fff; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-trophy" style="color: #ffd700;"></i>
+                    Conquistas e Achievements
+                </h2>
+                <button class="close-btn" id="closeAchievementsBtn" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                
+                <!-- Progresso Geral -->
+                <div class="achievements-progress" style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                    <h3 style="color: #ffd700; margin: 0 0 12px;">Progresso Geral</h3>
+                    <div class="progress-bar" style="width: 100%; height: 12px; background: rgba(255,255,255,0.2); border-radius: 6px; overflow: hidden; margin: 8px 0;">
+                        <div class="progress-fill" style="width: 15%; height: 100%; background: linear-gradient(90deg, #ffd700, #ff8c00); transition: width 0.8s ease;"></div>
+                    </div>
+                    <p style="color: #ccc; margin: 8px 0 0; font-size: 14px;">3 de 20 conquistas desbloqueadas (15%)</p>
+                </div>
+
+                <!-- Lista de Conquistas -->
+                <div class="achievements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    
+                    <!-- Conquistas Desbloqueadas -->
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎵</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeira Música</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Grave sua primeira música no estúdio</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎤</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeiro Show</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Realize sua primeira apresentação ao vivo</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item unlocked" style="background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,255,136,0.05)); border: 1px solid rgba(0,255,136,0.3); padding: 16px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">👥</div>
+                            <div>
+                                <h4 style="color: #00ff88; margin: 0 0 4px; font-size: 16px;">Primeiros Seguidores</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance 100 seguidores nas redes sociais</p>
+                                <small style="color: #00ff88; font-weight: 600;">✅ DESBLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conquistas Bloqueadas -->
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💿</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Primeiro Álbum</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Lance seu primeiro álbum completo</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💰</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Milionário</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Acumule $1,000,000 em dinheiro</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌟</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Estrela Rising</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance 10,000 de fama</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🏆</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Grammy Winner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Ganhe seu primeiro Grammy</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎪</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Festival Headliner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Seja headliner de um grande festival</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌍</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Tour Mundial</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Complete um tour mundial com 50+ shows</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">📱</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Viral Sensation</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Tenha uma música com +1M de streams</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🏢</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Label Owner</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Crie sua própria gravadora</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">💎</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Disco de Diamante</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Venda 10+ milhões de cópias de um álbum</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎬</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Hollywood Star</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Atue em um filme de Hollywood</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">👑</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Lenda da Música</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Alcance o nível máximo de fama</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🌈</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Hall of Fame</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Entre para o Hall da Fama da Música</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🎭</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Renaissance Artist</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Domine todas as habilidades (nível 10)</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-item locked" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; opacity: 0.6;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">🚀</div>
+                            <div>
+                                <h4 style="color: #fff; margin: 0 0 4px; font-size: 16px;">Conquistador dos Sonhos</h4>
+                                <p style="color: #ccc; margin: 0; font-size: 12px;">Complete o jogo com 100% de conquistas</p>
+                                <small style="color: #666; font-weight: 600;">🔒 BLOQUEADA</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn primary" id="closeAchievementsFooterBtn" style="background: linear-gradient(135deg, #ffd700, #ff8c00); border: none; color: #000; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/ui/game-hub.js"></script>
     <script type="module" src="js/main.js?v=1.5.0"></script>
     <script type="module" src="js/core/ai-simulation.js?v=1.3.5"></script>
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
-    
-    <!-- 🎭 Modern Modal System -->
-    <script src="js/ui/modal-system.js?v=1.0.0"></script>
-    <script src="js/ui/notification-modals.js?v=1.0.0"></script>
-    <script src="js/ui/notification-test-data.js?v=1.0.0"></script>
     
     <!-- Estilos adicionais para o novo dashboard -->
     <style>
@@ -2795,6 +3076,313 @@
         </script>
      
      <script>
+        // Sistema de Modais - Habilidades e Conquistas
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos dos modais
+            const skillsModal = document.getElementById('skillsModal');
+            const achievementsModal = document.getElementById('achievementsModal');
+            
+            // Botões para abrir modais
+            const openSkillsBtn = document.getElementById('openSkillsBtn');
+            const openAchievementsBtn = document.getElementById('openAchievementsBtn');
+            
+            // Botões para fechar modais
+            const closeSkillsBtns = document.querySelectorAll('#closeSkillsBtn, #closeSkillsFooterBtn');
+            const closeAchievementsBtns = document.querySelectorAll('#closeAchievementsBtn, #closeAchievementsFooterBtn');
+            
+            // Função para abrir modal
+            function openModal(modal) {
+                if (modal) {
+                    modal.style.display = 'flex';
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            // Função para fechar modal
+            function closeModal(modal) {
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }, 200);
+                }
+            }
+            
+            // Event listeners para abrir modais
+            if (openSkillsBtn) {
+                openSkillsBtn.addEventListener('click', function() {
+                    updateSkillsModalData();
+                    openModal(skillsModal);
+                });
+            }
+            
+            if (openAchievementsBtn) {
+                openAchievementsBtn.addEventListener('click', function() {
+                    updateAchievementsModalData();
+                    openModal(achievementsModal);
+                });
+            }
+            
+            // Event listeners para fechar modais
+            closeSkillsBtns.forEach(btn => {
+                btn.addEventListener('click', () => closeModal(skillsModal));
+            });
+            
+            closeAchievementsBtns.forEach(btn => {
+                btn.addEventListener('click', () => closeModal(achievementsModal));
+            });
+            
+            // Fechar modal ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (e.target === skillsModal) {
+                    closeModal(skillsModal);
+                }
+                if (e.target === achievementsModal) {
+                    closeModal(achievementsModal);
+                }
+            });
+            
+            // Função para atualizar dados do modal de habilidades
+            function updateSkillsModalData() {
+                // Atualizar status do jogador
+                const money = document.getElementById('statMoney')?.textContent || '$0';
+                const energy = document.getElementById('statEnergy')?.textContent || '100';
+                
+                const modalMoney = document.getElementById('modalPlayerMoney');
+                const modalEnergy = document.getElementById('modalPlayerEnergy');
+                const modalSkillPoints = document.getElementById('modalSkillPoints');
+                
+                if (modalMoney) modalMoney.textContent = money;
+                if (modalEnergy) modalEnergy.textContent = energy;
+                if (modalSkillPoints) modalSkillPoints.textContent = '0'; // Placeholder
+                
+                // Atualizar níveis das habilidades
+                const skills = ['vocals', 'songwriting', 'rhythm', 'charisma', 'virality', 'videoDirecting', 
+                              'leadership', 'marketing', 'negotiation', 'recruiting', 'sales'];
+                
+                skills.forEach(skill => {
+                    const levelElement = document.querySelector(`[data-skill="${skill}"] .skill-level`);
+                    if (levelElement) {
+                        // Placeholder - aqui você conectaria com o sistema real do jogo
+                        levelElement.textContent = '1';
+                    }
+                });
+                
+                console.log('📊 Dados do modal de habilidades atualizados');
+            }
+            
+            // Função para atualizar dados do modal de conquistas
+            function updateAchievementsModalData() {
+                // Aqui você conectaria com o sistema real de conquistas
+                console.log('🏆 Dados do modal de conquistas atualizados');
+                
+                // Placeholder para progresso
+                const progressBar = document.querySelector('.progress-fill');
+                if (progressBar) {
+                    // Simula progresso baseado em conquistas desbloqueadas
+                    const unlockedCount = document.querySelectorAll('.achievement-item.unlocked').length;
+                    const totalCount = document.querySelectorAll('.achievement-item').length;
+                    const percentage = (unlockedCount / totalCount) * 100;
+                    progressBar.style.width = percentage + '%';
+                }
+            }
+            
+            // Funcionalidade de upgrade de habilidades
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('upgrade-skill-btn')) {
+                    const skill = e.target.getAttribute('data-skill');
+                    const levelElement = e.target.closest('.skill-row').querySelector('.skill-level');
+                    
+                    if (levelElement && skill) {
+                        // Placeholder para sistema de upgrade
+                        const currentLevel = parseInt(levelElement.textContent);
+                        const newLevel = currentLevel + 1;
+                        
+                        // Aqui você validaria se o jogador tem dinheiro/energia suficiente
+                        const canUpgrade = true; // Placeholder
+                        
+                        if (canUpgrade && newLevel <= 10) {
+                            levelElement.textContent = newLevel;
+                            
+                            // Feedback visual
+                            e.target.style.transform = 'scale(0.9)';
+                            setTimeout(() => {
+                                e.target.style.transform = 'scale(1)';
+                            }, 150);
+                            
+                            // Notificação de upgrade
+                            showUpgradeNotification(skill, newLevel);
+                            
+                            console.log(`⬆️ ${skill.toUpperCase()} upgradado para nível ${newLevel}`);
+                        } else {
+                            // Feedback de erro
+                            e.target.style.backgroundColor = '#ff4444';
+                            setTimeout(() => {
+                                e.target.style.backgroundColor = '';
+                            }, 500);
+                            console.log(`❌ Não foi possível upgradar ${skill}`);
+                        }
+                    }
+                }
+            });
+            
+            // Função para mostrar notificação de upgrade
+            function showUpgradeNotification(skill, level) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #00ff88, #00cc6a);
+                    color: #000;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+                `;
+                notification.innerHTML = `🎉 ${skill.toUpperCase()} → Nível ${level}!`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+            
+            console.log('🎮 Sistema de modais de habilidades e conquistas inicializado');
+        });
+        </script>
+     
+     <script>
+        // CSS para animações dos modals
+        const modalStyles = document.createElement('style');
+        modalStyles.textContent = `
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                backdrop-filter: blur(5px);
+            }
+            
+            .modal.show {
+                opacity: 1;
+            }
+            
+            .modal .modal-content {
+                background: linear-gradient(135deg, #2a2d3a, #1e2026);
+                border-radius: 12px;
+                max-height: 90vh;
+                overflow: hidden;
+                transform: translateY(20px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            }
+            
+            .modal.show .modal-content {
+                transform: translateY(0);
+            }
+            
+            .modal-header {
+                padding: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .close-btn:hover {
+                color: #ff6b35 !important;
+                transform: scale(1.1);
+            }
+            
+            .upgrade-skill-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            }
+            
+            .achievement-item:hover {
+                transform: translateY(-2px);
+            }
+            
+            .achievement-item.unlocked:hover {
+                box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+            }
+            
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+            }
+            
+            .action-btn:nth-child(2):hover {
+                box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            }
+            
+            @keyframes slideInRight {
+                from { 
+                    opacity: 0; 
+                    transform: translateX(100px); 
+                }
+                to { 
+                    opacity: 1; 
+                    transform: translateX(0); 
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from { 
+                    opacity: 1; 
+                    transform: translateX(0); 
+                }
+                to { 
+                    opacity: 0; 
+                    transform: translateX(100px); 
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .modal .modal-content {
+                    margin: 10px;
+                    max-width: calc(100% - 20px);
+                    max-height: calc(100% - 20px);
+                }
+                
+                .skills-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .achievements-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .profile-actions {
+                    flex-direction: column !important;
+                }
+                
+                .action-btn {
+                    min-width: 100% !important;
+                }
+            }
+        `;
+        document.head.appendChild(modalStyles);
+        </script>
+     
+     <script>
         // Sistema de Navegação por Abas do Hub
         document.addEventListener('DOMContentLoaded', function() {
             const tabButtons = document.querySelectorAll('.tab-btn');
@@ -3074,84 +3662,304 @@
                 const sources = ['Billboard News', 'Pitchfork Reviews', 'Rolling Stone', 'Forbes Music Mogul', 'The Verge: Music Tech'];
                 
                 this.notifications = [
-                    // NEWS - Notícias da Indústria (exato dos testes)
+                    // Notícias da Indústria
                     {
                         id: 1,
                         type: 'news',
                         source: 'Billboard News',
-                        title: 'Streaming alcança números recordes em 2025',
-                        summary: 'O streaming musical atingiu 2.1 trilhões de reproduções globalmente no primeiro semestre, representando um crescimento de 15% em relação ao ano anterior.',
-                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 horas atrás
-                        isRead: false
+                        title: 'Streaming Revenue Reaches All-Time High in 2024',
+                        summary: 'Global streaming platforms report unprecedented growth, creating new opportunities...',
+                        content: `A indústria musical alcançou um marco histórico em 2024, com as receitas de streaming atingindo valores recordes. Este crescimento representa uma oportunidade única para artistas emergentes e estabelecidos expandirem sua base de fãs globalmente.
+                        
+                        <p>Os dados mostram que o consumo de música digital cresceu 23% no último trimestre, impulsionado principalmente por playlists algorítmicas e descoberta de novos talentos.</p>
+                        
+                        <p>Especialistas sugerem que investir em marketing digital e presença nas redes sociais será crucial para aproveitar essa tendência.</p>`,
+                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+5', type: 'positive' },
+                            { attribute: 'Streaming Revenue', value: '+15%', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Investir em Marketing Digital', cost: 5000, impacts: { fama: 10, dinheiro: -5000 } },
+                            { text: 'Focar em Playlists', cost: 3000, impacts: { fama: 7, dinheiro: -3000 } }
+                        ]
                     },
                     {
                         id: 2,
                         type: 'news',
-                        source: 'Forbes Music Mogul',
-                        title: 'Artistas independentes faturam $4.2 bilhões em 2025',
-                        summary: 'Relatório exclusivo mostra como músicos sem contratos com major labels estão dominando o mercado digital e construindo impérios financeiros próprios.',
-                        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 dia atrás
-                        isRead: true
+                        source: 'Pitchfork Reviews',
+                        title: 'Indie Rock Resurges in Underground Scene',
+                        summary: 'Independent artists are finding new audiences through grassroots movements...',
+                        content: `O rock independente está vivenciando um renascimento notável, com artistas undergrounds conquistando audiências fiéis através de movimentos grassroots e venues intimistas.
+                        
+                        <p>Esta tendência oferece oportunidades únicas para músicos que valorizam autenticidade e conexão direta com fãs.</p>`,
+                        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Criatividade', value: '+8', type: 'positive' },
+                            { attribute: 'Underground Cred', value: '+12', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Tocar em Venues Pequenos', cost: 1000, impacts: { fama: 5, energia: -10 } }
+                        ]
                     },
-                    
-                    // MESSAGES - Mensagens de Gravadoras/Agentes (exato dos testes)
                     {
                         id: 3,
-                        type: 'message',
-                        source: 'Atlantic Records',
-                        title: 'Proposta de Contrato - Oportunidade Exclusiva',
-                        summary: 'Ficamos impressionados com seu trabalho recente e gostaríamos de discutir uma parceria estratégica. Nossa proposta inclui suporte completo para produção, marketing e distribuição mundial.',
-                        timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutos atrás
-                        isRead: false
+                        type: 'news',
+                        source: 'The Verge: Music Tech',
+                        title: 'AI Music Tools Transform Creative Process',
+                        summary: 'New AI-powered instruments are revolutionizing how artists create music...',
+                        content: `Ferramentas de inteligência artificial estão revolucionando o processo criativo musical, oferecendo novas possibilidades para composição, produção e arranjos.
+                        
+                        <p>Artistas que adotam essas tecnologias cedo podem ganhar vantagem competitiva significativa no mercado.</p>`,
+                        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Inovação', value: '+10', type: 'positive' },
+                            { attribute: 'Produtividade', value: '+15', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Investir em AI Tools', cost: 8000, impacts: { criatividade: 15, dinheiro: -8000 } }
+                        ]
                     },
+                    
+                    // Mensagens
                     {
                         id: 4,
                         type: 'message',
-                        source: 'Sarah Mitchell - Artist Manager',
-                        title: 'Feedback sobre Demo "Neon Lights"',
-                        summary: 'Ouvi sua nova demo e acredito que tem potencial comercial incrível. Sugiro algumas mudanças na produção e podemos começar a preparar um plano de lançamento estratégico para Q4.',
-                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 horas atrás
-                        isRead: true
+                        source: 'Produtor Marcus Silva',
+                        title: 'Proposta de Colaboração',
+                        summary: 'Interessado em produzir seu próximo álbum...',
+                        content: `Olá! Sou o produtor Marcus Silva e tenho acompanhado seu trabalho. Gostaria de discutir uma possível colaboração para seu próximo projeto.
+                        
+                        <p>Tenho experiência com artistas como Ana Vilela e The Cosmos. Meu estúdio está equipado com tecnologia de ponta.</p>
+                        
+                        <p>Que tal marcarmos uma reunião?</p>`,
+                        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Qualidade Musical', value: '+20', type: 'positive' },
+                            { attribute: 'Networking', value: '+8', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Aceitar Reunião', cost: 0, impacts: { networking: 10 } },
+                            { text: 'Propor Colaboração', cost: 15000, impacts: { qualidade: 25, dinheiro: -15000 } }
+                        ]
                     },
                     
-                    // EVENTS - Convites e Eventos (exato dos testes)
+                    // Eventos
                     {
                         id: 5,
                         type: 'event',
-                        source: 'Rock in Rio Productions',
-                        title: 'Convite - Rock in Rio Festival 2025',
-                        summary: 'Convite para se apresentar no maior festival de música da América Latina. Show de 45 minutos no Palco Mundo para uma audiência estimada de 100,000 pessoas.',
-                        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hora atrás
-                        isRead: false
-                    },
-                    {
-                        id: 6,
-                        type: 'event',
-                        source: 'Premiere Classe Records',
-                        title: 'Colaboração com DJ Snake',
-                        summary: 'DJ Snake está procurando vocalists para seu próximo álbum. Sua voz foi especificamente solicitada para a faixa principal. Sessão de gravação agendada para próxima semana.',
-                        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 horas atrás
-                        isRead: false
+                        source: 'Rock in Rio Organization',
+                        title: 'Convite para Rock in Rio 2025',
+                        summary: 'Você foi selecionado para se apresentar no palco Sunset...',
+                        content: `Parabéns! Você foi selecionado para se apresentar no Rock in Rio 2025, no icônico Palco Sunset.
+                        
+                        <p>Esta é uma oportunidade única de alcançar uma audiência de milhões de pessoas e consolidar sua carreira.</p>
+                        
+                        <p>O evento acontece em setembro de 2025. Confirme sua participação até o final deste mês.</p>`,
+                        timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+50', type: 'positive' },
+                            { attribute: 'Fãs', value: '+100000', type: 'positive' },
+                            { attribute: 'Pressão', value: '+25', type: 'negative' }
+                        ],
+                        actions: [
+                            { text: 'Confirmar Participação', cost: 0, impacts: { fama: 50, fans: 100000, pressao: 25 } },
+                            { text: 'Declinar Respeitosamente', cost: 0, impacts: { networking: -5 } }
+                        ]
                     },
                     
-                    // ACHIEVEMENTS - Conquistas (exato dos testes)
+                    // Conquistas
+                    {
+                        id: 6,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Conquista Desbloqueada: Rising Star',
+                        summary: 'Você alcançou 10.000 fãs pela primeira vez!',
+                        content: `Parabéns! Você desbloqueou a conquista "Rising Star" ao alcançar 10.000 fãs dedicados.
+                        
+                        <p>Esta é apenas o começo de sua jornada para o estrelato. Continue criando música incrível!</p>
+                        
+                        <p>Recompensa: +5000 XP e novo título disponível</p>`,
+                        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'XP', value: '+5000', type: 'positive' },
+                            { attribute: 'Moral', value: '+10', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Equipar Título', cost: 0, impacts: { fama: 2 } }
+                        ]
+                    },
+                    
+                    // Mais Conquistas Específicas dos Requisitos
                     {
                         id: 7,
                         type: 'achievement',
-                        source: 'CONQUISTA DESBLOQUEADA',
-                        title: 'Seu Single Atingiu #1 na Billboard Hot 100!',
-                        summary: 'Parabéns! "Midnight Vibes" acaba de alcançar o primeiro lugar na Billboard Hot 100, uma conquista histórica que marca sua entrada definitiva no mainstream musical.',
-                        timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutos atrás
-                        isRead: false
+                        source: 'Sistema do Jogo',
+                        title: 'Seu último single atingiu o #1 na Billboard Hot 100!',
+                        summary: 'Parabéns! Você alcançou o topo das paradas musicais.',
+                        content: `Seu single "Rising Star" conquistou o primeiro lugar na Billboard Hot 100, a principal parada musical dos Estados Unidos!
+                        
+                        <p>Este é um marco histórico em sua carreira. Apenas os maiores artistas da música alcançam este feito.</p>
+                        
+                        <p>Sua base de fãs explodiu e agora você é uma sensação mundial!</p>`,
+                        timestamp: new Date(Date.now() - 30 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Fama', value: '+100', type: 'positive' },
+                            { attribute: 'Fãs', value: '+500000', type: 'positive' },
+                            { attribute: 'Receita', value: '+$50000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Comemorar nas Redes Sociais', cost: 0, impacts: { fama: 25 } }
+                        ]
                     },
                     {
                         id: 8,
                         type: 'achievement',
-                        source: 'CONQUISTA DESBLOQUEADA',
-                        title: 'Certificação Platina Alcançada!',
-                        summary: 'Seu álbum "Digital Dreams" foi oficialmente certificado Platina pela RIAA, com mais de 1 milhão de unidades vendidas nos Estados Unidos.',
-                        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 horas atrás
-                        isRead: false
+                        source: 'Sistema do Jogo',
+                        title: 'Você alcançou 1 milhão de ouvintes mensais no Spotify!',
+                        summary: 'Marco impressionante de streaming alcançado!',
+                        content: `Incrível! Seu perfil no Spotify agora conta com mais de 1 milhão de ouvintes mensais únicos.
+                        
+                        <p>Este número coloca você entre os artistas mais ouvidos da plataforma em sua categoria.</p>
+                        
+                        <p>Spotify destacou seu perfil como "Artista em Ascensão" esta semana!</p>`,
+                        timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Streaming Revenue', value: '+$25000/mês', type: 'positive' },
+                            { attribute: 'Alcance Global', value: '+50', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Lançar Playlist Exclusiva', cost: 5000, impacts: { fama: 15, dinheiro: -5000 } }
+                        ]
+                    },
+                    {
+                        id: 9,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Parabéns! Seu álbum foi certificado Ouro.',
+                        summary: 'Vendas ultrapassaram 500.000 cópias certificadas.',
+                        content: `Seu álbum "Dreams & Melodies" acaba de receber a certificação Ouro pela Recording Industry Association of America (RIAA).
+                        
+                        <p>Mais de 500.000 unidades foram vendidas, incluindo streams, downloads e cópias físicas.</p>
+                        
+                        <p>Uma conquista que poucos artistas independentes alcançam!</p>`,
+                        timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Prestígio', value: '+75', type: 'positive' },
+                            { attribute: 'Valor de Mercado', value: '+$100000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Organizar Evento de Celebração', cost: 15000, impacts: { fama: 30, dinheiro: -15000 } }
+                        ]
+                    },
+                    {
+                        id: 10,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Você completou com sucesso sua primeira turnê mundial!',
+                        summary: '50 shows em 25 países - uma jornada épica!',
+                        content: `Sua primeira turnê mundial "Rising Star World Tour" foi concluída com absoluto sucesso!
+                        
+                        <p>50 shows realizados em 25 países diferentes, com mais de 2 milhões de pessoas no total.</p>
+                        
+                        <p>Críticos descreveram como "uma das melhores estreias mundiais da década".</p>`,
+                        timestamp: new Date(Date.now() - 60 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Experiência', value: '+200', type: 'positive' },
+                            { attribute: 'Fama Global', value: '+150', type: 'positive' },
+                            { attribute: 'Receita', value: '+$2000000', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Planejar Segunda Turnê', cost: 100000, impacts: { fama: 50, dinheiro: -100000 } }
+                        ]
+                    },
+                    {
+                        id: 11,
+                        type: 'achievement',
+                        source: 'Sistema do Jogo',
+                        title: 'Seu canal no YouTube atingiu 10 milhões de inscritos!',
+                        summary: 'Botão de Diamante do YouTube desbloqueado!',
+                        content: `Incrível marco alcançado! Seu canal oficial no YouTube agora conta com mais de 10 milhões de inscritos fiéis.
+                        
+                        <p>YouTube enviará o prestigioso Botão de Diamante para celebrar este feito extraordinário.</p>
+                        
+                        <p>Você agora está entre os criadores de conteúdo musical mais influentes da plataforma!</p>`,
+                        timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Influência Digital', value: '+100', type: 'positive' },
+                            { attribute: 'Receita YouTube', value: '+$40000/mês', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Criar Série Documental', cost: 25000, impacts: { fama: 40, dinheiro: -25000 } }
+                        ]
+                    },
+                    
+                    // Mensagens de Gravadoras e Agentes
+                    {
+                        id: 12,
+                        type: 'message',
+                        source: 'Universal Music Group',
+                        title: 'Convite para Contrato de Gravação Major',
+                        summary: 'Oferta de contrato multimilionário em discussão...',
+                        content: `Prezado artista,
+                        
+                        <p>A Universal Music Group tem acompanhado seu crescimento exponencial e gostaríamos de discutir uma parceria estratégica.</p>
+                        
+                        <p>Nossa proposta inicial envolve:</p>
+                        <ul>
+                        <li>Contrato de 5 álbuns</li>
+                        <li>Adiantamento de $2.5 milhões</li>
+                        <li>Suporte completo de marketing e distribuição global</li>
+                        <li>Equipe de produção A-list</li>
+                        </ul>
+                        
+                        <p>Aguardamos sua resposta até o final desta semana.</p>`,
+                        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+                        isRead: false,
+                        impacts: [
+                            { attribute: 'Oportunidade de Carreira', value: 'MAJOR', type: 'positive' },
+                            { attribute: 'Pressão de Decisão', value: '+30', type: 'negative' }
+                        ],
+                        actions: [
+                            { text: 'Aceitar Proposta', cost: 0, impacts: { fama: 200, dinheiro: 2500000 } },
+                            { text: 'Negociar Termos', cost: 10000, impacts: { networking: 15, dinheiro: -10000 } },
+                            { text: 'Recusar Educadamente', cost: 0, impacts: { independencia: 50 } }
+                        ]
+                    },
+                    {
+                        id: 13,
+                        type: 'message',
+                        source: 'CAA (Creative Artists Agency)',
+                        title: 'Proposta de Representação Exclusiva',
+                        summary: 'Maior agência de talentos quer representar você...',
+                        content: `Olá,
+                        
+                        <p>Sou Sarah Mitchell, agente sênior da CAA. Represento alguns dos maiores nomes da música mundial.</p>
+                        
+                        <p>Gostaria de discutir representação exclusiva para shows, endorsements e oportunidades de mídia.</p>
+                        
+                        <p>Nossa comissão é de 10%, mas garantimos shows em venues premium e festivais internacionais.</p>`,
+                        timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000),
+                        isRead: true,
+                        impacts: [
+                            { attribute: 'Networking Premium', value: '+25', type: 'positive' },
+                            { attribute: 'Shows de Alto Nível', value: 'Acesso', type: 'positive' }
+                        ],
+                        actions: [
+                            { text: 'Assinar com CAA', cost: 0, impacts: { networking: 50, shows_premium: 100 } },
+                            { text: 'Pedir Mais Detalhes', cost: 0, impacts: { informacao: 10 } }
+                        ]
                     }
                 ];
                 
@@ -3335,234 +4143,25 @@
                     this.render(); // Re-render para remover indicador de não lida
                 }
                 
-                // Mapear tipo de notificação para modal específico
-                if (window.notificationModals) {
-                    this.openSpecificModal(notification);
-                } else {
-                    console.warn('notificationModals não encontrado; verifique a ordem de scripts.');
-                }
-            }
-            
-            openSpecificModal(notification) {
-                // Mapeamento direto por ID para garantir o modal correto
-                const modalMap = {
-                    // NEWS
-                    1: () => this.openNewsModal_Streaming(),
-                    2: () => this.openNewsModal_Forbes(),
-                    
-                    // MESSAGES  
-                    3: () => this.openMessageModal_Atlantic(),
-                    4: () => this.openMessageModal_Manager(),
-                    
-                    // EVENTS
-                    5: () => this.openEventModal_RockInRio(),
-                    6: () => this.openEventModal_DJSnake(),
-                    
-                    // ACHIEVEMENTS
-                    7: () => this.openAchievementModal_Billboard(),
-                    8: () => this.openAchievementModal_Platina()
+                // Usar o novo sistema de modais iOS
+                const newsData = {
+                    title: notification.title,
+                    content: this.formatNotificationContent(notification),
+                    meta: {
+                        source: notification.source || 'Rising Star News',
+                        time: this.formatTimestamp(notification.timestamp)
+                    },
+                    tags: notification.tags || ['Música', 'Carreira'],
+                    actions: [
+                        {
+                            text: 'Compartilhar',
+                            type: 'secondary',
+                            callback: () => this.shareNotification(notification)
+                        }
+                    ]
                 };
                 
-                const modalFunction = modalMap[notification.id];
-                if (modalFunction) {
-                    modalFunction();
-                } else {
-                    // Fallback genérico
-                    this.openNewsModal(notification);
-                }
-            }
-            
-            // MODAIS DE NOTÍCIAS (com botões corretos)
-            openNewsModal_Streaming() {
-                const newsData = {
-                    id: 'news-001',
-                    source: 'Billboard News',
-                    title: 'Streaming alcança números recordes em 2025',
-                    summary: 'O streaming musical atingiu 2.1 trilhões de reproduções globalmente no primeiro semestre, representando um crescimento de 15% em relação ao ano anterior.',
-                    timestamp: Date.now() - (2 * 60 * 60 * 1000),
-                    featured: true,
-                    fullArticle: `
-                        O mercado de streaming musical continua sua trajetória ascendente, com dados divulgados hoje mostrando que as plataformas digitais registraram 2.1 trilhões de reproduções no primeiro semestre de 2025.
-                        
-                        Este crescimento de 15% em relação ao mesmo período do ano anterior demonstra a consolidação do streaming como principal meio de consumo musical, superando inclusive as projeções mais otimistas da indústria.
-                        
-                        <h4>Principais Destaques:</h4>
-                        <ul>
-                            <li>Hip-hop lidera com 35% das reproduções totais</li>
-                            <li>Pop mantém 28% do market share</li>
-                            <li>Música latina cresce 40% comparado a 2024</li>
-                            <li>Podcasts musicais aumentaram 65%</li>
-                        </ul>
-                        
-                        Para artistas independentes, estes números representam oportunidades sem precedentes de alcançar audiências globais sem depender de grandes gravadoras.
-                    `,
-                    impact: {
-                        fama: +5,
-                        oportunidades: ['streaming_boost', 'label_interest']
-                    }
-                };
-                window.notificationModals.openNewsModal(newsData);
-            }
-            
-            openNewsModal_Forbes() {
-                const newsData = {
-                    id: 'news-003',
-                    source: 'Forbes Music Mogul',
-                    title: 'Artistas independentes faturam $4.2 bilhões em 2025',
-                    summary: 'Relatório exclusivo mostra como músicos sem contratos com major labels estão dominando o mercado digital e construindo impérios financeiros próprios.',
-                    timestamp: Date.now() - (1 * 24 * 60 * 60 * 1000),
-                    featured: true,
-                    fullArticle: `
-                        O mercado de música independente atingiu a marca histórica de $4.2 bilhões em receitas durante o primeiro semestre de 2025, segundo dados exclusivos compilados pela Forbes.
-                        
-                        Este crescimento exponencial é alimentado por artistas que optaram por manter controle total sobre sua música, utilizando plataformas de distribuição digital e estratégias de marketing direto ao consumidor.
-                        
-                        <h4>Top 5 Estratégias de Sucesso:</h4>
-                        <ol>
-                            <li>Engajamento direto nas redes sociais</li>
-                            <li>Parcerias com marcas alinhadas ao público</li>
-                            <li>Merchandising exclusivo e limitado</li>
-                            <li>Experiências virtuais personalizadas</li>
-                            <li>Diversificação em múltiplas plataformas</li>
-                        </ol>
-                    `,
-                    impact: {
-                        motivacao: +10,
-                        business_insights: true
-                    }
-                };
-                window.notificationModals.openNewsModal(newsData);
-            }
-            
-            // MODAIS DE MENSAGENS
-            openMessageModal_Atlantic() {
-                const messageData = {
-                    id: 'msg-001',
-                    sender: 'Atlantic Records',
-                    senderType: 'Gravadora',
-                    subject: 'Proposta de Contrato - Oportunidade Exclusiva',
-                    message: 'Ficamos impressionados com seu trabalho recente e gostaríamos de discutir uma parceria estratégica. Nossa proposta inclui suporte completo para produção, marketing e distribuição mundial.',
-                    timestamp: Date.now() - (30 * 60 * 1000),
-                    urgent: true,
-                    offer: {
-                        royalties: 15,
-                        advance: 250000,
-                        duration: '3 anos + 2 opcionais'
-                    },
-                    actions: [
-                        { action: 'accept', label: 'Aceitar Proposta', type: 'success', icon: 'check' },
-                        { action: 'counter', label: 'Contra-Proposta', type: 'primary', icon: 'handshake' },
-                        { action: 'decline', label: 'Recusar', type: 'danger', icon: 'times' },
-                        { action: 'schedule', label: 'Agendar Reunião', type: 'secondary', icon: 'calendar' }
-                    ]
-                };
-                window.notificationModals.openMessageModal(messageData);
-            }
-            
-            openMessageModal_Manager() {
-                const messageData = {
-                    id: 'msg-002',
-                    sender: 'Sarah Mitchell - Artist Manager',
-                    senderType: 'Agente/Manager',
-                    subject: 'Feedback sobre Demo "Neon Lights"',
-                    message: 'Ouvi sua nova demo e acredito que tem potencial comercial incrível. Sugiro algumas mudanças na produção e podemos começar a preparar um plano de lançamento estratégico para Q4.',
-                    timestamp: Date.now() - (2 * 60 * 60 * 1000),
-                    urgent: false,
-                    actions: [
-                        { action: 'reply', label: 'Responder', type: 'primary', icon: 'reply' },
-                        { action: 'schedule_call', label: 'Agendar Ligação', type: 'secondary', icon: 'phone' },
-                        { action: 'request_details', label: 'Solicitar Detalhes', type: 'secondary', icon: 'info-circle' }
-                    ]
-                };
-                window.notificationModals.openMessageModal(messageData);
-            }
-            
-            // MODAIS DE EVENTOS
-            openEventModal_RockInRio() {
-                const eventData = {
-                    id: 'event-001',
-                    eventName: 'Rock in Rio Festival 2025',
-                    organizer: 'Rock in Rio Productions',
-                    description: 'Convite para se apresentar no maior festival de música da América Latina. Show de 45 minutos no Palco Mundo para uma audiência estimada de 100,000 pessoas.',
-                    date: '15 de Setembro, 2025',
-                    location: 'Rio de Janeiro, Brasil',
-                    type: 'Festival Internacional',
-                    payment: 180000,
-                    timestamp: Date.now() - (1 * 60 * 60 * 1000),
-                    requirements: [
-                        'Apresentação de 45 minutos',
-                        'Som próprio (será fornecido)',
-                        'Disponibilidade para ensaio técnico no dia anterior',
-                        'Presença em coletiva de imprensa'
-                    ]
-                };
-                window.notificationModals.openEventModal(eventData);
-            }
-            
-            openEventModal_DJSnake() {
-                const eventData = {
-                    id: 'event-003',
-                    eventName: 'Colaboração com DJ Snake',
-                    organizer: 'Premiere Classe Records',
-                    description: 'DJ Snake está procurando vocalists para seu próximo álbum. Sua voz foi especificamente solicitada para a faixa principal. Sessão de gravação agendada para próxima semana.',
-                    date: '20-22 de Setembro, 2025',
-                    location: 'Abbey Road Studios, London',
-                    type: 'Colaboração Musical',
-                    payment: 75000,
-                    timestamp: Date.now() - (3 * 60 * 60 * 1000),
-                    requirements: [
-                        'Disponibilidade por 3 dias consecutivos',
-                        'Vocal range: A2 - E5',
-                        'Experiência em música eletrônica (desejável)',
-                        'Flexibilidade criativa para experimentação'
-                    ]
-                };
-                window.notificationModals.openEventModal(eventData);
-            }
-            
-            // MODAIS DE CONQUISTAS
-            openAchievementModal_Billboard() {
-                const achievementData = {
-                    id: 'achievement-001',
-                    title: 'Seu Single Atingiu #1 na Billboard Hot 100!',
-                    description: 'Parabéns! "Midnight Vibes" acaba de alcançar o primeiro lugar na Billboard Hot 100, uma conquista histórica que marca sua entrada definitiva no mainstream musical.',
-                    timestamp: Date.now() - (15 * 60 * 1000),
-                    stats: {
-                        'Streams': '50M+',
-                        'Downloads': '2.1M',
-                        'Radio Plays': '15.8K',
-                        'Chart Position': '#1'
-                    },
-                    rewards: [
-                        'Desbloqueado: Status "Chart Topper"',
-                        'Bonus de Fama: +1000 pontos',
-                        'Nova oportunidade: Tour Mundial disponível',
-                        'Aumento de royalties: +5% em futuros contratos'
-                    ]
-                };
-                window.notificationModals.openAchievementModal(achievementData);
-            }
-            
-            openAchievementModal_Platina() {
-                const achievementData = {
-                    id: 'achievement-002',
-                    title: 'Certificação Platina Alcançada!',
-                    description: 'Seu álbum "Digital Dreams" foi oficialmente certificado Platina pela RIAA, com mais de 1 milhão de unidades vendidas nos Estados Unidos.',
-                    timestamp: Date.now() - (2 * 60 * 60 * 1000),
-                    stats: {
-                        'Vendas US': '1.2M',
-                        'Vendas Global': '3.8M',
-                        'Tempo no Chart': '28 sem',
-                        'Peak Position': '#3'
-                    },
-                    rewards: [
-                        'Placa Platina desbloqueada',
-                        'Bonus de prestígio: +500 pontos',
-                        'Unlock: Estúdios premium disponíveis',
-                        'Aumento base de fãs: +250,000'
-                    ]
-                };
-                window.notificationModals.openAchievementModal(achievementData);
+                window.iOSModal.createNewsModal(newsData);
             }
             
             formatNotificationContent(notification) {
@@ -3726,6 +4325,9 @@
     <!-- Sistema Unificado de Toast/Notificações -->
     <script src="js/utils/toast-manager.js"></script>
     
+    <!-- Sistema de Modais iOS/macOS -->
+    <script src="js/modal-system-ios.js"></script>
+    
     <script>
         // Guarda final: não permitir dashboard visível antes do jogo
         (function finalDashboardGuard(){
@@ -3798,84 +4400,6 @@
             }
         })();
         
-        // 🎯 INICIALIZAÇÃO DOS BOTÕES DO PERFIL
-        document.addEventListener('DOMContentLoaded', function() {
-            // Aguardar carregamento dos modais
-            setTimeout(() => {
-                // Botão Habilidades
-                const skillsBtn = document.getElementById('openProfileSkillsBtn');
-                if (skillsBtn) {
-                    skillsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openSkillsModal();
-                        }
-                    });
-                }
-
-                // Botão Últimas Notícias
-                const newsBtn = document.getElementById('openProfileNewsBtn');
-                if (newsBtn) {
-                    newsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openNewsListModal();
-                        }
-                    });
-                }
-
-                // Botão Contratos
-                const contractsBtn = document.getElementById('openProfileContractsBtn');
-                if (contractsBtn) {
-                    contractsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openContractsListModal();
-                        }
-                    });
-                }
-
-                // Botão Eventos
-                const eventsBtn = document.getElementById('openProfileEventsBtn');
-                if (eventsBtn) {
-                    eventsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openEventsListModal();
-                        }
-                    });
-                }
-
-                // Botão Conquistas
-                const achievementsBtn = document.getElementById('openProfileAchievementsBtn');
-                if (achievementsBtn) {
-                    achievementsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openAchievementsListModal();
-                        }
-                    });
-                }
-
-                // Botão Estatísticas
-                const statsBtn = document.getElementById('openProfileStatsBtn');
-                if (statsBtn) {
-                    statsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openStatsModal();
-                        }
-                    });
-                }
-
-                // Botão Configurações
-                const settingsBtn = document.getElementById('openProfileSettingsBtn');
-                if (settingsBtn) {
-                    settingsBtn.addEventListener('click', () => {
-                        if (window.notificationModals) {
-                            window.notificationModals.openProfileSettingsModal();
-                        }
-                    });
-                }
-
-                console.log('🎯 Botões do perfil inicializados');
-            }, 1000); // Aguardar carregamento completo dos sistemas
-        });
-        
         // GUARDA BÁSICO ANTI-CURSOR (reduzido)
         (function basicAntiCursor(){
             document.addEventListener('selectstart', function(e) {
@@ -3888,5 +4412,9 @@
             });
         })();
     </script>
+    
+    <!-- Container para o sistema de modais iOS -->
+    <div id="modal-system-container"></div>
+    
     </body>
 </html>

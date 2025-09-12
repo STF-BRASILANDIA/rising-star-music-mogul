@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Modal</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 50px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+        .test-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            padding: 12px 24px;
+            margin: 10px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: white; text-align: center;">🎵 Teste do Sistema de Modais</h1>
+    
+    <div style="text-align: center; margin-top: 50px;">
+        <button class="test-button" onclick="testNewsModal()">📰 Testar Modal de Notícias</button>
+        <button class="test-button" onclick="testMessageModal()">💌 Testar Modal de Mensagens</button>
+        <button class="test-button" onclick="testEventModal()">🎪 Testar Modal de Eventos</button>
+        <button class="test-button" onclick="testAchievementModal()">🏆 Testar Modal de Conquistas</button>
+    </div>
+
+    <!-- Scripts do Sistema de Modais -->
+    <script src="js/ui/modal-system.js"></script>
+    <script src="js/ui/notification-modals.js"></script>
+    <script src="js/ui/notification-test-data.js"></script>
+
+    <script>
+        function testNewsModal() {
+            const newsData = NotificationTestData.getNewsData();
+            NotificationModals.showNews(newsData[0]);
+        }
+
+        function testMessageModal() {
+            const messageData = NotificationTestData.getMessageData();
+            NotificationModals.showMessage(messageData[0]);
+        }
+
+        function testEventModal() {
+            const eventData = NotificationTestData.getEventData();
+            NotificationModals.showEvent(eventData[0]);
+        }
+
+        function testAchievementModal() {
+            const achievementData = NotificationTestData.getAchievementData();
+            NotificationModals.showAchievement(achievementData[0]);
+        }
+    </script>
+</body>
+</html>
