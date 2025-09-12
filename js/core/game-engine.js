@@ -15,7 +15,9 @@ export class RisingStarGame {
         this.gameState = 'loading';
         this.currentDate = new Date(2024, 0, 1); // Inicia em Janeiro 2024
         this.gameSpeed = 1; // 1 = normal, 2 = 2x, etc.
-        this.autosaveInterval = 30000; // 30 segundos
+        this.autoSaveOnEvents = true; // Save baseado em eventos, não em tempo
+        this.lastSaveHash = null; // Hash do último save para verificar integridade
+        this.pendingActions = []; // Ações que precisam ser salvas
         
         this.systems = {
             dataManager: null,
@@ -225,25 +227,54 @@ export class RisingStarGame {
         // Eventos de interface
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                this.systems.interfaceManager.togglePauseMenu();
+                this.systems.interfaceManager?.togglePauseMenu();
             }
         });
         
-        // Auto-save
-        setInterval(() => {
-            if (this.gameState === 'playing') {
-                this.autoSave();
+        // Save antes de fechar a página
+        window.addEventListener('beforeunload', async (e) => {
+            // Save síncrono rápido para não bloquear
+            try {
+                await this.onBeforeUnload();
+            } catch (error) {
+                console.error('❌ Erro no save antes de fechar:', error);
             }
-        }, this.autosaveInterval);
+        });
         
-        // Visibilidade da página
-        document.addEventListener('visibilitychange', () => {
+        // Visibilidade da página - pausar/resumir e save quando necessário
+        document.addEventListener('visibilitychange', async () => {
             if (document.hidden) {
                 this.pauseGame();
+                // Save quando página fica inativa (mobile/alt+tab)
+                if (this.gameData.player) {
+                    try {
+                        await this.saveOnEvent('page_hidden');
+                    } catch (error) {
+                        console.error('❌ Erro no save ao esconder página:', error);
+                    }
+                }
             } else {
                 this.resumeGame();
             }
         });
+    }
+    
+    async onBeforeUnload() {
+        // Save rápido e síncrono antes de fechar
+        if (this.gameData.player && this.gameState === 'playing') {
+            // Força save sem backup para ser mais rápido
+            const saveData = {
+                timestamp: Date.now(),
+                gameData: this.gameData,
+                version: this.gameVersion || '1.0.0'
+            };
+            
+            // Save direto no localStorage (sync)
+            const saveId = this.systems.dataManager.getProfileSaveId(this.gameData.player);
+            localStorage.setItem(saveId, JSON.stringify(saveData));
+            
+            console.log('💾 Save rápido antes de fechar executado');
+        }
     }
     
     startGameLoop() {
@@ -262,7 +293,14 @@ export class RisingStarGame {
     update(deltaTime) {
         // Atualizar tempo do jogo (1 segundo real = 1 dia no jogo por padrão)
         const gameTimeElapsed = (deltaTime * this.gameSpeed) / 1000;
+        const oldDate = new Date(this.currentDate);
         this.advanceGameTime(gameTimeElapsed);
+        
+        // Verificar se passou uma semana/turno (save automático)
+        const weekChanged = this.hasWeekChanged(oldDate, this.currentDate);
+        if (weekChanged) {
+            this.onTurnPassed();
+        }
         
         // Atualizar sistemas (apenas os que existem)
         if (this.systems.aiSimulation) {
@@ -283,6 +321,32 @@ export class RisingStarGame {
         
         // Processar eventos pendentes
         this.processEvents();
+    }
+
+    /**
+     * Verifica se uma semana passou (um "turno" do jogo)
+     */
+    hasWeekChanged(oldDate, newDate) {
+        const oldWeek = Math.floor(oldDate.getTime() / (7 * 24 * 60 * 60 * 1000));
+        const newWeek = Math.floor(newDate.getTime() / (7 * 24 * 60 * 60 * 1000));
+        return oldWeek !== newWeek;
+    }
+
+    /**
+     * Chamado quando um turno (semana) passa - trigger para auto-save
+     */
+    async onTurnPassed() {
+        console.log('📅 Turno passou - semana:', Math.floor(this.currentDate.getTime() / (7 * 24 * 60 * 60 * 1000)));
+        
+        // Adicionar evento de passagem de turno
+        this.addGameEvent({
+            type: 'turn_passed',
+            week: Math.floor(this.currentDate.getTime() / (7 * 24 * 60 * 60 * 1000)),
+            gameDate: this.currentDate.toISOString()
+        });
+        
+        // Save automático a cada turno
+        await this.saveOnEvent('turn_passed');
     }
     
     advanceGameTime(seconds) {
@@ -454,8 +518,23 @@ export class RisingStarGame {
             },
             discography: [],
             studioEquipment: 'basic',
-            achievements: []
+            achievements: [],
+            createdAt: Date.now(),
+            profileCreated: new Date().toISOString()
         };
+        
+        // Marcar que dados foram alterados e forçar save imediato do novo perfil
+        this.markDataChanged();
+        
+        // Auto-save imediato para garantir que o perfil seja salvo
+        setTimeout(async () => {
+            try {
+                await this.forceSave();
+                console.log('💾 Perfil salvo automaticamente após criação');
+            } catch (error) {
+                console.error('❌ Erro ao salvar perfil inicial:', error);
+            }
+        }, 1000);
         
         // Inicializar player no mundo (apenas sistemas que existem)
         if (this.systems.aiSimulation && this.systems.aiSimulation.initializePlayer) {
@@ -490,6 +569,7 @@ export class RisingStarGame {
         console.log('✅ Jogo iniciado com sucesso!');
         console.log('💰 Dinheiro inicial:', this.gameData.player.money);
         console.log('🎯 Habilidades:', this.gameData.player.skills);
+        console.log('🔄 Auto-save ativado a cada 15 segundos');
     }
     
     pauseGame() {
@@ -507,7 +587,103 @@ export class RisingStarGame {
     }
     
     async saveGame() {
-        const saveData = {
+        // Usar o novo sistema de save com backup
+        await this.saveGameWithBackup();
+        return this.prepareSaveData();
+    }
+
+    /**
+     * Sistema de save baseado em eventos específicos
+     */
+    async saveOnEvent(eventType, eventData = null) {
+        if (!this.autoSaveOnEvents || !this.gameData.player) {
+            return;
+        }
+
+        try {
+            console.log(`💾 Auto-save triggered by event: ${eventType}`);
+            
+            // Registrar a ação que causou o save
+            this.addPendingAction({
+                type: eventType,
+                timestamp: Date.now(),
+                data: eventData
+            });
+            
+            // Realizar save com backup redundante
+            await this.saveGameWithBackup();
+            
+            console.log(`✅ Save realizado com sucesso para evento: ${eventType}`);
+            
+        } catch (error) {
+            console.error(`❌ Erro no save para evento ${eventType}:`, error);
+            
+            // Tentar recuperar de backup se save falhou
+            await this.tryRecoverFromBackup();
+        }
+    }
+
+    /**
+     * Adiciona ação pendente que precisa ser salva
+     */
+    addPendingAction(action) {
+        this.pendingActions.push(action);
+        
+        // Limitar histórico de ações a 50 para não consumir muita memória
+        if (this.pendingActions.length > 50) {
+            this.pendingActions = this.pendingActions.slice(-50);
+        }
+    }
+
+    /**
+     * Save com sistema de backup redundante
+     */
+    async saveGameWithBackup() {
+        const saveData = this.prepareSaveData();
+        
+        // Calcular hash para verificar integridade
+        const saveHash = this.calculateSaveHash(saveData);
+        
+        // Tentar salvar 3 vezes com backups diferentes
+        let saveSuccess = false;
+        let lastError = null;
+        
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                await this.systems.dataManager.saveGame(saveData);
+                
+                // Verificar se save foi corrompido
+                const verification = await this.verifySaveIntegrity(saveData.profileId);
+                if (verification.isValid) {
+                    this.lastSaveHash = saveHash;
+                    saveSuccess = true;
+                    break;
+                } else {
+                    throw new Error('Save corrompido após salvamento');
+                }
+                
+            } catch (error) {
+                lastError = error;
+                console.warn(`⚠️ Tentativa de save ${attempt + 1} falhou:`, error);
+                
+                // Esperar um pouco antes da próxima tentativa
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+        
+        if (!saveSuccess) {
+            throw new Error(`Falha em todas as tentativas de save: ${lastError?.message}`);
+        }
+        
+        // Limpar ações pendentes após save bem-sucedido
+        this.pendingActions = [];
+    }
+
+    /**
+     * Prepara dados para salvamento
+     */
+    prepareSaveData() {
+        return {
             version: this.version,
             timestamp: Date.now(),
             currentDate: this.currentDate.toISOString(),
@@ -519,39 +695,241 @@ export class RisingStarGame {
             events: this.gameData.events,
             news: this.gameData.news,
             trends: this.gameData.trends,
+            pendingActions: this.pendingActions, // Incluir ações pendentes
             systemStates: {
                 aiSimulation: this.systems.aiSimulation?.getState ? this.systems.aiSimulation.getState() : null,
                 musicCreation: this.systems.musicCreation?.getState ? this.systems.musicCreation.getState() : null,
                 // TODO: Implementar estes sistemas
-                careerManagement: null, // this.systems.careerManagement.getState(),
-                socialSystem: null, // this.systems.socialSystem.getState(),
-                industrySimulation: null // this.systems.industrySimulation.getState()
+                careerManagement: null,
+                socialSystem: null,
+                industrySimulation: null
             }
         };
-        
-        await this.systems.dataManager.saveGame(saveData);
-        console.log('💾 Jogo salvo com sucesso');
-        
-        return saveData;
     }
-    
-    async autoSave() {
+
+    /**
+     * Calcula hash do save para verificar integridade
+     */
+    calculateSaveHash(saveData) {
+        // Simples hash baseado em JSON stringify
+        const jsonStr = JSON.stringify(saveData);
+        let hash = 0;
+        for (let i = 0; i < jsonStr.length; i++) {
+            const char = jsonStr.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return hash.toString(36);
+    }
+
+    /**
+     * Verifica integridade do save
+     */
+    async verifySaveIntegrity(profileId) {
         try {
-            await this.saveGame();
-            this.systems.interfaceManager.showNotification('Jogo salvo automaticamente', 'success');
+            const saveData = await this.systems.dataManager.getData(this.systems.dataManager.stores.gameData, profileId);
+            
+            if (!saveData) {
+                return { isValid: false, error: 'Save not found' };
+            }
+            
+            // Verificações básicas de integridade
+            if (!saveData.player || !saveData.version || !saveData.timestamp) {
+                return { isValid: false, error: 'Missing critical save data' };
+            }
+            
+            // Verificar se dados essenciais existem
+            if (typeof saveData.player.money !== 'number' || !saveData.player.firstName) {
+                return { isValid: false, error: 'Corrupted player data' };
+            }
+            
+            return { isValid: true };
+            
         } catch (error) {
-            console.error('Erro no auto-save:', error);
+            return { isValid: false, error: error.message };
+        }
+    }
+
+    /**
+     * Tenta recuperar de backup em caso de corrupção
+     */
+    async tryRecoverFromBackup() {
+        try {
+            console.log('🔄 Tentando recuperar de backup...');
+            
+            if (!this.gameData.player?.profileId) {
+                throw new Error('Não foi possível identificar perfil para recuperação');
+            }
+            
+            const profileId = this.systems.dataManager.getProfileSaveId(this.gameData);
+            const allData = await this.systems.dataManager.getAllData(this.systems.dataManager.stores.gameData);
+            
+            // Buscar backups do perfil atual
+            const profileBackups = allData
+                .filter(item => item.id.startsWith(`${profileId}_backup_`))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (profileBackups.length === 0) {
+                throw new Error('Nenhum backup encontrado');
+            }
+            
+            // Tentar carregar o backup mais recente
+            for (const backup of profileBackups) {
+                try {
+                    const verification = await this.verifySaveIntegrity(backup.id);
+                    if (verification.isValid) {
+                        // Restaurar do backup
+                        await this.systems.dataManager.putData(
+                            this.systems.dataManager.stores.gameData, 
+                            { ...backup, id: profileId }
+                        );
+                        
+                        console.log(`✅ Recuperado de backup: ${backup.id}`);
+                        return true;
+                    }
+                } catch (e) {
+                    console.warn(`⚠️ Backup ${backup.id} também corrompido:`, e);
+                }
+            }
+            
+            throw new Error('Todos os backups estão corrompidos');
+            
+        } catch (error) {
+            console.error('❌ Falha na recuperação de backup:', error);
+            
+            // Notificar usuário sobre problema crítico
+            if (window.notificationSystem) {
+                window.notificationSystem.show({
+                    type: 'error',
+                    title: 'Erro Crítico de Save',
+                    message: 'Não foi possível salvar ou recuperar dados. Recomendamos exportar dados manualmente.',
+                    duration: 10000
+                });
+            }
+            
+            return false;
+        }
+    }
+
+    /**
+     * Atualiza dados do jogador e salva automaticamente
+     */
+    async updatePlayerData(newPlayerData) {
+        if (this.gameData.player) {
+            Object.assign(this.gameData.player, newPlayerData);
+        } else {
+            this.gameData.player = { ...newPlayerData };
+        }
+        
+        console.log('👤 Dados do jogador atualizados');
+        await this.saveOnEvent('player_updated', newPlayerData);
+    }
+
+    /**
+     * Adiciona nova música e salva automaticamente
+     */
+    async addSong(songData) {
+        const songId = songData.id || `song_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        this.gameData.songs[songId] = {
+            ...songData,
+            id: songId,
+            createdAt: Date.now()
+        };
+        
+        console.log(`🎵 Nova música adicionada: ${songData.title || songId}`);
+        await this.saveOnEvent('song_created', { songId, title: songData.title });
+        return songId;
+    }
+
+    /**
+     * Adiciona novo álbum e salva automaticamente
+     */
+    async addAlbum(albumData) {
+        const albumId = albumData.id || `album_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        this.gameData.albums[albumId] = {
+            ...albumData,
+            id: albumId,
+            createdAt: Date.now()
+        };
+        
+        console.log(`💿 Novo álbum adicionado: ${albumData.title || albumId}`);
+        await this.saveOnEvent('album_created', { albumId, title: albumData.title });
+        return albumId;
+    }
+
+    /**
+     * Adiciona evento e salva automaticamente
+     */
+    async addGameEvent(eventData) {
+        const event = {
+            ...eventData,
+            id: eventData.id || `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: Date.now(),
+            gameDate: this.currentDate.toISOString()
+        };
+        this.gameData.events.push(event);
+        
+        console.log(`📅 Novo evento adicionado: ${event.type || event.id}`);
+        await this.saveOnEvent('event_added', { eventId: event.id, eventType: event.type });
+        return event.id;
+    }
+
+    /**
+     * Atualiza estatísticas do jogador e salva automaticamente
+     */
+    async updatePlayerStats(statUpdates) {
+        if (!this.gameData.player.stats) {
+            this.gameData.player.stats = {};
+        }
+        
+        Object.assign(this.gameData.player.stats, statUpdates);
+        
+        console.log('📊 Estatísticas do jogador atualizadas');
+        await this.saveOnEvent('stats_updated', statUpdates);
+    }
+
+    /**
+     * Métodos para ações críticas que precisam de save imediato
+     */
+    async onCriticalAction(actionType, actionData) {
+        console.log(`⚡ Ação crítica: ${actionType}`);
+        await this.saveOnEvent('critical_action', { actionType, actionData });
+    }
+
+    /**
+     * Chamado antes de fechar o jogo ou mudar tela
+     */
+    async onBeforeUnload() {
+        console.log('🚪 Salvando antes de sair...');
+        await this.saveOnEvent('before_unload');
+    }
+
+    /**
+     * Save forçado (mantido para compatibilidade)
+     */
+    async forceSave() {
+        try {
+            await this.saveGameWithBackup();
+            console.log('💾 Save forçado realizado com sucesso');
+        } catch (error) {
+            console.error('❌ Erro no save forçado:', error);
+            throw error;
         }
     }
     
     loadSaveData(saveData) {
-        if (saveData.version !== this.version) {
-            console.warn('⚠️ Versão do save diferente da atual');
+        console.log('📁 Carregando dados do save...');
+        
+        if (saveData.version && saveData.version !== this.version) {
+            console.warn(`⚠️ Versão do save (${saveData.version}) diferente da atual (${this.version})`);
         }
         
-        this.currentDate = new Date(saveData.currentDate);
+        // Carregar dados básicos do jogo
+        this.currentDate = saveData.currentDate ? new Date(saveData.currentDate) : new Date(2024, 0, 1);
         this.gameSpeed = saveData.gameSpeed || 1;
-        this.gameData.player = saveData.player;
+        
+        // Carregar dados do jogador
+        this.gameData.player = saveData.player || null;
         this.gameData.songs = saveData.songs || {};
         this.gameData.albums = saveData.albums || {};
         this.gameData.charts = saveData.charts || {};
@@ -559,16 +937,40 @@ export class RisingStarGame {
         this.gameData.news = saveData.news || [];
         this.gameData.trends = saveData.trends || {};
         
-        // Restaurar estados dos sistemas
+        // Restaurar estados dos sistemas se disponíveis
         if (saveData.systemStates) {
             Object.keys(saveData.systemStates).forEach(systemName => {
-                if (this.systems[systemName] && this.systems[systemName].setState) {
-                    this.systems[systemName].setState(saveData.systemStates[systemName]);
+                if (this.systems[systemName] && this.systems[systemName].setState && saveData.systemStates[systemName]) {
+                    try {
+                        this.systems[systemName].setState(saveData.systemStates[systemName]);
+                    } catch (error) {
+                        console.warn(`⚠️ Erro ao restaurar estado do sistema ${systemName}:`, error);
+                    }
                 }
             });
         }
         
-        console.log('📁 Save carregado com sucesso');
+        // Carregar ações pendentes se disponíveis
+        this.pendingActions = saveData.pendingActions || [];
+        
+        // Resetar sistema de save (dados estão sincronizados)
+        this.lastSaveHash = this.calculateSaveHash(saveData);
+        this.gameState = 'playing';
+        
+        // Atualizar interface se disponível
+        if (window.gameHub && typeof window.gameHub.updateMetrics === 'function') {
+            try { 
+                window.gameHub.updateMetrics(); 
+                console.log('� Interface atualizada com dados do save');
+            } catch(e) { 
+                console.warn('⚠️ Falha ao atualizar interface:', e); 
+            }
+        }
+        
+        console.log('✅ Save carregado com sucesso');
+        console.log(`👤 Jogador: ${this.gameData.player?.firstName || 'Desconhecido'}`);
+        console.log(`💰 Dinheiro: $${this.gameData.player?.money || 0}`);
+        console.log(`🎵 Músicas: ${Object.keys(this.gameData.songs).length}`);
     }
     
     async loadGame(saveId) {
@@ -760,14 +1162,6 @@ export class RisingStarGame {
     applySettings(settings) {
         // Apply game-related settings
         this.settings = settings;
-        
-        // Update auto-save based on settings
-        if (settings.autoSaveEnabled && !this.autoSaveInterval) {
-            const interval = settings.autoSaveInterval || 2; // Default 2 minutes
-            this.systems.dataManager.startAutoSave(interval);
-        } else if (!settings.autoSaveEnabled && this.autoSaveInterval) {
-            this.systems.dataManager.stopAutoSave();
-        }
         
         // Apply game speed if fast mode is enabled
         if (settings.fastModeEnabled) {

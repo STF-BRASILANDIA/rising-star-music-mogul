@@ -893,6 +893,34 @@ class NotificationModals {
                 </div>
 
                 <div class="settings-section">
+                    <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">📱 Interface</h4>
+                    <div class="settings-option">
+                        <div style="display: flex; flex-direction: column; width: 100%;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span>Área Segura (Notch/Pills)</span>
+                                <span id="safeAreaValue" style="font-size: 12px; opacity: 0.7;">0px</span>
+                            </div>
+                            <input type="range" id="safeAreaOffset" min="0" max="80" value="0" 
+                                   style="width: 100%; margin: 4px 0;" 
+                                   oninput="notificationModals.updateSafeArea(this.value)" />
+                            <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">
+                                Ajuste para dispositivos com notch (iPhone 15 Pro Max, etc.)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">💾 Dados e Armazenamento</h4>
+                    <div class="settings-option" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Gerenciar Dados do Jogo</span>
+                        <button class="notification-btn secondary" onclick="notificationModals.openStorageModal()">
+                            <i class="fas fa-database"></i> Abrir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
                     <h4 style="margin: 0 0 12px; color: #1d1d1f; font-size: 16px;">💾 Dados e Armazenamento</h4>
                     <div class="settings-option" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>Gerenciar Dados do Jogo</span>
@@ -921,6 +949,12 @@ class NotificationModals {
         });
 
         this.modalSystem.openModal(modal);
+        
+        // Carregar configurações salvas após o modal ser criado
+        setTimeout(() => {
+            this.loadSettingsInModal();
+        }, 100);
+        
         return modal;
     }
 
@@ -1195,6 +1229,64 @@ class NotificationModals {
 
     saveSettings() { console.log('💾 Configurações salvas'); }
     resetSettings() { console.log('🔄 Configurações restauradas'); }
+    
+    /**
+     * Atualiza a área segura em tempo real
+     */
+    updateSafeArea(value) {
+        const val = parseInt(value || '0');
+        
+        // Aplicar mudança visual imediatamente
+        if (val > 0) {
+            document.documentElement.style.setProperty('--safe-area-extra-top', val + 'px');
+        } else {
+            document.documentElement.style.setProperty('--safe-area-extra-top', '0px');
+        }
+        
+        // Atualizar label
+        const valueLabel = document.getElementById('safeAreaValue');
+        if (valueLabel) {
+            valueLabel.textContent = val + 'px';
+        }
+        
+        // Salvar imediatamente no localStorage
+        try {
+            const current = JSON.parse(localStorage.getItem('risingstar_settings') || '{}');
+            localStorage.setItem('risingstar_settings', JSON.stringify({ ...current, safeAreaOffset: val }));
+            console.log('✅ Safe area offset salvo:', val + 'px');
+        } catch (err) {
+            console.warn('⚠️ Não foi possível salvar safeAreaOffset:', err);
+        }
+    }
+
+    /**
+     * Carrega configurações salvas no modal
+     */
+    loadSettingsInModal() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('risingstar_settings') || '{}');
+            
+            // Carregar safe area offset
+            const safeAreaInput = document.getElementById('safeAreaOffset');
+            const safeAreaValue = document.getElementById('safeAreaValue');
+            
+            if (safeAreaInput && saved.safeAreaOffset !== undefined) {
+                safeAreaInput.value = saved.safeAreaOffset || 0;
+                if (safeAreaValue) {
+                    safeAreaValue.textContent = (saved.safeAreaOffset || 0) + 'px';
+                }
+                
+                // Aplicar valor atual
+                if (saved.safeAreaOffset > 0) {
+                    document.documentElement.style.setProperty('--safe-area-extra-top', saved.safeAreaOffset + 'px');
+                }
+            }
+            
+            console.log('📋 Configurações carregadas no modal');
+        } catch (error) {
+            console.error('❌ Erro ao carregar configurações no modal:', error);
+        }
+    }
     exportStats() { console.log('📊 Exportando relatório de estatísticas'); }
     viewDetailedStats() { console.log('📈 Visualizando análise detalhada'); }
     subscribeToNews() { console.log('📰 Assinando feed de notícias'); }

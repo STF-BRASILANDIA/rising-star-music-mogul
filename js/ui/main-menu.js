@@ -44,13 +44,21 @@ export class MainMenu {
 
             // Verificar se existe save game através do data manager
             if (this.gameEngine?.systems?.dataManager) {
-                const saveData = await this.gameEngine.systems.dataManager.loadGame();
-                if (saveData && saveData.data) {
+                const latestSave = await this.gameEngine.systems.dataManager.getLatestSave();
+                if (latestSave && latestSave.player) {
                     // Tem save game - habilitar botão
                     continueBtn.style.display = 'block';
                     continueBtn.disabled = false;
                     continueBtn.classList.remove('disabled');
-                    console.log('✅ Save game encontrado - botão continuar habilitado');
+                    
+                    // Mostrar nome do personagem no botão se possível
+                    const playerName = this.gameEngine.systems.dataManager.getPlayerDisplayName(latestSave);
+                    const buttonText = continueBtn.querySelector('.tab-label') || continueBtn;
+                    if (buttonText && playerName && playerName !== 'Jogador') {
+                        buttonText.textContent = `Continuar - ${playerName}`;
+                    }
+                    
+                    console.log(`✅ Save game encontrado: ${playerName} - botão continuar habilitado`);
                 } else {
                     // Sem save game - esconder botão
                     continueBtn.style.display = 'none';
@@ -120,23 +128,34 @@ export class MainMenu {
             console.log('🎮 Continuando jogo...');
             
             if (this.gameEngine?.systems?.dataManager) {
-                // Usar data manager para carregar o jogo
-                const saveData = await this.gameEngine.systems.dataManager.loadGame();
-                if (saveData && saveData.data) {
-                    console.log('📁 Save game carregado com sucesso');
-                    // Inicializar o jogo com os dados carregados
-                    await this.gameEngine.loadGameFromSave(saveData);
+                // Usar data manager para carregar o jogo mais recente
+                const saveData = await this.gameEngine.systems.dataManager.getLatestSave();
+                if (saveData && saveData.player) {
+                    console.log(`📁 Carregando perfil: ${this.gameEngine.systems.dataManager.getPlayerDisplayName(saveData)}`);
+                    
+                    // Carregar dados do save no game engine
+                    this.gameEngine.loadSaveData(saveData);
+                    
+                    // Esconder menu e mostrar interface principal
+                    this.hide();
+                    if (this.gameEngine.systems.interfaceManager) {
+                        this.gameEngine.systems.interfaceManager.showMainInterface();
+                    }
+                    
+                    // Iniciar game loop se não estiver rodando
+                    if (this.gameEngine.gameState !== 'playing') {
+                        this.gameEngine.gameState = 'playing';
+                    }
+                    
                     console.log('✅ Jogo continuado com sucesso');
                 } else {
-                    throw new Error('Save game não encontrado');
+                    throw new Error('Nenhum save game encontrado');
                 }
             } else {
                 // Fallback: tentar carregar do localStorage
                 console.log('⚠️ DataManager não disponível, usando fallback localStorage');
                 const loaded = this.loadFromLocalStorage();
-                if (loaded) {
-                    console.log('✅ Jogo carregado do localStorage');
-                } else {
+                if (!loaded) {
                     throw new Error('Não foi possível carregar o save game');
                 }
             }

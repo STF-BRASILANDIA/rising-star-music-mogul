@@ -94,39 +94,109 @@ export class DataManager {
     
     async saveGame(gameData) {
         try {
+            // Determinar o ID do save baseado no perfil atual
+            const profileId = this.getProfileSaveId(gameData);
+            
             const saveData = {
-                id: 'current_save',
+                id: profileId,
+                profileId: profileId,
                 ...gameData,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                lastSaved: new Date().toISOString(),
+                autoSave: true
             };
             
+            // Salvar no slot específico do perfil (sempre sobrescreve)
             await this.putData(this.stores.gameData, saveData);
             
-            // Also save backup
+            // Criar backup automático (mantém histórico)
             const backupData = {
-                id: `backup_${Date.now()}`,
+                id: `${profileId}_backup_${Date.now()}`,
+                originalProfileId: profileId,
                 ...gameData,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                backupCreated: new Date().toISOString()
             };
             
             await this.putData(this.stores.gameData, backupData);
             
-            // Keep only last 5 backups
-            await this.cleanupBackups();
+            // Manter apenas os últimos 3 backups por perfil
+            await this.cleanupProfileBackups(profileId);
             
-            console.log('💾 Game saved successfully');
+            console.log(`💾 Auto-save realizado para perfil: ${profileId}`);
             return true;
         } catch (error) {
-            console.error('❌ Failed to save game:', error);
+            console.error('❌ Falha no auto-save:', error);
             throw error;
         }
     }
-    
-    async loadGame() {
+
+    /**
+     * Determina o ID único do save baseado no perfil do jogador
+     */
+    getProfileSaveId(gameData) {
+        // Se já existe um profileId nos dados, usar ele
+        if (gameData.profileId) {
+            return gameData.profileId;
+        }
+        
+        // Se existe dados do player, criar ID baseado no perfil
+        if (gameData.player) {
+            const player = gameData.player;
+            const firstName = player.firstName || player.nome || 'Player';
+            const lastName = player.lastName || player.sobrenome || '';
+            const stageName = player.stageName || player.nomeArtistico || '';
+            
+            // Criar ID único baseado no nome do personagem
+            const profileKey = `${firstName}_${lastName}_${stageName}`.toLowerCase()
+                .replace(/[^a-z0-9]/g, '_')
+                .replace(/_+/g, '_')
+                .replace(/^_|_$/g, '');
+            
+            return `profile_${profileKey}`;
+        }
+        
+        // Fallback: usar timestamp + random para perfil único
+        const uniqueId = `profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        return uniqueId;
+    }
+
+    /**
+     * Limpa backups antigos de um perfil específico (mantém apenas os 3 mais recentes)
+     */
+    async cleanupProfileBackups(profileId) {
         try {
-            const saveData = await this.getData(this.stores.gameData, 'current_save');
+            const allData = await this.getAllData(this.stores.gameData);
+            const profileBackups = allData
+                .filter(item => item.id.startsWith(`${profileId}_backup_`))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Manter apenas os 3 backups mais recentes
+            const backupsToDelete = profileBackups.slice(3);
+            
+            for (const backup of backupsToDelete) {
+                await this.deleteData(this.stores.gameData, backup.id);
+                console.log(`🗑️ Backup antigo removido: ${backup.id}`);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao limpar backups:', error);
+        }
+    }
+    
+    async loadGame(profileId = null) {
+        try {
+            let saveData;
+            
+            if (profileId) {
+                // Carregar perfil específico
+                saveData = await this.getData(this.stores.gameData, profileId);
+            } else {
+                // Tentar carregar o save mais recente
+                saveData = await this.getLatestSave();
+            }
+            
             if (saveData) {
-                console.log('📁 Game loaded successfully');
+                console.log(`📁 Jogo carregado: ${saveData.profileId || 'perfil desconhecido'}`);
                 return saveData;
             }
             return null;
@@ -134,6 +204,65 @@ export class DataManager {
             console.error('❌ Failed to load game:', error);
             return null;
         }
+    }
+
+    /**
+     * Retorna o save mais recente de qualquer perfil
+     */
+    async getLatestSave() {
+        try {
+            const allData = await this.getAllData(this.stores.gameData);
+            const saves = allData
+                .filter(item => item.id.startsWith('profile_') && !item.id.includes('_backup_'))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            return saves.length > 0 ? saves[0] : null;
+        } catch (error) {
+            console.error('❌ Erro ao buscar save mais recente:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Lista todos os perfis salvos
+     */
+    async getAllProfiles() {
+        try {
+            const allData = await this.getAllData(this.stores.gameData);
+            const profiles = allData
+                .filter(item => item.id.startsWith('profile_') && !item.id.includes('_backup_'))
+                .map(save => ({
+                    id: save.profileId || save.id,
+                    playerName: this.getPlayerDisplayName(save),
+                    lastPlayed: save.lastSaved || new Date(save.timestamp).toISOString(),
+                    timestamp: save.timestamp
+                }))
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            return profiles;
+        } catch (error) {
+            console.error('❌ Erro ao listar perfis:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Retorna nome de exibição do jogador
+     */
+    getPlayerDisplayName(saveData) {
+        if (saveData.player) {
+            const player = saveData.player;
+            const firstName = player.firstName || player.nome || '';
+            const lastName = player.lastName || player.sobrenome || '';
+            const stageName = player.stageName || player.nomeArtistico || '';
+            
+            if (stageName) {
+                return `${firstName} "${stageName}" ${lastName}`.trim();
+            } else {
+                return `${firstName} ${lastName}`.trim() || 'Jogador';
+            }
+        }
+        return 'Jogador';
     }
     
     async savePlayerData(playerData) {

@@ -81,6 +81,9 @@ export class MusicCreation {
         this.currentSong = song;
         this.gameEngine.gameData.songs[song.id] = song;
         
+        // Save automático após criar nova música
+        this.gameEngine.saveOnEvent('song_created', { songId: song.id, songTitle: song.title });
+        
         console.log('🎵 Nova música criada:', song.title);
         return song;
     }
@@ -214,6 +217,9 @@ export class MusicCreation {
             timestamp: new Date()
         });
         
+        // Save automático após finalizar música
+        this.gameEngine.saveOnEvent('song_completed', { songId: song.id, songTitle: song.title });
+        
         return true;
     }
     
@@ -243,6 +249,9 @@ export class MusicCreation {
         
         // Simular recepção inicial
         this.simulateInitialReception(song);
+        
+        // Save automático após lançar música
+        this.gameEngine.saveOnEvent('song_released', { songId: songId, songTitle: song.title });
         
         console.log('🚀 Música lançada:', song.title);
         return true;
