@@ -561,6 +561,13 @@ export class MainMenu {
     }
     
     showLoadGameModal() {
+        // Usar MenuModals se disponível  
+        if (window.menuModals && typeof window.menuModals.showModal === 'function') {
+            window.menuModals.showModal('loadGame', 'loadGameBtn');
+            return;
+        }
+        
+        // Fallback para modal tradicional
         const modal = document.getElementById('loadGameModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -599,6 +606,13 @@ export class MainMenu {
     }
     
     showCredits() {
+        // Usar MenuModals se disponível
+        if (window.menuModals && typeof window.menuModals.showModal === 'function') {
+            window.menuModals.showModal('credits', 'creditsBtn');
+            return;
+        }
+        
+        // Fallback para modal tradicional
         const modal = document.getElementById('creditsModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -617,6 +631,13 @@ export class MainMenu {
     }
     
     showHelp() {
+        // Usar MenuModals se disponível
+        if (window.menuModals && typeof window.menuModals.showModal === 'function') {
+            window.menuModals.showModal('help', 'helpBtn');
+            return;
+        }
+        
+        // Fallback para modal tradicional
         const modal = document.getElementById('helpModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -913,6 +934,10 @@ export class MainMenu {
                 await this.gameEngine.systems.dataManager.deleteSave(saveId);
                 await this.loadSavedGames();
                 this.updateSavedGamesList();
+                
+                // 🔄 ATUALIZAR STATUS DO BOTÃO CONTINUAR APÓS DELETAR
+                await this.checkContinueGameStatus();
+                
                 console.log('Save deletado com sucesso');
             } catch (error) {
                 console.error('Erro ao deletar save:', error);

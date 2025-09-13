@@ -1298,35 +1298,112 @@ class NotificationModals {
     shareAchievements() { console.log('🏆 Compartilhando conquistas'); }
 
     /**
-     * 🌟 Modal para Sistema de Habilidades
+     * 🌟 Modal para Sistema de Habilidades - SISTEMA ATUALIZADO
      */
     openSkillsModal() {
-        // Dados das habilidades (podem ser carregados do sistema de jogo)
+        // 🎯 BUSCAR DADOS REAIS DO CHARACTER CREATOR E DATA MANAGER
+        const getSkillData = (skillKey, name, icon) => {
+            let level = 0; // ✅ padrão
+            let maxLevel = 100;
+            
+            // 🎯 PRIORIDADE 1: window.game.gameData.player.skills (dados sincronizados)
+            try {
+                if (window.game?.gameData?.player?.skills && 
+                    typeof window.game.gameData.player.skills[skillKey] === 'number') {
+                    level = window.game.gameData.player.skills[skillKey];
+                    console.log(`🎯 Skill ${skillKey} carregada do window.game.gameData.player: ${level}`);
+                }
+                // 🎯 PRIORIDADE 2: DataManager skillState 
+                else if (window.game?.systems?.dataManager) {
+                    const dm = window.game.systems.dataManager;
+                    const skillState = dm.getSkillState(skillKey);
+                    level = skillState.level || 0;
+                    maxLevel = skillState.maxLevel || 100;
+                    console.log(`🎯 Skill ${skillKey} carregada do skillState: level=${level}`);
+                    
+                    // Fallback para playerData se necessário
+                    if (level === 0) {
+                        const playerData = dm.loadPlayerData();
+                        if (playerData?.skills && typeof playerData.skills[skillKey] === 'number') {
+                            level = playerData.skills[skillKey];
+                            console.log(`🎯 Skill ${skillKey} carregada do player data: level=${level}`);
+                        }
+                    }
+                } else {
+                    // Fallback: localStorage
+                    const gameData = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
+                    if (gameData.player?.skills && typeof gameData.player.skills[skillKey] === 'number') {
+                        level = gameData.player.skills[skillKey];
+                        console.log(`💾 Skill ${skillKey} carregada do localStorage (player): level=${level}`);
+                    } else if (gameData.skills && typeof gameData.skills[skillKey] === 'number') {
+                        level = gameData.skills[skillKey];
+                        console.log(`💾 Skill ${skillKey} carregada do localStorage (skills): level=${level}`);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Erro ao buscar dados da skill ${skillKey}:`, error);
+            }
+            
+            // Calcular custos baseados no sistema real
+            let cost = 500;
+            let energy = 20;
+            try {
+                if (window.game?.systems?.dataManager) {
+                    cost = window.game.systems.dataManager.trainingMoneyCost(level);
+                    energy = window.game.systems.dataManager.trainingEnergyCost(level);
+                }
+            } catch (error) {
+                // Usar custos padrão se houver erro
+                cost = Math.floor(500 * Math.pow(1.2, Math.floor(level / 10)));
+                energy = Math.floor(20 * Math.pow(1.1, Math.floor(level / 20)));
+            }
+            
+            return { id: skillKey, name, icon, level, maxLevel, cost, energy };
+        };
+
+        // 🎵 TODAS AS 8 SKILLS DO SISTEMA ATUALIZADO
         const artisticSkills = [
-            { id: 'vocals', name: 'Vocals', icon: '🎤', level: 3, maxLevel: 10, cost: 150, energy: 20 },
-            { id: 'songwriting', name: 'Songwriting', icon: '✍️', level: 2, maxLevel: 10, cost: 200, energy: 25 },
-            { id: 'rhythm', name: 'Rhythm', icon: '🥁', level: 4, maxLevel: 10, cost: 180, energy: 15 },
-            { id: 'charisma', name: 'Charisma', icon: '✨', level: 5, maxLevel: 10, cost: 250, energy: 30 },
-            { id: 'virality', name: 'Virality', icon: '📱', level: 1, maxLevel: 10, cost: 300, energy: 35 },
-            { id: 'video_directing', name: 'Video Directing', icon: '🎬', level: 2, maxLevel: 10, cost: 220, energy: 25 }
+            getSkillData('vocals', 'Vocals', '🎤'),
+            getSkillData('songWriting', 'Songwriting', '✍️'),
+            getSkillData('rhythm', 'Rhythm', '🥁'),
+            getSkillData('livePerformance', 'Live Performance', '🎭'), // NOVA SKILL
+            getSkillData('production', 'Production', '🎛️'),          // NOVA SKILL
+            getSkillData('charisma', 'Charisma', '✨'),
+            getSkillData('virality', 'Virality', '📱'),
+            getSkillData('videoDirecting', 'Video Directing', '🎬')
         ];
 
+        // 🏢 HABILIDADES DE NEGÓCIO (começam em 0, não aparecem na criação)
         const businessSkills = [
-            { id: 'leadership', name: 'Leadership', icon: '👑', level: 2, maxLevel: 10, cost: 280, energy: 30 },
-            { id: 'marketing', name: 'Marketing', icon: '📊', level: 3, maxLevel: 10, cost: 200, energy: 20 },
-            { id: 'negotiation', name: 'Negotiation', icon: '🤝', level: 1, maxLevel: 10, cost: 320, energy: 35 },
-            { id: 'recruiting', name: 'Recruiting', icon: '🔍', level: 1, maxLevel: 10, cost: 250, energy: 25 },
-            { id: 'sales', name: 'Sales', icon: '💼', level: 2, maxLevel: 10, cost: 180, energy: 20 }
+            getSkillData('marketing', 'Marketing', '📈'),
+            getSkillData('business', 'Business', '💼'),
+            getSkillData('networking', 'Networking', '🤝'),
+            getSkillData('management', 'Management', '📊')
         ];
 
         const renderSkillCategory = (title, icon, skills) => {
             const skillsHtml = skills.map(skill => {
                 const progressPercent = (skill.level / skill.maxLevel) * 100;
                 const canUpgrade = skill.level < skill.maxLevel;
-                const currentEnergy = parseInt(document.getElementById('statEnergy')?.textContent || '100');
-                const currentMoney = parseInt(document.getElementById('statMoney')?.textContent?.replace(/[$,]/g, '') || '0');
-                
-                const hasResources = currentMoney >= skill.cost && currentEnergy >= skill.energy;
+                // Usar fonte de verdade para recursos
+                let currentEnergy = 100;
+                let currentMoney = 0;
+                try {
+                    if (window.game?.systems?.dataManager) {
+                        const energyInfo = window.game.systems.dataManager.getEnergyState();
+                        currentEnergy = energyInfo.current;
+                        const gd = window.game.systems.dataManager.loadGameData();
+                        if (gd.player && typeof gd.player.money === 'number') {
+                            currentMoney = gd.player.money;
+                        } else if (typeof gd.money === 'number') {
+                            currentMoney = gd.money;
+                        }
+                    } else if (window.game?.gameData?.player) {
+                        currentEnergy = window.game.gameData.player.energy ?? 100;
+                        currentMoney = window.game.gameData.player.money ?? 0;
+                    }
+                } catch (_) { /* fallback mantém defaults */ }
+                const hasResources = (currentMoney >= skill.cost) && (currentEnergy >= skill.energy);
                 
                 return `
                     <div class="skill-item">
@@ -1404,52 +1481,349 @@ class NotificationModals {
             </div>
         `;
 
+        // Evitar múltiplas instâncias: se já existir, apenas atualiza conteúdo
+        const existing = document.getElementById('skills-modal');
+        if (existing && existing.classList.contains('active')) {
+            this.modalSystem.updateModalContent('skills-modal', content);
+            return existing;
+        }
         const modal = this.modalSystem.createModal({
             id: 'skills-modal',
             title: 'Sistema de Habilidades',
             content,
             size: 'large'
         });
-
         this.modalSystem.openModal(modal);
         return modal;
     }
 
     /**
-     * 🎯 Upgrade de habilidade
+     * 🎯 Upgrade de habilidade - INTEGRAÇÃO COM SISTEMA REAL DE DADOS
      */
     upgradeSkill(skillId, cost, energyCost) {
-        const currentMoney = parseInt(document.getElementById('statMoney')?.textContent?.replace(/[$,]/g, '') || '0');
-        const currentEnergy = parseInt(document.getElementById('statEnergy')?.textContent || '100');
+        // Evitar múltiplos cliques
+        if (this._upgrading) {
+            console.log('⚠️ Upgrade já em andamento, ignorando...');
+            return;
+        }
+        this._upgrading = true;
         
-        if (currentMoney >= cost && currentEnergy >= energyCost) {
-            // Deduzir recursos
-            const newMoney = currentMoney - cost;
-            const newEnergy = currentEnergy - energyCost;
+        try {
+            console.log(`🎯 DEBUG upgradeSkill: skillId=${skillId}, cost_interface=${cost}, energy_interface=${energyCost}`);
             
-            // Atualizar UI
-            if (document.getElementById('statMoney')) {
-                document.getElementById('statMoney').textContent = `$${newMoney.toLocaleString()}`;
+            // ✅ USAR SISTEMA REAL DE TREINAMENTO SE DISPONÍVEL
+            if (window.game?.systems?.dataManager && typeof window.game.systems.dataManager.trainSkill === 'function') {
+                console.log('🎯 Usando sistema real de treinamento via DataManager');
+                
+                const result = window.game.systems.dataManager.trainSkill(skillId);
+                
+                if (result && result.success) {
+                    console.log(`✅ Skill ${skillId} treinada com sucesso! Novo nível: ${result.newLevel || 'N/A'}`);
+                    
+                    // Atualizar displays de recursos - TODOS OS SELETORES
+                    if (result.remainingMoney !== undefined) {
+                        const moneyFormatted = `$${result.remainingMoney.toLocaleString()}`;
+                        document.querySelectorAll('#statMoney, #statMoneyInline, .money-display, .stat-cash .val').forEach(el => {
+                            if (el) {
+                                el.textContent = moneyFormatted;
+                                console.log(`💰 Dinheiro atualizado: ${el.id || el.className} = ${moneyFormatted}`);
+                            }
+                        });
+                    }
+                    if (result.remainingEnergy !== undefined) {
+                        document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                            if (el) {
+                                el.textContent = String(result.remainingEnergy);
+                                console.log(`⚡ Energia atualizada: ${el.id || el.className} = ${result.remainingEnergy}`);
+                            }
+                        });
+                    }
+                    
+                    // ✅ ATUALIZAR MODAL SEM FECHAR - apenas re-renderizar conteúdo
+                    this._refreshSkillsModalInPlace();
+                    
+                    // Mostrar feedback de sucesso
+                    this.showSkillUpgradeSuccess(skillId, result.newLevel);
+                    
+                } else {
+                    console.log(`❌ Falha no treinamento: ${result?.reason || 'Erro desconhecido'}`);
+                    alert(`❌ ${result?.reason || 'Recursos insuficientes ou erro no sistema'}`);
+                }
+                
+            } else {
+                console.log('⚠️ Sistema real não disponível, usando fallback...');
+                
+                // FALLBACK: Sistema básico que atualiza localStorage diretamente
+                const currentMoney = parseInt(document.getElementById('statMoney')?.textContent?.replace(/[$,]/g, '') || '0');
+                const currentEnergy = parseInt(document.getElementById('statEnergy')?.textContent || '100');
+                
+                if (currentMoney >= cost && currentEnergy >= energyCost) {
+                    // Deduzir recursos
+                    const newMoney = currentMoney - cost;
+                    const newEnergy = currentEnergy - energyCost;
+                    
+                    // ✅ ATUALIZAR DADOS DAS HABILIDADES NO LOCALSTORAGE
+                    try {
+                        const gameData = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
+                        if (!gameData.player) gameData.player = {};
+                        if (!gameData.player.skills) gameData.player.skills = {};
+                        
+                        // Incrementar nível da habilidade
+                        const currentLevel = gameData.player.skills[skillId] || 0;
+                        const newLevel = currentLevel + 1;
+                        gameData.player.skills[skillId] = newLevel;
+                        
+                        // Salvar recursos atualizados
+                        gameData.player.money = newMoney;
+                        gameData.player.energy = newEnergy;
+                        
+                        // Salvar no localStorage
+                        localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+                        
+                        console.log(`✅ Skill ${skillId} incrementada de ${currentLevel} para ${newLevel} (fallback)`);
+                        
+                        // Atualizar UI - TODOS OS SELETORES
+                        document.querySelectorAll('#statMoney, #statMoneyInline, .money-display, .stat-cash .val').forEach(el => {
+                            if (el) {
+                                el.textContent = `$${newMoney.toLocaleString()}`;
+                                console.log(`💰 Dinheiro atualizado (fallback): ${el.id || el.className} = $${newMoney.toLocaleString()}`);
+                            }
+                        });
+                        document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                            if (el) {
+                                el.textContent = String(newEnergy);
+                                console.log(`⚡ Energia atualizada (fallback): ${el.id || el.className} = ${newEnergy}`);
+                            }
+                        });
+                        
+                        // ✅ ATUALIZAR MODAL SEM FECHAR - apenas re-renderizar conteúdo  
+                        this._refreshSkillsModalInPlace();
+                        
+                        // Mostrar feedback
+                        this.showSkillUpgradeSuccess(skillId, newLevel);
+                        
+                    } catch (error) {
+                        console.error('❌ Erro ao salvar dados da habilidade:', error);
+                        alert('❌ Erro ao salvar progresso da habilidade');
+                    }
+                } else {
+                    console.log('❌ Recursos insuficientes para upgrade');
+                    alert('❌ Recursos insuficientes! Você precisa de mais dinheiro ou energia.');
+                }
             }
-            if (document.getElementById('statEnergy')) {
-                document.getElementById('statEnergy').textContent = newEnergy;
-            }
-            
-            // Fechar modal atual e reabrir com dados atualizados
-            this.modalSystem.closeModal('skills-modal');
-            setTimeout(() => this.openSkillsModal(), 300);
-            
-            console.log(`🌟 Skill ${skillId} upgraded! Cost: $${cost}, Energy: ${energyCost}`);
-            
-            // Mostrar feedback de sucesso
-            this.showSkillUpgradeSuccess(skillId);
-        } else {
-            console.log('❌ Recursos insuficientes para upgrade');
+        } catch (error) {
+            console.error('❌ Erro durante upgrade da skill:', error);
+            alert('❌ Erro interno durante treinamento');
+        } finally {
+            // Liberar flag de upgrade
+            this._upgrading = false;
         }
     }
 
-    showSkillUpgradeSuccess(skillId) {
+    /**
+     * ✅ Atualiza o conteúdo do modal de skills SEM fechar - apenas regera o HTML
+     */
+    _refreshSkillsModalInPlace() {
+        const modal = document.getElementById('skills-modal');
+        if (!modal || !modal.classList.contains('active')) {
+            console.log('⚠️ Modal skills não está ativo, ignorando refresh');
+            return;
+        }
+        
+        console.log('🔄 Atualizando conteúdo do modal de skills IN-PLACE...');
+        
+        // 🎯 REGENERAR CONTEÚDO COM DADOS ATUALIZADOS
+        const getSkillData = (skillKey, name, icon) => {
+            let level = 0;
+            let maxLevel = 100;
+            
+            try {
+                // 🎯 PRIORIDADE 1: window.game.gameData.player.skills (dados sincronizados)
+                if (window.game?.gameData?.player?.skills && 
+                    typeof window.game.gameData.player.skills[skillKey] === 'number') {
+                    level = window.game.gameData.player.skills[skillKey];
+                    console.log(`🔄 Refresh - Skill ${skillKey} do gameData.player: level=${level}`);
+                }
+                // 🎯 PRIORIDADE 2: DataManager skillState 
+                else if (window.game?.systems?.dataManager) {
+                    const dm = window.game.systems.dataManager;
+                    const skillState = dm.getSkillState(skillKey);
+                    level = skillState.level || 0;
+                    maxLevel = skillState.maxLevel || 100;
+                    console.log(`🔄 Refresh - Skill ${skillKey} do skillState: level=${level}`);
+                    
+                    if (level === 0) {
+                        const playerData = dm.loadPlayerData();
+                        if (playerData?.skills && typeof playerData.skills[skillKey] === 'number') {
+                            level = playerData.skills[skillKey];
+                        }
+                    }
+                } else {
+                    const gameData = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
+                    if (gameData.player?.skills && typeof gameData.player.skills[skillKey] === 'number') {
+                        level = gameData.player.skills[skillKey];
+                    } else if (gameData.skills && typeof gameData.skills[skillKey] === 'number') {
+                        level = gameData.skills[skillKey];
+                    }
+                }
+            } catch (error) {
+                console.warn(`Erro ao buscar dados da skill ${skillKey}:`, error);
+            }
+            
+            let cost = 500;
+            let energy = 20;
+            try {
+                if (window.game?.systems?.dataManager) {
+                    cost = window.game.systems.dataManager.trainingMoneyCost(level);
+                    energy = window.game.systems.dataManager.trainingEnergyCost(level);
+                }
+            } catch (error) {
+                cost = Math.floor(500 * Math.pow(1.2, Math.floor(level / 10)));
+                energy = Math.floor(20 * Math.pow(1.1, Math.floor(level / 20)));
+            }
+            
+            return { id: skillKey, name, icon, level, maxLevel, cost, energy };
+        };
+
+        const artisticSkills = [
+            getSkillData('vocals', 'Vocals', '🎤'),
+            getSkillData('songWriting', 'Songwriting', '✍️'),
+            getSkillData('rhythm', 'Rhythm', '🥁'),
+            getSkillData('livePerformance', 'Live Performance', '🎭'),
+            getSkillData('production', 'Production', '🎛️'),
+            getSkillData('charisma', 'Charisma', '✨'),
+            getSkillData('virality', 'Virality', '📱'),
+            getSkillData('videoDirecting', 'Video Directing', '🎬')
+        ];
+
+        const businessSkills = [
+            getSkillData('marketing', 'Marketing', '📈'),
+            getSkillData('business', 'Business', '💼'),
+            getSkillData('networking', 'Networking', '🤝'),
+            getSkillData('management', 'Management', '📊')
+        ];
+
+        const renderSkillCategory = (title, icon, skills) => {
+            const skillsHtml = skills.map(skill => {
+                const progressPercent = (skill.level / skill.maxLevel) * 100;
+                const canUpgrade = skill.level < skill.maxLevel;
+                
+                let currentEnergy = 100;
+                let currentMoney = 0;
+                try {
+                    if (window.game?.systems?.dataManager) {
+                        const energyInfo = window.game.systems.dataManager.getEnergyState();
+                        currentEnergy = energyInfo.current;
+                        const gd = window.game.systems.dataManager.loadGameData();
+                        if (gd.player && typeof gd.player.money === 'number') {
+                            currentMoney = gd.player.money;
+                        } else if (typeof gd.money === 'number') {
+                            currentMoney = gd.money;
+                        }
+                    }
+                } catch (_) { /* fallback mantém defaults */ }
+                const hasResources = (currentMoney >= skill.cost) && (currentEnergy >= skill.energy);
+                
+                return `
+                    <div class="skill-item">
+                        <div class="skill-header">
+                            <div class="skill-name">
+                                <span style="font-size: 16px;">${skill.icon}</span>
+                                ${skill.name}
+                            </div>
+                            <div class="skill-level">${skill.level}/${skill.maxLevel}</div>
+                        </div>
+                        
+                        <div class="skill-progress">
+                            <div class="skill-progress-fill" style="width: ${progressPercent}%;"></div>
+                        </div>
+                        
+                        <div class="skill-upgrade">
+                            <div class="skill-cost">
+                                <i class="fas fa-dollar-sign"></i> ${skill.cost}
+                                <span style="margin-left: 8px;"><i class="fas fa-bolt"></i> ${skill.energy}</span>
+                            </div>
+                            <button 
+                                class="skill-upgrade-btn" 
+                                ${!canUpgrade || !hasResources ? 'disabled' : ''}
+                                onclick="notificationModals.upgradeSkill('${skill.id}', ${skill.cost}, ${skill.energy})"
+                            >
+                                ${!canUpgrade ? 'MAX' : !hasResources ? 'Sem Recursos' : 'Upgrade'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="skills-category">
+                    <h4 class="skills-category-title">
+                        <span style="font-size: 18px;">${icon}</span>
+                        ${title}
+                    </h4>
+                    <div class="skills-grid">
+                        ${skillsHtml}
+                    </div>
+                </div>
+            `;
+        };
+
+        const newContent = `
+            <div class="notification-card">
+                <div class="notification-header">
+                    <div class="notification-icon achievement">🌟</div>
+                    <div class="notification-meta">
+                        <div class="notification-source">Sistema de Desenvolvimento</div>
+                        <div class="notification-timestamp">Invista em suas habilidades</div>
+                    </div>
+                </div>
+                
+                <h3 class="notification-title">Árvore de Habilidades</h3>
+                <p class="notification-summary">Desenvolva suas habilidades artísticas e de negócios para alcançar o sucesso</p>
+                
+                <div style="margin: 20px 0;">
+                    ${renderSkillCategory('Habilidades Artísticas', '🎨', artisticSkills)}
+                    ${renderSkillCategory('Habilidades de Negócios', '💼', businessSkills)}
+                </div>
+                
+                <div class="notification-actions">
+                    <button class="notification-btn primary" onclick="notificationModals.resetSkills()">
+                        <i class="fas fa-undo"></i> Reset Habilidades
+                    </button>
+                    <button class="notification-btn secondary" onclick="notificationModals.skillsInfo()">
+                        <i class="fas fa-info-circle"></i> Informações
+                    </button>
+                    <button class="notification-btn secondary" onclick="notificationModals.skillsPresets()">
+                        <i class="fas fa-bookmark"></i> Presets
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // ✅ ATUALIZAR APENAS O BODY DO MODAL - SEM FECHAR
+        const modalBody = modal.querySelector('.modern-modal-body');
+        if (modalBody) {
+            modalBody.innerHTML = newContent;
+            console.log('✅ Modal skills atualizado in-place com novos dados!');
+        } else {
+            console.error('❌ Não foi possível encontrar .modern-modal-body');
+        }
+    }
+
+    /**
+     * ❌ MÉTODO ANTIGO - NÃO USAR MAIS
+     */
+    _updateSkillsModalContent() {
+        // Método mantido para compatibilidade, mas não deve ser usado
+        console.log('⚠️ _updateSkillsModalContent() chamado - redirecionando para _refreshSkillsModalInPlace()');
+        this._refreshSkillsModalInPlace();
+    }
+
+    showSkillUpgradeSuccess(skillId, newLevel = null) {
         // Criar notificação de sucesso temporária
+        const skillName = this.getSkillDisplayName ? this.getSkillDisplayName(skillId) : skillId;
+        const message = newLevel ? `${skillName} atingiu nível ${newLevel}!` : `${skillName} aprimorada!`;
+        
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
@@ -1461,16 +1835,43 @@ class NotificationModals {
             border-radius: 12px;
             font-weight: 600;
             z-index: 30000;
+            box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
             animation: slideIn 0.3s ease;
         `;
-        notification.innerHTML = `<i class="fas fa-check"></i> Habilidade ${skillId} aprimorada!`;
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-check-circle"></i> 
+                ${message}
+            </div>
+        `;
         
         document.body.appendChild(notification);
         
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => notification.remove(), 300);
-        }, 2000);
+        }, 3000);
+    }
+
+    /**
+     * Obtém nome de exibição da skill
+     */
+    getSkillDisplayName(skillKey) {
+        const skillNames = {
+            vocals: 'Vocal',
+            songWriting: 'Composição',
+            rhythm: 'Ritmo',
+            livePerformance: 'Performance ao Vivo',
+            production: 'Produção',
+            charisma: 'Carisma',
+            virality: 'Viralização',
+            videoDirecting: 'Direção de Vídeo',
+            marketing: 'Marketing',
+            business: 'Negócios',
+            networking: 'Networking',
+            management: 'Gestão'
+        };
+        return skillNames[skillKey] || skillKey;
     }
 
     // Métodos auxiliares para o sistema de habilidades

@@ -49,13 +49,14 @@ export class GameHub {
         
         // Renderizar conteúdo inicial
         console.log('🎮 Renderizando conteúdo inicial...');
-        this.updateProfileInfo();
+    this.updateProfileInfo();
     // Inicializar upload de avatar (apenas uma vez)
     try { this._initAvatarUpload(); } catch(e) { console.warn('Falha init upload avatar:', e); }
         // Forçar atualização de métricas imediatamente (garante dinheiro abreviado no primeiro frame)
         try {
             this.updateMetrics();
             this.updateResources();
+            this.updateTimeInfo();
         } catch (e) {
             console.warn('⚠️ Falha atualização imediata em show():', e);
         }
@@ -611,14 +612,22 @@ export class GameHub {
     }
 
     updateTimeInfo() {
-        const gameData = this.game?.gameData;
-        if (gameData?.currentDate) {
-            const date = new Date(gameData.currentDate);
-            const week = Math.floor((Date.now() - date.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
-            this._setText('weekIndicator', `Semana ${week}`);
-            
-            const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        try {
+            // Usar a data corrente do engine como fonte de verdade
+            const date = (this.game?.getCurrentDate && this.game.getCurrentDate()) || this.game?.currentDate || new Date();
+            if (!date) return;
+            // Semana do ano: calcula a partir de 1º de janeiro do ano corrente
+            const startOfYear = new Date(date.getFullYear(), 0, 1);
+            const millisPerDay = 24 * 60 * 60 * 1000;
+            const dayOfYear = Math.floor((date - startOfYear) / millisPerDay) + 1;
+            let weekOfYear = Math.floor((dayOfYear - 1) / 7) + 1; // semana 1 cobre dias 1-7
+            if (weekOfYear > 52) weekOfYear = 52; // fixar em 52 semanas por ano
+            this._setText('weekIndicator', `Semana ${weekOfYear}/52`);
+
+            const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
             this._setText('dayIndicator', days[date.getDay()]);
+        } catch (e) {
+            console.warn('Falha ao atualizar info de tempo:', e);
         }
     }
 

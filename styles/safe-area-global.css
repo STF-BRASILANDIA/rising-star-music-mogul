@@ -1,0 +1,167 @@
+/**
+ * 📱 SAFE AREA GLOBAL - Rising Star: Music Mogul
+ * Sistema global de safe area para todas as páginas
+ * Compatível com iPhone X+, Android notch, etc.
+ */
+
+/* ===== VARIÁVEIS GLOBAIS ===== */
+:root {
+  /* Safe area nativa do dispositivo */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  
+  /* Safe area extra configurável pelo usuário */
+  --safe-area-extra-top: 0px;
+  --safe-area-extra-bottom: 0px;
+  
+  /* Combinação total */
+  --safe-area-total-top: calc(var(--safe-area-top) + var(--safe-area-extra-top));
+  --safe-area-total-bottom: calc(var(--safe-area-bottom) + var(--safe-area-extra-bottom));
+}
+
+/* ===== APLICAÇÃO GLOBAL ===== */
+
+/* Todas as páginas principais */
+.screen,
+.page-container,
+.main-menu,
+#mainMenu,
+#gameInterface,
+#characterCreation,
+#studioPage,
+#careerPage,
+#socialPage,
+#financePage {
+  padding-top: var(--safe-area-total-top) !important;
+  padding-right: var(--safe-area-right) !important;
+  padding-bottom: var(--safe-area-total-bottom) !important;
+  padding-left: var(--safe-area-left) !important;
+}
+
+/* Headers e top bars */
+.top-bar,
+.header,
+.app-header,
+.game-header,
+.menu-header {
+  padding-top: calc(var(--safe-area-total-top) + 8px) !important;
+}
+
+/* Modais - ajuste apenas no topo */
+.modal-content,
+.modern-modal,
+.notification-modal {
+  margin-top: var(--safe-area-total-top) !important;
+}
+
+/* Navegação inferior */
+.bottom-nav,
+.tab-navigation,
+.mobile-nav,
+.hub-navigation {
+  padding-bottom: calc(var(--safe-area-total-bottom) + 8px) !important;
+}
+
+/* Conteúdo scrollável */
+.scrollable-content,
+.hub-panels,
+.panel-content,
+.modal-scroll {
+  scroll-padding-top: var(--safe-area-total-top) !important;
+  scroll-padding-bottom: calc(var(--safe-area-total-bottom) + 20px) !important;
+}
+
+/* ===== CASOS ESPECIAIS ===== */
+
+/* Menu principal - centralização mantida */
+.main-menu .menu-buttons {
+  margin-top: calc(var(--safe-area-total-top) + 20px);
+}
+
+/* Dashboard híbrido - ajuste específico */
+.app-shell.hybrid {
+  padding-top: var(--safe-area-total-top) !important;
+}
+
+/* Inline profile bar */
+.inline-profile-bar {
+  margin-top: var(--safe-area-total-top);
+}
+
+/* Loading screen */
+.loading-screen {
+  padding-top: var(--safe-area-total-top);
+}
+
+/* ===== MOBILE ESPECÍFICO ===== */
+@media (max-width: 768px) {
+  /* Ajuste extra para mobile */
+  .screen,
+  .page-container {
+    min-height: calc(100vh - var(--safe-area-total-top) - var(--safe-area-total-bottom));
+  }
+  
+  /* Touch targets maiores próximos às bordas */
+  .screen .button:first-child,
+  .screen .btn:first-child {
+    margin-top: 8px;
+  }
+  
+  .screen .button:last-child,
+  .screen .btn:last-child {
+    margin-bottom: 8px;
+  }
+}
+
+/* ===== DISPOSITIVOS COM NOTCH ===== */
+@media (max-width: 430px) and (min-height: 800px) {
+  /* iPhone 14 Pro Max, etc. */
+  :root {
+    --safe-area-extra-top: 8px; /* Margem extra para notch */
+  }
+}
+
+/* ===== LANDSCAPE MODE ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Reduzir safe area em landscape para aproveitar espaço */
+  :root {
+    --safe-area-extra-top: max(0px, calc(var(--safe-area-extra-top) - 8px));
+  }
+}
+
+/* ===== FALLBACK PARA BROWSERS ANTIGOS ===== */
+@supports not (padding: env(safe-area-inset-top)) {
+  /* Fallback para browsers que não suportam env() */
+  .screen,
+  .page-container {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+}
+
+/* ===== DEBUG MODE ===== */
+[data-debug="safe-area"] * {
+  /* Outline para visualizar safe areas em debug */
+  outline: 1px dashed rgba(255, 0, 0, 0.3) !important;
+}
+
+[data-debug="safe-area"]::before {
+  content: "Safe Top: " var(--safe-area-total-top);
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* ===== COMPATIBILIDADE COM SISTEMA EXISTENTE ===== */
+/* Manter compatibilidade com classes já existentes */
+.safe-area-top { padding-top: var(--safe-area-total-top) !important; }
+.safe-area-bottom { padding-bottom: var(--safe-area-total-bottom) !important; }
+.safe-area-all { padding: var(--safe-area-total-top) var(--safe-area-right) var(--safe-area-total-bottom) var(--safe-area-left) !important; }

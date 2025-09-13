@@ -22,6 +22,8 @@
     <link rel="icon" type="image/png" sizes="96x96" href="assets/icons/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
     <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <link rel="stylesheet" href="styles/safe-area-global.css?v=1.0.0">
+    <link rel="stylesheet" href="styles/menu-modals.css?v=1.0.0">
     <link rel="stylesheet" href="styles/main.css?v=3.0.0">
     <link rel="stylesheet" href="styles/components.css?v=3.0.0">
     <link rel="stylesheet" href="styles/responsive.css?v=3.0.0">
@@ -304,11 +306,12 @@
                                 <option value="1">Indie Darlings</option>
                                 <option value="2">Crossover Star</option>
                                 <option value="3">Up and Coming Band</option>
-                                <option value="4">Solo</option>
+                                <option value="4">Solo Artist</option>
                                 <option value="5">Local Scene Hero</option>
-                                <option value="6">Band Member</option>
-                                <option value="7">Indie Label</option>
-                                <option value="8">Recording Studio</option>
+                                <option value="6">Studio Producer</option>
+                                <option value="7">Social Media Influencer</option>
+                                <option value="8">Music Video Director</option>
+                                <option value="9">Musical Prodigy</option>
                             </select>
                         </div>
                     </div>
@@ -334,6 +337,10 @@
                             <div class="stat-row">
                                 <span class="stat-label">Starting Cash</span>
                                 <span class="stat-value" id="startingCash">$15,000</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Pontos p/ distribuir (próxima etapa)</span>
+                                <span class="stat-value" id="startingSkillPoints">—</span>
                             </div>
                         </div>
                     </div>
@@ -493,6 +500,30 @@
                                         <button class="skill-btn plus" type="button">+</button>
                                     </div>
                                 </div>
+
+                                <div class="skill-row" data-skill="livePerformance">
+                                    <div class="skill-info">
+                                        <span class="skill-name">LIVE PERFORMANCE</span>
+                                        <span class="skill-description">Performance ao vivo e interação com público</span>
+                                    </div>
+                                    <div class="skill-controls">
+                                        <button class="skill-btn minus" type="button">−</button>
+                                        <span class="skill-value">1</span>
+                                        <button class="skill-btn plus" type="button">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="skill-row" data-skill="production">
+                                    <div class="skill-info">
+                                        <span class="skill-name">PRODUCTION</span>
+                                        <span class="skill-description">Produção musical e sound design</span>
+                                    </div>
+                                    <div class="skill-controls">
+                                        <button class="skill-btn minus" type="button">−</button>
+                                        <span class="skill-value">1</span>
+                                        <button class="skill-btn plus" type="button">+</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -630,7 +661,7 @@
                             <p style="margin: 4px 0 0; font-size: 14px; opacity: 0.8;">15 de Junho de 2024</p>
                         </div>
                         <button id="advanceTimeBtn" style="padding: 12px 24px; background: linear-gradient(135deg, #ffd700, #daa520); border: none; color: #000; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);">
-                            End Week
+                            Passar Semana
                         </button>
                     </div>
                 </div>
@@ -782,10 +813,22 @@
                                                 <span>✍️</span> Songwriting
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>💼</span> Marketing
+                                                <span>🥁</span> Rhythm
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
-                                                <span>🤝</span> Negotiation
+                                                <span>🎭</span> Live Performance
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
+                                                <span>🎛️</span> Production
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
+                                                <span>✨</span> Charisma
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
+                                                <span>📱</span> Virality
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; backdrop-filter: blur(10px);">
+                                                <span>🎬</span> Video Directing
                                             </div>
                                         </div>
                                         
@@ -1563,6 +1606,7 @@
     
     <!-- 🎭 Modern Modal System -->
     <script src="js/ui/modal-system.js?v=1.0.0"></script>
+    <script src="js/ui/menu-modals.js?v=1.0.0"></script>
     <script src="js/ui/notification-modals.js?v=1.0.0"></script>
     <script src="js/ui/notification-test-data.js?v=1.0.0"></script>
     

@@ -1,0 +1,865 @@
+/**
+ * 🎭 MODAIS DO MENU - Rising Star: Music Mogul
+ * Estilos específicos para modais do menu principal
+ * Compatível com o sistema Modern Modal existente
+ */
+
+/* ===== ESTILOS ESPECÍFICOS PARA MODAIS DO MENU ===== */
+.menu-modal .menu-modal-content {
+  padding: 20px;
+  color: #1d1d1f;
+}
+
+/* ===== NOVO JOGO - SELEÇÃO DE MODO ===== */
+.menu-modal .game-mode-selection h3 {
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .mode-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-modal .mode-option:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.menu-modal .mode-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #1a1a1a;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.menu-modal .mode-info {
+  flex: 1;
+}
+
+.menu-modal .mode-info h4 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .mode-info p {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .mode-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.menu-modal .feature {
+  background: rgba(255, 215, 0, 0.2);
+  color: #b8860b;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ===== CARREGAR JOGO ===== */
+.menu-modal .save-slots {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.menu-modal .save-slots::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu-modal .save-slots::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.menu-modal .save-slot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-modal .save-slot:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.menu-modal .save-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.menu-modal .save-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.menu-modal .save-actions .modern-btn {
+  min-width: auto;
+  padding: 8px 16px;
+}
+
+.menu-modal .save-actions .modern-btn.secondary {
+  min-width: auto;
+  padding: 8px 12px;
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+.menu-modal .save-actions .modern-btn.secondary:hover {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+.menu-modal .save-info h4 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-modal .save-info h4 i {
+  color: #007aff;
+}
+
+.menu-modal .save-info .save-details {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.menu-modal .save-info .save-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.menu-modal .save-info .save-meta i {
+  color: #007aff;
+  font-size: 12px;
+}
+
+.menu-modal .save-info .save-id,
+.menu-modal .save-info small {
+  color: rgba(29, 29, 31, 0.6);
+  font-size: 12px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.menu-modal .save-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.menu-modal .save-actions .modern-btn {
+  min-width: auto;
+  padding: 8px 16px;
+}
+
+.menu-modal .save-actions .modern-btn.secondary {
+  min-width: auto;
+  padding: 8px 12px;
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+.menu-modal .save-actions .modern-btn.secondary:hover {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+.menu-modal .save-info h4 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-modal .save-info h4 i {
+  color: #007aff;
+}
+
+.menu-modal .save-info .save-details {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.menu-modal .save-info .save-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.menu-modal .save-info .save-meta i {
+  color: #007aff;
+  font-size: 12px;
+}
+
+.menu-modal .save-info .save-id,
+.menu-modal .save-info small {
+  color: rgba(29, 29, 31, 0.6);
+  font-size: 12px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.menu-modal .save-info p {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0 0 4px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .save-info small {
+  color: rgba(29, 29, 31, 0.6);
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .no-saves {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(29, 29, 31, 0.6);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .no-saves i {
+  font-size: 48px;
+  color: rgba(0, 122, 255, 0.3);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.menu-modal .no-saves p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+  color: rgba(29, 29, 31, 0.8);
+}
+
+.menu-modal .no-saves small {
+  font-size: 14px;
+  color: rgba(29, 29, 31, 0.6);
+}
+
+.menu-modal .demo-save {
+  border: 2px dashed rgba(255, 215, 0, 0.5);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.menu-modal .demo-save .save-info h4 {
+  color: #d97706;
+}
+
+.menu-modal .modern-btn {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  min-height: 44px; /* Touch target mínimo */
+}
+
+.menu-modal .modern-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.menu-modal .modern-btn.secondary {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1d1d1f;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-modal .modern-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.menu-modal .modern-btn.primary {
+  background: linear-gradient(135deg, #007aff, #5ac8fa);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.menu-modal .modern-btn.primary:hover {
+  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.menu-modal .import-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.menu-modal .import-section h3 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .import-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.menu-modal .import-options .modern-btn {
+  flex: 1;
+  min-width: 180px;
+  justify-content: center;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.menu-modal .loading-saves {
+  text-align: center;
+  padding: 40px;
+  color: rgba(29, 29, 31, 0.6);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .loading-saves i {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #ffd700;
+}
+
+.menu-modal .no-saves {
+  text-align: center;
+  padding: 40px;
+  color: rgba(29, 29, 31, 0.6);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .no-saves i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: rgba(29, 29, 31, 0.3);
+}
+
+/* ===== TESTE DASHBOARD ===== */
+.menu-modal .test-options h3 {
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .test-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-modal .test-option:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.menu-modal .test-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #1a1a1a;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.menu-modal .test-info {
+  flex: 1;
+}
+
+.menu-modal .test-info h4 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .test-info p {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .test-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ===== COMO JOGAR ===== */
+.menu-modal .help-content {
+  max-height: 500px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.menu-modal .help-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu-modal .help-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.menu-modal .help-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.menu-modal .help-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 122, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.menu-modal .help-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #007aff, #5ac8fa);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.menu-modal .help-info {
+  flex: 1;
+}
+
+.menu-modal .help-info h3 {
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu-modal .help-info h3::after {
+  content: "›";
+  font-size: 24px;
+  color: rgba(0, 122, 255, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotate(0deg);
+}
+
+.menu-modal .help-card:hover .help-info h3::after {
+  color: rgba(0, 122, 255, 1);
+  transform: rotate(90deg);
+}
+
+.menu-modal .help-card.expanded .help-info h3::after {
+  transform: rotate(90deg);
+  color: rgba(0, 122, 255, 1);
+}
+
+.menu-modal .help-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-modal .help-info li {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  padding-left: 16px;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .help-info li::before {
+  content: "•";
+  color: #007aff;
+  font-size: 16px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: bold;
+}
+
+.menu-modal .help-info li:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== AJUDA - CONTEÚDO EXTRA ===== */
+.menu-modal .help-info .help-details {
+  margin-bottom: 12px;
+}
+
+.menu-modal .help-info .help-extra {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.menu-modal .help-info .help-extra p {
+  color: rgba(29, 29, 31, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.menu-modal .help-info .help-extra ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-modal .help-info .help-extra li {
+  color: rgba(29, 29, 31, 0.7);
+  font-size: 13px;
+  margin-bottom: 6px;
+  padding-left: 12px;
+}
+
+.menu-modal .help-info .help-extra li::before {
+  content: "▪";
+  color: #007aff;
+  font-size: 14px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: bold;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== CRÉDITOS ===== */
+.menu-modal .credits-content {
+  max-height: 600px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.menu-modal .credits-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu-modal .credits-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.menu-modal .credits-section {
+  margin-bottom: 32px;
+}
+
+.menu-modal .credits-section h3 {
+  color: #007aff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+  padding-bottom: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .credit-item {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-modal .credit-item h4 {
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .credit-item p {
+  color: rgba(29, 29, 31, 0.8);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .version-info {
+  background: linear-gradient(135deg, 
+    rgba(0, 122, 255, 0.1), 
+    rgba(90, 200, 250, 0.05)
+  );
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-modal .version-info h3 {
+  color: #007aff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .version-info p {
+  color: rgba(29, 29, 31, 0.9);
+  font-size: 14px;
+  margin: 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.menu-modal .version-info p strong {
+  color: #1d1d1f;
+  font-weight: 700;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+  .menu-modal .mode-option, 
+  .menu-modal .test-option,
+  .menu-modal .help-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .menu-modal .mode-icon, 
+  .menu-modal .test-icon,
+  .menu-modal .help-icon {
+    align-self: center;
+  }
+  
+  .menu-modal .import-options {
+    flex-direction: column;
+  }
+  
+  .menu-modal .import-options .modern-btn {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .menu-modal .help-info {
+    text-align: left;
+  }
+  
+  .menu-modal .help-info h3 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-modal .menu-modal-content {
+  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== CORREÇÃO DE VISIBILIDADE - MODAL CARREGAR JOGO ===== */
+/* Texto claro para melhor contraste no background escuro do modal */
+.menu-modal .save-info h4 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.menu-modal .save-info h4 i {
+  color: #5ac8fa !important;
+}
+
+.menu-modal .save-info .save-details,
+.menu-modal .save-info p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.menu-modal .save-info .save-meta i {
+  color: #5ac8fa !important;
+}
+
+.menu-modal .save-info .save-id,
+.menu-modal .save-info small {
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.menu-modal .no-saves {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.menu-modal .no-saves i {
+  color: rgba(90, 200, 250, 0.6) !important;
+}
+
+.menu-modal .no-saves p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.menu-modal .no-saves small {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.menu-modal .demo-save .save-info h4 {
+  color: #ffd700 !important;
+}
+
+/* Título da seção de importar */
+.menu-modal .import-section h3 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}

@@ -49,6 +49,19 @@ export class InterfaceManager {
                 console.warn('⚠️ Falha atualização imediata inicial:', e);
             }
 
+            // Conectar botão de avançar semana (End Week)
+            try {
+                const btn = document.getElementById('advanceTimeBtn');
+                if (btn && !btn._weekBound) {
+                    btn.addEventListener('click', () => {
+                        try { this.gameEngine.passWeek?.(); } catch (e) { console.warn('Falha ao passar semana:', e); }
+                    });
+                    btn._weekBound = true;
+                }
+            } catch (e) {
+                console.warn('⚠️ Não foi possível bindar End Week:', e);
+            }
+
             // Start update timers only when interface is shown and game is ready
             setTimeout(() => {
                 try {
@@ -661,6 +674,22 @@ export class InterfaceManager {
                             <option value="en-US">English (US)</option>
                         </select>
                     </div>
+                    <hr style="margin:12px 0;opacity:.2;">
+                    <div class="setting-item">
+                        <label>Backup de Dados</label>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn-secondary" id="exportSaveBtn">
+                                <i class="fas fa-download"></i> Exportar Save
+                            </button>
+                            <button class="btn-secondary" id="importSaveBtn">
+                                <i class="fas fa-upload"></i> Importar Save
+                            </button>
+                            <input type="file" id="importSaveFile" accept="application/json" style="display:none;" />
+                        </div>
+                        <small style="opacity:.7; display:block; margin-top:6px;">
+                            Exporte seus dados para um arquivo .json e importe depois, caso limpe os dados do navegador ou troque de dispositivo.
+                        </small>
+                    </div>
                 </div>
                 
                 <div class="tab-panel" id="audio">
@@ -731,6 +760,42 @@ export class InterfaceManager {
         if (modal) {
             this.bindSettingsTabs(modal);
             this.loadCurrentSettings(modal);
+
+            // Wire backup buttons
+            const dm = this.gameEngine?.systems?.dataManager || window.dataManager;
+            const exportBtn = modal.querySelector('#exportSaveBtn');
+            const importBtn = modal.querySelector('#importSaveBtn');
+            const fileInput = modal.querySelector('#importSaveFile');
+
+            if (exportBtn && dm?.exportData) {
+                exportBtn.addEventListener('click', async () => {
+                    try {
+                        await dm.exportData();
+                        this.showNotification('Backup exportado com sucesso.', 'success');
+                    } catch (e) {
+                        console.error('Erro ao exportar save:', e);
+                        this.showNotification('Falha ao exportar backup.', 'error');
+                    }
+                });
+            }
+
+            if (importBtn && fileInput && dm?.importData) {
+                importBtn.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', async (ev) => {
+                    const file = ev.target.files?.[0];
+                    if (!file) return;
+                    try {
+                        await dm.importData(file);
+                        this.showNotification('Importação concluída. Recarregando...', 'success');
+                        setTimeout(() => { try { location.reload(); } catch(_) {} }, 800);
+                    } catch (e) {
+                        console.error('Erro ao importar save:', e);
+                        this.showNotification('Falha ao importar backup.', 'error');
+                    } finally {
+                        ev.target.value = '';
+                    }
+                });
+            }
         }
     }
     

@@ -50,72 +50,140 @@ export class CharacterCreator {
     this.locationIndex = 0;
     this.roleIndex = 0;
         
-        // Histórias de fundo atualizadas
-        this.backgroundStories = [
+        // ========================================
+        // 🎵 SKILL KEYS - Integração com DataManager
+        // ========================================
+        this.SKILL_KEYS = [
+            'vocals',
+            'songWriting', 
+            'rhythm',
+            'livePerformance',
+            'production',
+            'charisma',
+            'virality',
+            'videoDirecting'
+        ];
+
+        // ========================================
+        // 📖 SISTEMA DE BACKGROUNDS COMPLETO (10 histórias)
+        // ========================================
+        this.BACKGROUNDS = [
             {
                 id: 'bestFriend',
                 name: 'Best Friend',
                 description: 'Você e seu melhor amigo decidiram tentar fazer sucesso na indústria musical. Vocês não têm certeza de como vai ser, mas já estão ouvindo coisas boas de amigos e família.',
                 stats: { label: 'Unsigned', home: 'Loft', cash: '$15,000' },
-                bonuses: { performance: 5, charisma: 5 }
+                // Baselines das skills (mínimo que não pode ser reduzido)
+                skillBaselines: {
+                    vocals: 5, songWriting: 5, rhythm: 5, livePerformance: 8,
+                    production: 2, charisma: 12, virality: 5, videoDirecting: 3
+                },
+                // Pontos extras para distribuir
+                distributionPoints: 15
             },
             {
                 id: 'indieDarlings',
                 name: 'Indie Darlings',
                 description: 'Todo mundo parece pensar que seu grupo tem o fator "it" quando se trata de apelo indie. Você tem a aparência e se sente descolado, mas agora é hora de ver se você tem o talento musical para apoiar sua imagem legal.',
                 stats: { label: 'Unsigned', home: 'Apartment', cash: '$10,000' },
-                bonuses: { charisma: 10, performance: 3 }
+                skillBaselines: {
+                    vocals: 8, songWriting: 10, rhythm: 6, livePerformance: 5,
+                    production: 4, charisma: 15, virality: 8, videoDirecting: 6
+                },
+                distributionPoints: 12
             },
             {
                 id: 'crossoverStar',
                 name: 'Crossover Star',
                 description: 'Você é um nome conhecido, já fez filmes, televisão e tudo mais. A música sempre foi sua verdadeira paixão, e você não pode esperar para compartilhar seus talentos musicais com o mundo.',
                 stats: { label: 'Unsigned', home: 'Luxury Condo', cash: '$50,000' },
-                bonuses: { charisma: 15, technical: 5 }
+                skillBaselines: {
+                    vocals: 10, songWriting: 6, rhythm: 4, livePerformance: 12,
+                    production: 3, charisma: 20, virality: 12, videoDirecting: 8
+                },
+                distributionPoints: 10
             },
             {
                 id: 'upAndComingBand',
                 name: 'Up and Coming Band',
                 description: 'Vocês são uma banda em ascensão com um som único. Já tocaram em alguns shows locais e estão prontos para o próximo nível.',
                 stats: { label: 'Unsigned', home: 'Band House', cash: '$20,000' },
-                bonuses: { performance: 8, composition: 7 }
+                skillBaselines: {
+                    vocals: 8, songWriting: 8, rhythm: 10, livePerformance: 15,
+                    production: 5, charisma: 8, virality: 4, videoDirecting: 3
+                },
+                distributionPoints: 14
             },
             {
-                id: 'solo',
-                name: 'Solo',
+                id: 'soloArtist',
+                name: 'Solo Artist',
                 description: 'Você decidiu seguir carreira solo depois de sair de uma banda. Tem experiência, mas agora precisa provar que pode fazer sucesso sozinho.',
                 stats: { label: 'Unsigned', home: 'Studio Apartment', cash: '$12,000' },
-                bonuses: { vocal: 10, composition: 5 }
+                skillBaselines: {
+                    vocals: 12, songWriting: 10, rhythm: 6, livePerformance: 8,
+                    production: 4, charisma: 10, virality: 5, videoDirecting: 4
+                },
+                distributionPoints: 16
             },
             {
                 id: 'localSceneHero',
                 name: 'Local Scene Hero',
                 description: 'Você é uma lenda na cena musical local da sua cidade. Tem uma base de fãs sólida e experiência de palco, mas ainda precisa conquistar reconhecimento nacional.',
                 stats: { label: 'Unsigned', home: 'Condo', cash: '$35,000' },
-                bonuses: { charisma: 8, performance: 7 }
+                skillBaselines: {
+                    vocals: 10, songWriting: 8, rhythm: 8, livePerformance: 18,
+                    production: 6, charisma: 15, virality: 3, videoDirecting: 2
+                },
+                distributionPoints: 12
             },
             {
-                id: 'bandMember',
-                name: 'Band Member',
-                description: 'Você é membro de uma banda estabelecida, mas quer explorar sua criatividade individual mantendo os laços com o grupo.',
-                stats: { label: 'Unsigned', home: 'Shared House', cash: '$18,000' },
-                bonuses: { performance: 6, composition: 9 }
-            },
-            {
-                id: 'indieLabel',
-                name: 'Indie Label',
-                description: 'Você estava em uma gravadora independente, mas decidiu sair para buscar sua própria oportunidade. Agora precisa conquistar uma nova label.',
-                stats: { label: 'Unsigned', home: 'Loft', cash: '$25,000' },
-                bonuses: { composition: 10, technical: 5 }
-            },
-            {
-                id: 'recordingStudio',
-                name: 'Recording Studio',
+                id: 'studioProducer',
+                name: 'Studio Producer',
                 description: 'Você trabalha em um estúdio de gravação e decidiu usar seu conhecimento técnico para lançar sua própria carreira musical.',
                 stats: { label: 'Unsigned', home: 'Studio Space', cash: '$22,000' },
-                bonuses: { technical: 12, composition: 3 }
+                skillBaselines: {
+                    vocals: 6, songWriting: 12, rhythm: 8, livePerformance: 3,
+                    production: 18, charisma: 5, virality: 4, videoDirecting: 6
+                },
+                distributionPoints: 13
+            },
+            {
+                id: 'socialMediaInfluencer',
+                name: 'Social Media Influencer',
+                description: 'Você já tem milhares de seguidores online e quer usar essa base para lançar sua carreira musical. Você entende o que funciona nas redes sociais.',
+                stats: { label: 'Unsigned', home: 'Modern Apartment', cash: '$25,000' },
+                skillBaselines: {
+                    vocals: 7, songWriting: 6, rhythm: 5, livePerformance: 4,
+                    production: 3, charisma: 12, virality: 20, videoDirecting: 12
+                },
+                distributionPoints: 11
+            },
+            {
+                id: 'musicVideoDirector',
+                name: 'Music Video Director',
+                description: 'Você dirige videoclipes para outros artistas, mas sempre sonhou em criar sua própria música. Seu olho visual é seu maior trunfo.',
+                stats: { label: 'Unsigned', home: 'Creative Loft', cash: '$18,000' },
+                skillBaselines: {
+                    vocals: 5, songWriting: 8, rhythm: 6, livePerformance: 6,
+                    production: 8, charisma: 8, virality: 10, videoDirecting: 18
+                },
+                distributionPoints: 14
+            },
+            {
+                id: 'musicalProdigy',
+                name: 'Musical Prodigy',
+                description: 'Você é um prodígio musical com talento natural excepcional. Estudou música formalmente e domina múltiplos instrumentos, mas agora quer conquistar o mercado mainstream.',
+                stats: { label: 'Unsigned', home: 'Music Conservatory Dorm', cash: '$8,000' },
+                skillBaselines: {
+                    vocals: 15, songWriting: 15, rhythm: 15, livePerformance: 10,
+                    production: 12, charisma: 6, virality: 2, videoDirecting: 3
+                },
+                distributionPoints: 20
             }
         ];
+        
+        // Manter compatibilidade com código existente
+        this.backgroundStories = this.BACKGROUNDS;
         
         this.init();
         // If DOM already ready, proactively setup components to bind delegation
@@ -165,10 +233,12 @@ export class CharacterCreator {
             
             // Skills - APENAS TALENTOS ARTÍSTICOS (Empresariais serão desbloqueados no jogo)
             skills: {
-                // ARTIST TRAITS - Todos começam com 1 ponto
+                // ARTIST TRAITS - Todos começam com 1 ponto (8 skills artísticas)
                 vocals: 1,
                 songWriting: 1,
                 rhythm: 1,
+                livePerformance: 1,  // ✅ ADICIONADO
+                production: 1,       // ✅ ADICIONADO
                 charisma: 1,
                 virality: 1,
                 videoDirecting: 1
@@ -534,6 +604,16 @@ export class CharacterCreator {
             console.log('🛡️ STEP 3 PROTECTION ACTIVATED');
             console.log('🛡️ Stack trace for step 3 display:', new Error().stack);
             
+            // 🎯 RESETAR SKILLS PARA BASELINE QUANDO ENTRAR NO STEP 3
+            if (this.character.backgroundStory && this.character.backgroundStory.skillBaselines) {
+                setTimeout(() => {
+                    this.resetSkillsAllocationToBaseline();
+                    this.showNotification(`Skills resetadas para "${this.character.backgroundStory.name}"`, 'info', 2500);
+                }, 200);
+            } else {
+                console.warn('⚠️ Nenhum background selecionado para resetar skills');
+            }
+            
             // CRITICAL: Block ALL validateCurrentStep calls for next 500ms
             const originalValidate = this.validateCurrentStep;
             this.validateCurrentStep = () => {
@@ -727,6 +807,14 @@ export class CharacterCreator {
             this.showNotification(`História "${background.name}" selecionada!`, 'success', 2000);
             
             this.updateBackgroundStats();
+            
+            // 🎯 RESETAR SKILLS PARA BASELINE DO BACKGROUND
+            if (this.currentStep === 3) { // Se estiver no step de skills
+                setTimeout(() => {
+                    this.resetSkillsAllocationToBaseline();
+                    this.showNotification(`Skills resetadas para baseline de "${background.name}"`, 'info', 3000);
+                }, 100);
+            }
         } else {
             console.log('❌ Background not found for index:', backgroundIndex);
         }
@@ -737,6 +825,7 @@ export class CharacterCreator {
         if (statsContainer && this.character.backgroundStory) {
             statsContainer.innerHTML = '';
             
+            // Mostrar stats básicos (casa, dinheiro, etc.)
             Object.entries(this.character.backgroundStory.stats).forEach(([key, value]) => {
                 const statRow = document.createElement('div');
                 statRow.className = 'stat-row';
@@ -747,12 +836,45 @@ export class CharacterCreator {
                 
                 const statValue = document.createElement('span');
                 statValue.className = 'stat-value';
-                statValue.textContent = `+${value}`;
+                statValue.textContent = value;
                 
                 statRow.appendChild(label);
                 statRow.appendChild(statValue);
                 statsContainer.appendChild(statRow);
             });
+
+            // Mostrar pontos de distribuição disponíveis
+            if (this.character.backgroundStory.distributionPoints) {
+                const pointsRow = document.createElement('div');
+                pointsRow.className = 'stat-row skill-points-row';
+                pointsRow.style.marginTop = '12px';
+                pointsRow.style.borderTop = '1px solid rgba(255,255,255,0.2)';
+                pointsRow.style.paddingTop = '12px';
+                
+                const label = document.createElement('span');
+                label.className = 'stat-label';
+                label.textContent = 'Pontos p/ distribuir (próxima etapa)';
+                label.style.fontWeight = '600';
+                label.style.color = '#FFD700';
+                
+                const pointsValue = document.createElement('span');
+                pointsValue.className = 'stat-value';
+                pointsValue.textContent = this.character.backgroundStory.distributionPoints;
+                pointsValue.style.fontWeight = '700';
+                pointsValue.style.color = '#FFD700';
+                
+                pointsRow.appendChild(label);
+                pointsRow.appendChild(pointsValue);
+                statsContainer.appendChild(pointsRow);
+            }
+
+            // Atualizar o elemento de pontos no step 1 se existir
+            const startingSkillPoints = document.getElementById('startingSkillPoints');
+            if (startingSkillPoints && this.character.backgroundStory.distributionPoints) {
+                startingSkillPoints.textContent = this.character.backgroundStory.distributionPoints;
+                startingSkillPoints.style.color = '#FFD700';
+                startingSkillPoints.style.fontWeight = '700';
+            }
         }
     }
     
@@ -825,6 +947,58 @@ export class CharacterCreator {
         }
     }
     
+    // ========================================
+    // 🎯 SISTEMA DE BASELINE DAS SKILLS
+    // ========================================
+
+    /**
+     * Reseta todas as skills para o baseline do background selecionado
+     */
+    resetSkillsAllocationToBaseline() {
+        if (!this.character.backgroundStory || !this.character.backgroundStory.skillBaselines) {
+            console.warn('⚠️ Nenhum background selecionado ou sem baselines definidos');
+            return;
+        }
+
+        const baselines = this.character.backgroundStory.skillBaselines;
+        const distributionPoints = this.character.backgroundStory.distributionPoints || 15;
+
+        // Resetar skills para os baselines
+        this.SKILL_KEYS.forEach(skillKey => {
+            this.character.skills[skillKey] = baselines[skillKey] || 5;
+        });
+
+        // Definir pontos disponíveis
+        this.availablePoints = distributionPoints;
+
+        // Atualizar displays
+        this.updateSkillsDisplay();
+        this.updatePointsDisplay();
+
+        console.log(`✅ Skills resetadas para baseline do background: ${this.character.backgroundStory.name}`);
+        console.log('📊 Baselines aplicados:', baselines);
+        console.log(`🎯 Pontos disponíveis para distribuição: ${distributionPoints}`);
+    }
+
+    /**
+     * Obtém o baseline mínimo para uma skill específica
+     */
+    getSkillBaseline(skillKey) {
+        if (!this.character.backgroundStory || !this.character.backgroundStory.skillBaselines) {
+            return 1; // Mínimo padrão
+        }
+        return this.character.backgroundStory.skillBaselines[skillKey] || 1;
+    }
+
+    /**
+     * Verifica se uma skill pode ser reduzida (não pode ir abaixo do baseline)
+     */
+    canReduceSkill(skillKey) {
+        const currentValue = this.character.skills[skillKey] || 1;
+        const baseline = this.getSkillBaseline(skillKey);
+        return currentValue > baseline;
+    }
+
     updateSkillsDisplay() {
         Object.entries(this.character.skills).forEach(([skillName, value]) => {
             const skillElement = document.querySelector(`[data-skill="${skillName}"]`);
@@ -837,11 +1011,23 @@ export class CharacterCreator {
                 
                 if (valueDisplay) {
                     valueDisplay.textContent = value;
+                    
+                    // Destacar se está no baseline
+                    const baseline = this.getSkillBaseline(skillName);
+                    if (value === baseline && baseline > 1) {
+                        valueDisplay.style.color = '#FFD700';
+                        valueDisplay.style.fontWeight = '700';
+                    } else {
+                        valueDisplay.style.color = '';
+                        valueDisplay.style.fontWeight = '';
+                    }
                 }
                 
                 if (minusBtn) {
-                    minusBtn.disabled = value <= 1;
-                    minusBtn.style.opacity = value <= 1 ? '0.5' : '1';
+                    // Não pode reduzir abaixo do baseline
+                    const canReduce = this.canReduceSkill(skillName);
+                    minusBtn.disabled = !canReduce;
+                    minusBtn.style.opacity = canReduce ? '1' : '0.5';
                 }
                 
                 if (plusBtn) {
@@ -1066,15 +1252,36 @@ export class CharacterCreator {
             });
         }
         
+        // ✅ CONVERSÃO DO DINHEIRO DO BACKGROUND
+        let initialMoney = 10000; // Valor padrão
+        if (this.character.backgroundStory && this.character.backgroundStory.stats && this.character.backgroundStory.stats.cash) {
+            const cashString = this.character.backgroundStory.stats.cash;
+            // Converter "$15,000" para 15000
+            const numericValue = cashString.replace(/[$,]/g, '');
+            const parsedMoney = parseInt(numericValue, 10);
+            if (!isNaN(parsedMoney)) {
+                initialMoney = parsedMoney;
+                console.log(`💰 Dinheiro inicial do background "${this.character.backgroundStory.name}": $${initialMoney.toLocaleString()}`);
+            } else {
+                console.warn(`⚠️ Falha ao converter dinheiro do background: "${cashString}"`);
+            }
+        }
+        
         // Create character in game engine
         const characterData = {
             ...this.character,
             artistName: `${this.character.firstName} ${this.character.lastName}`.trim(),
-            stats: this.character.skills
+            skills: this.character.skills,  // ✅ CORRIGIDO: usar 'skills' em vez de 'stats'
+            money: initialMoney  // ✅ ADICIONADO: dinheiro inicial baseado no background
         };
         
         console.log('🎮 Starting game with character:', characterData);
         console.log('📊 Final skills:', this.character.skills);
+        console.log('� Dinheiro inicial:', characterData.money);
+        console.log('�🔍 Skills detalhadas:');
+        Object.entries(this.character.skills).forEach(([skill, level]) => {
+            console.log(`   ${skill}: ${level}`);
+        });
         console.log('🎯 Pontos não utilizados:', this.availablePoints);
         
         // Hide character creation and start game

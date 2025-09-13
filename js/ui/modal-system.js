@@ -269,6 +269,12 @@ class ModernModalSystem {
     openModal(modalElement) {
         if (!modalElement) return;
 
+        // 🚧 PREVENIR MÚLTIPLOS CLIQUES - Se este modal já está ativo, não abrir novamente
+        if (this.activeModals.has(modalElement)) {
+            console.log('🎭 Modal já está ativo, ignorando abertura duplicada:', modalElement.id || 'unnamed');
+            return;
+        }
+
         // Adiciona à pilha
         this.modalStack.push(modalElement);
         this.activeModals.add(modalElement);
@@ -293,6 +299,12 @@ class ModernModalSystem {
      * Fecha um modal específico
      */
     closeModal(modalElement) {
+        // Permitir passar um id (string) ou o próprio elemento
+        if (typeof modalElement === 'string') {
+            const byId = document.getElementById(modalElement);
+            if (!byId) return;
+            modalElement = byId;
+        }
         if (!modalElement || !this.activeModals.has(modalElement)) return;
 
         // Remove da pilha e conjunto
@@ -309,6 +321,14 @@ class ModernModalSystem {
         }
 
         console.log('🎭 Modal closed:', modalElement.id || 'unnamed');
+    }
+
+    /**
+     * Fecha um modal pelo id
+     */
+    closeModalById(id) {
+        const el = document.getElementById(id);
+        if (el) this.closeModal(el);
     }
 
     /**
@@ -338,6 +358,18 @@ class ModernModalSystem {
     }
 
     /**
+     * Atualiza o conteúdo (body) de um modal existente
+     */
+    updateModalContent(id, newHtml) {
+        const modal = document.getElementById(id);
+        if (!modal) return false;
+        const body = modal.querySelector('.modern-modal-body');
+        if (!body) return false;
+        body.innerHTML = newHtml;
+        return true;
+    }
+
+    /**
      * Cria um modal dinamicamente
      */
     createModal(options = {}) {
@@ -349,6 +381,13 @@ class ModernModalSystem {
             showFooter = false,
             footerContent = ''
         } = options;
+
+        // 🚧 VERIFICAR SE JÁ EXISTE UM MODAL COM ESTE ID
+        const existingModal = document.getElementById(id);
+        if (existingModal) {
+            console.log('🎭 Modal já existe, retornando o existente:', id);
+            return existingModal;
+        }
 
         const modal = document.createElement('div');
         modal.id = id;
