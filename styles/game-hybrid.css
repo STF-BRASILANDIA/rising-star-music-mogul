@@ -560,6 +560,16 @@ body.in-game .in-game-only { display: block; }
   margin-bottom: auto;
 }
 
+/* === FIX LAYOUT SIDEBAR: 2 em cima + 2 embaixo ===
+   Garante que na sidebar (não colapsada) sempre haja 2 colunas.
+   Mantém 1 coluna quando .side-panel estiver .collapsed. */
+.side-panel:not(.collapsed) .primary-stats {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+.side-panel.collapsed .primary-stats {
+  grid-template-columns: 1fr !important;
+}
+
 .qa-btn { 
   background: linear-gradient(135deg, #272a33, #1e2026); 
   border: 1px solid rgba(255,255,255,0.12); 
