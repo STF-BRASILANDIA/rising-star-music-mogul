@@ -255,9 +255,9 @@ class ModernModalSystem {
                 body .modern-modal {
                     width: 96vw !important;
                     height: fit-content !important;
-                    min-height: 300px !important;
+                    min-height: 60vh !important;
                     max-width: none !important;
-                    max-height: 95vh !important;
+                    max-height: 90vh !important;
                     border-radius: 20px !important;
                     /* iOS específico: force visibility */
                     -webkit-transform: translate(-50%, -50%) scale(0.9) !important;
@@ -268,13 +268,15 @@ class ModernModalSystem {
                 }
                 
                 body .modern-modal .modern-modal-header {
-                    padding: 16px 35px 12px 16px !important;
+                    padding: 16px 35px 16px 16px !important;
                     flex-shrink: 0 !important;
+                    min-height: 60px !important;
                 }
                 
                 body .modern-modal .modern-modal-title {
                     font-size: 17px !important;
                     max-width: calc(100% - 35px) !important;
+                    line-height: 1.3 !important;
                 }
                 
                 body .modern-modal .modern-modal-close {
@@ -292,15 +294,16 @@ class ModernModalSystem {
                 }
                 
                 body .modern-modal .modern-modal-body {
-                    max-height: calc(95vh - 90px) !important;
-                    min-height: 200px !important;
+                    max-height: calc(90vh - 120px) !important;
+                    min-height: calc(60vh - 120px) !important;
                     flex: 1 !important;
                     overflow-y: auto !important;
                     -webkit-overflow-scrolling: touch !important;
                     /* iOS: force content visibility */
                     background: rgba(255, 255, 255, 0.05) !important;
-                    display: block !important;
-                    padding: 8px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    padding: 12px !important;
                 }
                 
                 body .modern-modal .modern-modal-body > * {
@@ -308,11 +311,13 @@ class ModernModalSystem {
                     display: block !important;
                     opacity: 1 !important;
                     visibility: visible !important;
+                    flex-shrink: 0 !important;
                 }
                 
                 body .modern-modal .modern-modal-footer {
-                    padding: 10px 16px 14px !important;
+                    padding: 12px 16px 16px !important;
                     flex-shrink: 0 !important;
+                    min-height: 60px !important;
                 }
             }
             

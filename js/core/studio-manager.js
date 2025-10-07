@@ -663,66 +663,154 @@ export class StudioManager {
     // Alias para compatibilidade - openAnalytics chama showAnalyticsInterface
     openAnalytics(tab = 'charts') {
         console.log('📊 Abrindo Analytics, aba:', tab);
-        this.showAnalyticsInterface();
+        console.log('📊 Estado do gameEngine:', !!this.gameEngine);
+        console.log('📊 Estado do player:', !!this.gameEngine?.gameData?.player);
+        console.log('📊 Estado do modernModalSystem:', !!window.modernModalSystem);
         
-        // Se especificou uma aba, tentar ativá-la após um pequeno delay
-        if (tab && tab !== 'charts') {
-            setTimeout(() => {
-                try {
-                    const modal = document.querySelector('#analytics-modal');
-                    if (modal) {
-                        const tabBtn = modal.querySelector(`[data-tab="${tab}"]`);
-                        if (tabBtn) {
-                            tabBtn.click();
+        try {
+            this.showAnalyticsInterface();
+            
+            // Se especificou uma aba, tentar ativá-la após um pequeno delay
+            if (tab && tab !== 'charts') {
+                setTimeout(() => {
+                    try {
+                        const modal = document.querySelector('#analytics-modal');
+                        if (modal) {
+                            const tabBtn = modal.querySelector(`[data-tab="${tab}"]`);
+                            if (tabBtn) {
+                                tabBtn.click();
+                            }
                         }
+                    } catch (e) {
+                        console.warn('Falha ao ativar aba:', tab, e);
                     }
-                } catch (e) {
-                    console.warn('Falha ao ativar aba:', tab, e);
-                }
-            }, 200);
+                }, 200);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao abrir Analytics:', error);
+            this.showNotification('❌ Erro ao abrir Analytics. Tente novamente.', 'error');
         }
     }
 
     showAnalyticsInterface() {
-        const modal = window.modernModalSystem.createModal({
-            id: 'analytics-modal',
-            title: '📊 Analytics & Charts',
-            content: this.getAnalyticsHTML(),
-            type: 'analytics'
-        });
-        window.modernModalSystem.openModal(modal);
-        this.setupAnalyticsEvents(modal);
+        try {
+            console.log('📊 showAnalyticsInterface chamado');
+            
+            if (!window.modernModalSystem) {
+                console.error('❌ modernModalSystem não disponível');
+                this.showNotification('❌ Sistema de modais não disponível', 'error');
+                return;
+            }
+
+            const content = this.getAnalyticsHTML();
+            console.log('📊 Conteúdo gerado:', content ? 'OK' : 'VAZIO');
+
+            const modal = window.modernModalSystem.createModal({
+                id: 'analytics-modal',
+                title: '📊 Analytics & Charts',
+                content: content,
+                type: 'analytics'
+            });
+            
+            if (!modal) {
+                console.error('❌ Falha ao criar modal');
+                this.showNotification('❌ Erro ao criar modal Analytics', 'error');
+                return;
+            }
+
+            window.modernModalSystem.openModal(modal);
+            this.setupAnalyticsEvents(modal);
+            console.log('✅ Analytics modal aberto com sucesso');
+            
+        } catch (error) {
+            console.error('❌ Erro em showAnalyticsInterface:', error);
+            this.showNotification('❌ Erro ao abrir Analytics: ' + error.message, 'error');
+        }
     }
 
     getAnalyticsHTML() {
-        const player = this.gameEngine.gameData.player;
-        const songs = player.songs || [];
-        
-        return `
-            <div class="analytics-interface">
-                <div class="analytics-header">
-                    <h3>📊 Suas Estatísticas Musicais</h3>
+        try {
+            console.log('📊 getAnalyticsHTML chamado');
+            
+            const player = this.gameEngine?.gameData?.player;
+            if (!player) {
+                console.warn('⚠️ Player não encontrado para Analytics');
+                return `
+                    <div class="analytics-interface">
+                        <div class="analytics-header">
+                            <h3>📊 Analytics não disponível</h3>
+                            <p>Dados do jogador não encontrados. Tente recarregar a página.</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const songs = player.songs || [];
+            console.log('📊 Músicas encontradas:', songs.length);
+            
+            let chartsHTML = '';
+            let songsHTML = '';
+            let revenueHTML = '';
+            
+            try {
+                chartsHTML = this.getChartsHTML();
+            } catch (e) {
+                console.warn('⚠️ Erro ao gerar charts HTML:', e);
+                chartsHTML = '<p>Erro ao carregar charts</p>';
+            }
+            
+            try {
+                songsHTML = this.getSongsHTML(songs);
+            } catch (e) {
+                console.warn('⚠️ Erro ao gerar songs HTML:', e);
+                songsHTML = '<p>Erro ao carregar músicas</p>';
+            }
+            
+            try {
+                revenueHTML = this.getRevenueHTML(songs);
+            } catch (e) {
+                console.warn('⚠️ Erro ao gerar revenue HTML:', e);
+                revenueHTML = '<p>Erro ao carregar receitas</p>';
+            }
+            
+            return `
+                <div class="analytics-interface">
+                    <div class="analytics-header">
+                        <h3>📊 Suas Estatísticas Musicais</h3>
+                        <p>Músicas: ${songs.length} | Player: ${player.firstName || 'N/A'}</p>
+                    </div>
+                    
+                    <div class="analytics-tabs">
+                        <button class="tab-btn active" data-tab="charts">Charts Regionais</button>
+                        <button class="tab-btn" data-tab="songs">Suas Músicas</button>
+                        <button class="tab-btn" data-tab="revenue">Receita</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="charts-tab">
+                        ${chartsHTML}
+                    </div>
+                    
+                    <div class="tab-content" id="songs-tab">
+                        ${songsHTML}
+                    </div>
+                    
+                    <div class="tab-content" id="revenue-tab">
+                        ${revenueHTML}
+                    </div>
                 </div>
-                
-                <div class="analytics-tabs">
-                    <button class="tab-btn active" data-tab="charts">Charts Regionais</button>
-                    <button class="tab-btn" data-tab="songs">Suas Músicas</button>
-                    <button class="tab-btn" data-tab="revenue">Receita</button>
+            `;
+        } catch (error) {
+            console.error('❌ Erro em getAnalyticsHTML:', error);
+            return `
+                <div class="analytics-interface">
+                    <div class="analytics-header">
+                        <h3>❌ Erro no Analytics</h3>
+                        <p>Erro: ${error.message}</p>
+                        <p>Tente recarregar a página.</p>
+                    </div>
                 </div>
-                
-                <div class="tab-content active" id="charts-tab">
-                    ${this.getChartsHTML()}
-                </div>
-                
-                <div class="tab-content" id="songs-tab">
-                    ${this.getSongsHTML(songs)}
-                </div>
-                
-                <div class="tab-content" id="revenue-tab">
-                    ${this.getRevenueHTML(songs)}
-                </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     getChartsHTML() {
