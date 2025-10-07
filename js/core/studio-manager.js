@@ -660,6 +660,29 @@ export class StudioManager {
         }
     }
 
+    // Alias para compatibilidade - openAnalytics chama showAnalyticsInterface
+    openAnalytics(tab = 'charts') {
+        console.log('📊 Abrindo Analytics, aba:', tab);
+        this.showAnalyticsInterface();
+        
+        // Se especificou uma aba, tentar ativá-la após um pequeno delay
+        if (tab && tab !== 'charts') {
+            setTimeout(() => {
+                try {
+                    const modal = document.querySelector('#analytics-modal');
+                    if (modal) {
+                        const tabBtn = modal.querySelector(`[data-tab="${tab}"]`);
+                        if (tabBtn) {
+                            tabBtn.click();
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Falha ao ativar aba:', tab, e);
+                }
+            }, 200);
+        }
+    }
+
     showAnalyticsInterface() {
         const modal = window.modernModalSystem.createModal({
             id: 'analytics-modal',

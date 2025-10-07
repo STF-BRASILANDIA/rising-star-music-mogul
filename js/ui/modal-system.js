@@ -255,14 +255,21 @@ class ModernModalSystem {
                 body .modern-modal {
                     width: 96vw !important;
                     height: fit-content !important;
-                    min-height: auto !important;
+                    min-height: 300px !important;
                     max-width: none !important;
                     max-height: 95vh !important;
                     border-radius: 20px !important;
+                    /* iOS específico: force visibility */
+                    -webkit-transform: translate(-50%, -50%) scale(0.9) !important;
+                }
+                
+                body .modern-modal.active {
+                    -webkit-transform: translate(-50%, -50%) scale(1) !important;
                 }
                 
                 body .modern-modal .modern-modal-header {
                     padding: 16px 35px 12px 16px !important;
+                    flex-shrink: 0 !important;
                 }
                 
                 body .modern-modal .modern-modal-title {
@@ -281,14 +288,55 @@ class ModernModalSystem {
                     max-height: 30px !important;
                     font-size: 18px !important;
                     border-radius: 50% !important;
+                    z-index: 10001 !important;
                 }
                 
                 body .modern-modal .modern-modal-body {
                     max-height: calc(95vh - 90px) !important;
+                    min-height: 200px !important;
+                    flex: 1 !important;
+                    overflow-y: auto !important;
+                    -webkit-overflow-scrolling: touch !important;
+                    /* iOS: force content visibility */
+                    background: rgba(255, 255, 255, 0.05) !important;
+                    display: block !important;
+                    padding: 8px !important;
+                }
+                
+                body .modern-modal .modern-modal-body > * {
+                    /* Force child elements to be visible */
+                    display: block !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
                 }
                 
                 body .modern-modal .modern-modal-footer {
                     padding: 10px 16px 14px !important;
+                    flex-shrink: 0 !important;
+                }
+            }
+            
+            /* iOS Safari específico */
+            @supports (-webkit-touch-callout: none) {
+                body .modern-modal {
+                    /* Force hardware acceleration */
+                    will-change: transform, opacity !important;
+                    -webkit-backface-visibility: hidden !important;
+                    backface-visibility: hidden !important;
+                }
+                
+                body .modern-modal .modern-modal-body {
+                    /* iOS scroll fix */
+                    overflow: auto !important;
+                    -webkit-overflow-scrolling: touch !important;
+                    min-height: 200px !important;
+                }
+                
+                body .modern-modal .modern-modal-body * {
+                    /* Force all content to be visible on iOS */
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                    display: block !important;
                 }
             }
 
@@ -427,13 +475,64 @@ class ModernModalSystem {
         modalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Setup close button
+        // Setup close button com suporte iOS
         const closeBtn = modalElement.querySelector('.modern-modal-close');
         if (closeBtn) {
-            closeBtn.onclick = () => this.closeModal(modalElement);
+            this.addIOSButtonHandler(closeBtn, () => this.closeModal(modalElement));
         }
 
+        // iOS: Force content visibility após um frame
+        setTimeout(() => this.forceIOSContentVisibility(modalElement), 50);
+
         console.log('🎭 Modal opened:', modalElement.id || 'unnamed');
+    }
+
+    /**
+     * Adiciona handler de botão compatível com iOS
+     */
+    addIOSButtonHandler(button, handler) {
+        if (!button) return;
+        
+        let pressed = false;
+        const wrapper = (e) => {
+            if (pressed) return;
+            pressed = true;
+            try {
+                e.preventDefault && e.preventDefault();
+                e.stopPropagation && e.stopPropagation();
+                handler(e);
+            } finally {
+                setTimeout(() => { pressed = false; }, 300);
+            }
+        };
+        
+        button.addEventListener('click', wrapper, { passive: false });
+        button.addEventListener('touchend', wrapper, { passive: false });
+        button.addEventListener('pointerup', wrapper, { passive: false });
+    }
+
+    /**
+     * Force content visibility no iOS
+     */
+    forceIOSContentVisibility(modalElement) {
+        try {
+            const body = modalElement.querySelector('.modern-modal-body');
+            if (body) {
+                // Force repaint
+                body.style.display = 'none';
+                body.offsetHeight; // trigger reflow
+                body.style.display = '';
+                
+                // Force all children to be visible
+                const allElements = body.querySelectorAll('*');
+                allElements.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.visibility = 'visible';
+                });
+            }
+        } catch (e) {
+            console.warn('Falha ao forçar visibilidade iOS:', e);
+        }
     }
 
     /**
