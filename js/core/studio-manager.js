@@ -27,6 +27,62 @@ export class StudioManager {
         this.loadProjects();
     }
 
+    // === Persistência do estado (para salvar/carregar via GameEngine) ===
+    getState() {
+        // Serializa Maps para objetos simples
+        const chartsObj = { regions: this.charts?.regions || [] };
+        if (this.charts) {
+            chartsObj.current = {};
+            chartsObj.trends = {};
+            (this.charts.regions || []).forEach(region => {
+                const regionChart = this.charts.current?.get ? this.charts.current.get(region) : (this.charts.current?.[region] || []);
+                chartsObj.current[region] = Array.isArray(regionChart) ? regionChart : [];
+                const regionTrends = this.charts.trends?.get ? this.charts.trends.get(region) : (this.charts.trends?.[region] || []);
+                chartsObj.trends[region] = Array.isArray(regionTrends) ? regionTrends : [];
+            });
+        }
+
+        return {
+            equipment: this.equipment,
+            currentProjects: this.currentProjects,
+            labels: this.labels,
+            charts: chartsObj,
+            // Composições podem existir se o compositor estiver em uso
+            compositions: this.compositions || []
+        };
+    }
+
+    setState(state) {
+        try {
+            if (!state) return;
+            this.equipment = state.equipment || this.equipment;
+            this.currentProjects = Array.isArray(state.currentProjects) ? state.currentProjects : this.currentProjects;
+            this.labels = Array.isArray(state.labels) ? state.labels : this.labels;
+
+            // Reconstruir estrutura de charts com Maps internos para uso interno
+            if (state.charts && state.charts.regions) {
+                this.charts = {
+                    regions: state.charts.regions,
+                    current: new Map(),
+                    trends: new Map()
+                };
+                this.charts.regions.forEach(region => {
+                    const regionChart = state.charts.current?.[region] || [];
+                    const regionTrends = state.charts.trends?.[region] || [];
+                    this.charts.current.set(region, Array.isArray(regionChart) ? regionChart : []);
+                    this.charts.trends.set(region, Array.isArray(regionTrends) ? regionTrends : []);
+                });
+            }
+
+            // Composições
+            if (Array.isArray(state.compositions)) {
+                this.compositions = state.compositions;
+            }
+        } catch (err) {
+            console.warn('⚠️ Falha ao restaurar estado do StudioManager:', err);
+        }
+    }
+
     setupEventListeners() {
         // Event listeners para todos os botões do estúdio usando data-studio-action
         document.addEventListener('click', (e) => {
@@ -317,9 +373,28 @@ export class StudioManager {
             this.updateTrendDisplay(modal, e.target.value);
         });
         
-        startBtn.addEventListener('click', () => {
-            this.processRecording(modal);
-        });
+        this.addPressHandler(startBtn, () => this.processRecording(modal));
+    }
+
+    updateTrendDisplay(modal, selectedGenre) {
+        try {
+            const container = modal.querySelector('#trendsDisplay');
+            if (!container) return;
+
+            // Atualiza apenas o ícone de tendência do gênero selecionado
+            const trend = this.getTrendForGenre(selectedGenre);
+            const trendIcon = trend > 0.7 ? '🔥' : trend > 0.4 ? '📈' : '📉';
+            // Pequeno banner acima da grade
+            const bannerId = 'studio-trend-banner';
+            let banner = modal.querySelector(`#${bannerId}`);
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = bannerId;
+                banner.style.cssText = 'margin: 8px 0 12px; font-size: 14px; opacity: .9;';
+                container.parentElement.insertBefore(banner, container);
+            }
+            banner.textContent = `Tendência para ${selectedGenre}: ${Math.round(trend*100)}% ${trendIcon}`;
+        } catch (_) { /* noop */ }
     }
 
     processRecording(modal) {
@@ -375,7 +450,8 @@ export class StudioManager {
             createdAt: new Date(),
             streams: 0,
             revenue: 0,
-            chartPositions: new Map()
+            // Use objeto simples para persistir corretamente em JSON
+            chartPositions: {}
         };
         
         // Adiciona às músicas do jogador
@@ -385,7 +461,7 @@ export class StudioManager {
         this.gameEngine.gameData.player.songs.push(song);
         
         // Simula colocação inicial nos charts
-        this.addSongToCharts(song);
+    this.addSongToCharts(song);
         
         // Verifica ofertas de gravadoras
         this.checkLabelOffers();
@@ -413,12 +489,13 @@ export class StudioManager {
             
             const initialPosition = Math.max(1, Math.min(100, basePosition + trendAdjustment + randomVariance));
             
-            song.chartPositions.set(region, {
+            // Persistir como objeto
+            song.chartPositions[region] = {
                 position: initialPosition,
                 lastWeekPosition: null,
                 weeksOnChart: 1,
                 peakPosition: initialPosition
-            });
+            };
             
             // Adiciona aos charts da região
             const regionChart = this.charts.current.get(region);
@@ -471,10 +548,21 @@ export class StudioManager {
         return true;
     }
 
+    // Helper para iterar posições de charts (compatível com Map antigo e objeto novo)
+    forEachChartPosition(song, cb) {
+        const cp = song.chartPositions;
+        if (!cp) return;
+        if (cp instanceof Map) {
+            cp.forEach((data, region) => cb(region, data, 'map'));
+        } else if (typeof cp === 'object') {
+            Object.entries(cp).forEach(([region, data]) => cb(region, data, 'object'));
+        }
+    }
+
     getBestChartPosition(songs) {
         let bestPosition = null;
         songs.forEach(song => {
-            song.chartPositions.forEach(chartData => {
+            this.forEachChartPosition(song, (_region, chartData) => {
                 if (!bestPosition || chartData.peakPosition < bestPosition) {
                     bestPosition = chartData.peakPosition;
                 }
@@ -800,17 +888,24 @@ export class StudioManager {
         const songs = player.songs || [];
         
         songs.forEach(song => {
-            song.chartPositions.forEach((chartData, region) => {
+            this.forEachChartPosition(song, (region, chartData, kind) => {
                 // Simula mudança de posição baseada na qualidade e streams
                 const momentum = this.calculateSongMomentum(song, region);
                 const positionChange = Math.round(momentum * (Math.random() * 10 - 5));
-                
+
                 chartData.lastWeekPosition = chartData.position;
                 chartData.position = Math.max(1, Math.min(100, chartData.position - positionChange));
                 chartData.weeksOnChart++;
-                
+
                 if (chartData.position < chartData.peakPosition) {
                     chartData.peakPosition = chartData.position;
+                }
+
+                // Persistir de volta no objeto quando necessário
+                if (kind === 'object') {
+                    song.chartPositions[region] = chartData;
+                } else if (kind === 'map') {
+                    song.chartPositions.set(region, chartData);
                 }
             });
         });
@@ -842,22 +937,22 @@ export class StudioManager {
         songs.forEach(song => {
             // Calcula streams baseado na posição nos charts
             let weeklyStreams = 0;
-            song.chartPositions.forEach((chartData, region) => {
+            this.forEachChartPosition(song, (region, chartData) => {
                 const regionMultiplier = this.getRegionMultiplier(region);
                 const positionMultiplier = Math.max(0.1, (101 - chartData.position) / 100);
                 weeklyStreams += Math.round(positionMultiplier * regionMultiplier * 10000);
             });
-            
+
             song.streams += weeklyStreams;
-            
+
             // Calcula receita (com desconto da gravadora se houver)
             const baseRevenue = weeklyStreams * 0.001; // $0.001 por stream
             let finalRevenue = baseRevenue;
-            
+
             if (player.currentLabel) {
                 finalRevenue = baseRevenue * player.currentLabel.royaltyRate;
             }
-            
+
             song.revenue += finalRevenue;
             player.money += finalRevenue;
         });
@@ -1042,20 +1137,90 @@ export class StudioManager {
         });
 
         // Botão de compor
-        composeBtn.addEventListener('click', () => {
+        const onCompose = () => {
             this.composeNewSong({
                 title: titleInput.value.trim(),
                 theme: themeSelect.value,
                 topic: topicSelect.value,
                 genre: genreSelect.value
             });
-            
             // Fechar modal
             window.modernModalSystem.closeModal(modal);
-        });
+        };
+        this.addPressHandler(composeBtn, onCompose);
 
         // Preview inicial
         updatePreview();
+    }
+
+    // Helper: adiciona handler compatível com iOS evitando duplo disparo (click + touch/pointer)
+    addPressHandler(element, handler) {
+        if (!element) return;
+        let armed = false;
+        const wrap = (e) => {
+            try { e.preventDefault && e.preventDefault(); } catch(_) {}
+            if (armed) return;
+            armed = true;
+            try { handler(e); } finally {
+                setTimeout(() => { armed = false; }, 250);
+            }
+        };
+        element.addEventListener('pointerup', wrap, { passive: false });
+        element.addEventListener('click', wrap, { passive: false });
+        element.addEventListener('touchend', wrap, { passive: false });
+    }
+
+    // Cria uma composição e opcionalmente realiza uma gravação básica automática
+    composeNewSong({ title, theme, topic, genre }) {
+        try {
+            if (!title) {
+                this.showNotification('⚠️ Digite um título para a música', 'warning');
+                return;
+            }
+
+            // Gera qualidade inicial baseada nas skills e tendências
+            const initialQuality = this.calculateCompositionQuality(theme, topic, genre);
+            const composition = {
+                id: Date.now(),
+                title,
+                theme,
+                topic,
+                genre,
+                status: 'composed',
+                quality: initialQuality,
+                maxQuality: Math.min(1.0, initialQuality + 0.2),
+                originalQuality: initialQuality,
+                createdAt: new Date(),
+                improvements: []
+            };
+
+            if (!this.compositions) this.compositions = [];
+            this.compositions.push(composition);
+
+            // Notificar sucesso
+            const q = Math.round(initialQuality * 100);
+            this.showNotification(`🎵 "${title}" composta (${q}%). Vamos gravar!`, 'success', 4000);
+
+            // Gravação básica automática para destravar o fluxo de validação
+            const BASIC_COST = 500;
+            if (this.getPlayerMoney() >= BASIC_COST) {
+                this.executeRecording({
+                    name: title,
+                    genre,
+                    mood: 'Alegre',
+                    quality: 'basic',
+                    cost: BASIC_COST
+                });
+            } else {
+                this.showNotification('💸 Dinheiro insuficiente para gravar agora. Você pode gravar pelo Estúdio mais tarde.', 'info');
+            }
+
+            // Atualiza estatísticas e salva
+            this.updateStudioStats();
+        } catch (err) {
+            console.error('❌ Erro ao compor música:', err);
+            this.showNotification('❌ Erro ao compor música', 'error');
+        }
     }
 
 

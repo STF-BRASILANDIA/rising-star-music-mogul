@@ -356,6 +356,14 @@ export class RisingStarGame {
             this.weeklyProgressHandler();
             // Charts/streams semanais (stub)
             console.log('📊 (Semanal) Processando charts/streams...');
+            // Atualização semanal do Estúdio (charts/receita/tendências)
+            try {
+                if (this.systems.studioManager?.weeklyUpdate) {
+                    this.systems.studioManager.weeklyUpdate();
+                }
+            } catch (err) {
+                console.warn('⚠️ Falha ao atualizar StudioManager na virada semanal:', err);
+            }
         } catch (e) {
             console.warn('⚠️ Erro em processos semanais:', e);
         }
@@ -400,15 +408,7 @@ export class RisingStarGame {
             // 3) Processar rotinas semanais
             await this.onTurnPassed('manual');
 
-            // 3.5) Studio Manager weekly update
-            try {
-                if (this.systems.studioManager && this.systems.studioManager.weeklyUpdate) {
-                    console.log('🎵 Executando atualização semanal do StudioManager...');
-                    this.systems.studioManager.weeklyUpdate();
-                }
-            } catch (err) {
-                console.error('❌ Erro na atualização semanal do Studio:', err);
-            }
+            // 3.5) (Removido) StudioManager weeklyUpdate já é chamado em onTurnPassed
 
             // 4) Atualizar UI de tempo explicitamente
             try { window.gameHub?.updateTimeInfo?.(); } catch(_) {}
@@ -1055,6 +1055,7 @@ export class RisingStarGame {
             systemStates: {
                 aiSimulation: this.systems.aiSimulation?.getState ? this.systems.aiSimulation.getState() : null,
                 musicCreation: this.systems.musicCreation?.getState ? this.systems.musicCreation.getState() : null,
+                studioManager: this.systems.studioManager?.getState ? this.systems.studioManager.getState() : null,
                 // TODO: Implementar estes sistemas
                 careerManagement: null,
                 socialSystem: null,
