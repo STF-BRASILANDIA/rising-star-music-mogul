@@ -446,23 +446,28 @@ class MenuModals {
     startDashboardTest(testMode) {
         console.log(`🧪 Iniciando teste do dashboard: ${testMode}`);
         this.hideModal();
-        
+
         // Configurar dados de teste baseado no modo
         if (testMode === 'quick') {
             this.setupQuickTest();
         } else if (testMode === 'debug') {
             this.setupDebugMode();
         }
-        
-        // Disparar evento original do botão
-        const testBtn = document.getElementById('testDashboardBtn');
-        if (testBtn && testBtn.click) {
-            // Remover interceptor temporariamente
-            this.tempDisableInterceptor = true;
-            setTimeout(() => {
-                testBtn.click();
-                this.tempDisableInterceptor = false;
-            }, 100);
+
+        // Em vez de re-disparar .click(), emitir um evento custom para o MainMenu
+        try {
+            const evt = new CustomEvent('menu:action', {
+                detail: {
+                    action: 'testDashboard',
+                    source: 'menu-modals',
+                    mode: testMode || 'quick'
+                }
+            });
+            document.dispatchEvent(evt);
+            console.log('📣 menu:action(testDashboard) emitido');
+        } catch (e) {
+            console.warn('⚠️ Falha ao emitir menu:action; usando fallback window.testDashboard()', e);
+            if (typeof window.testDashboard === 'function') window.testDashboard();
         }
     }
 

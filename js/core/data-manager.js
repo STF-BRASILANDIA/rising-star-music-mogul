@@ -14,6 +14,13 @@ export class DataManager {
         this.useLocalStorageFallback = true; // Continuar usando localStorage
         this.firebaseManager = null; // Será ativado quando o usuário quiser sync
         console.log('💾 Usando localStorage + Firebase opcional');
+        // Versão do esquema de save local
+        this.schemaVersion = 2;
+        // Throttle para autosave (em ms)
+        this.autosaveThrottleMs = 10000;
+        this._lastAutoSaveAt = 0;
+        this._autoSaveTimer = null;
+        this._latestAutoSaveData = null;
         this.stores = {
             gameData: 'gameData',
             playerData: 'playerData',
@@ -21,6 +28,27 @@ export class DataManager {
             achievements: 'achievements',
             settings: 'settings'
         };
+
+        // Garantir binding de contexto para métodos usados fora do objeto
+        this.loadGameData = this.loadGameData.bind(this);
+        this.listGameSaves = this.listGameSaves.bind(this);
+        this.loadGameDataFromSlot = this.loadGameDataFromSlot.bind(this);
+        this.saveGameDataToSlot = this.saveGameDataToSlot.bind(this);
+        this.saveGameDataUnified = this.saveGameDataUnified.bind(this);
+        this.saveGameData = this.saveGameData.bind(this);
+        this.savePlayerData = this.savePlayerData.bind(this);
+        this.loadPlayerData = this.loadPlayerData.bind(this);
+        this.getSkillState = this.getSkillState.bind(this);
+        this.setSkillState = this.setSkillState.bind(this);
+        this.trainSkill = this.trainSkill.bind(this);
+        this.getEnergyState = this.getEnergyState.bind(this);
+        this.setEnergyState = this.setEnergyState.bind(this);
+        this.weeklyRollover = this.weeklyRollover.bind(this);
+        this.getAllSkills = this.getAllSkills.bind(this);
+        this.resetAllSkills = this.resetAllSkills.bind(this);
+        this.migrateSaveData = this.migrateSaveData.bind(this);
+        this.getProfileSaveId = this.getProfileSaveId.bind(this);
+        this.computeChecksum = this.computeChecksum.bind(this);
     }
 
     /**
@@ -46,6 +74,12 @@ export class DataManager {
             } catch (e) {
                 console.warn('Persistência de storage não disponível/negada:', e);
             }
+            // Recuperar escritas incompletas (__staging) e limpar metadados órfãos
+            try {
+                this.recoverIncompleteWrites();
+            } catch (recErr) {
+                console.warn('⚠️ Recuperação de staging falhou:', recErr);
+            }
             return true;
         } catch (error) {
             console.warn('⚠️ DataManager.init() encontrou um problema, mantendo fallback localStorage:', error);
@@ -56,20 +90,15 @@ export class DataManager {
     
     async saveGame(gameData) {
         try {
+            const DEBUG_SAVE = (localStorage.getItem('DEBUG_SAVE') === '1');
             // 🚫 BLOQUEAR SAVE APENAS NO MENU INICIAL
             if (typeof window !== 'undefined' && window.game) {
                 const gameState = window.game.gameState || window.game.state;
-                
-                // Verificar se estamos especificamente no menu principal
-                const isInMainMenu = (
-                    gameState === 'menu' || 
-                    gameState === 'main-menu' || 
-                    gameState === 'initial' ||
-                    (document.getElementById('main-menu') && document.getElementById('main-menu').style.display !== 'none')
-                );
-                
+                // Verificar se estamos no menu principal usando estado e DOM corretos
+                const menuEl = (typeof document !== 'undefined') ? document.getElementById('mainMenu') : null;
+                const isInMainMenu = (gameState === 'main_menu') || (menuEl && menuEl.style.display !== 'none');
                 if (isInMainMenu) {
-                    console.log('🚫 SAVE BLOQUEADO: Estamos no menu principal (estado:', gameState, ')');
+                    if (DEBUG_SAVE) console.log('🚫 [DEBUG_SAVE] SAVE BLOQUEADO: menu principal (estado:', gameState, ')');
                     return false;
                 }
             }
@@ -93,32 +122,82 @@ export class DataManager {
                 ...gameData,
                 timestamp: Date.now(),
                 lastSaved: new Date().toISOString(),
-                autoSave: true
+                autoSave: true,
+                schemaVersion: this.schemaVersion
             };
             
-            // Salvar no slot específico do perfil (sempre sobrescreve)
-            await this.putData(this.stores.gameData, saveData);
-            
-            // Criar backup automático (mantém histórico)
-            const backupData = {
-                id: `${profileId}_backup_${Date.now()}`,
-                originalProfileId: profileId,
-                ...gameData,
-                timestamp: Date.now(),
-                backupCreated: new Date().toISOString()
-            };
-            
-            await this.putData(this.stores.gameData, backupData);
-            
-            // Manter apenas os últimos 3 backups por perfil
-            await this.cleanupProfileBackups(profileId);
-            
-            console.log(`💾 Auto-save realizado para perfil: ${profileId}`);
+            // Throttle/coalescência de autosave
+            const now = Date.now();
+            const canSaveNow = (now - this._lastAutoSaveAt) >= this.autosaveThrottleMs;
+            if (canSaveNow) {
+                await this._commitSaveWithBackup(saveData, DEBUG_SAVE);
+                this._lastAutoSaveAt = Date.now();
+            } else {
+                this._scheduleAutoSave(saveData, DEBUG_SAVE);
+            }
             return true;
         } catch (error) {
             console.error('❌ Falha no auto-save:', error);
             throw error;
         }
+    }
+
+    _scheduleAutoSave(saveData, DEBUG_SAVE = false) {
+        this._latestAutoSaveData = saveData;
+        if (this._autoSaveTimer) {
+            try { clearTimeout(this._autoSaveTimer); } catch(_) {}
+        }
+        const delay = Math.min(5000, this.autosaveThrottleMs);
+        if (DEBUG_SAVE) console.log(`⏳ [DEBUG_SAVE] Autosave agendado para ${delay}ms`);
+        this._autoSaveTimer = setTimeout(async () => {
+            try {
+                if (this._latestAutoSaveData) {
+                    await this._commitSaveWithBackup(this._latestAutoSaveData, DEBUG_SAVE);
+                    this._lastAutoSaveAt = Date.now();
+                    this._latestAutoSaveData = null;
+                }
+            } catch (e) {
+                console.warn('⚠️ Falha ao executar autosave agendado:', e);
+            } finally {
+                this._autoSaveTimer = null;
+            }
+        }, delay);
+    }
+
+    async _commitSaveWithBackup(saveData, DEBUG_SAVE = false) {
+        const profileId = saveData.profileId || saveData.id;
+        // Salvar no slot específico do perfil (sempre sobrescreve)
+        if (this.useLocalStorageFallback) {
+            await this.localStoragePutAtomic(this.stores.gameData, saveData);
+        } else {
+            if (DEBUG_SAVE) {
+                try { console.log('💾 [DEBUG_SAVE] putData main', `${this.dbName}_${this.stores.gameData}_${saveData.id}`, 'bytes=', JSON.stringify(saveData).length); } catch(_) {}
+            }
+            await this.putData(this.stores.gameData, saveData);
+        }
+        
+        // Criar backup automático (mantém histórico)
+        const backupData = {
+            id: `${profileId}_backup_${Date.now()}`,
+            originalProfileId: profileId,
+            ...saveData,
+            timestamp: Date.now(),
+            backupCreated: new Date().toISOString(),
+            schemaVersion: this.schemaVersion
+        };
+        
+        if (this.useLocalStorageFallback) {
+            await this.localStoragePutAtomic(this.stores.gameData, backupData);
+        } else {
+            if (DEBUG_SAVE) {
+                try { console.log('💾 [DEBUG_SAVE] putData backup', `${this.dbName}_${this.stores.gameData}_${backupData.id}`, 'bytes=', JSON.stringify(backupData).length); } catch(_) {}
+            }
+            await this.putData(this.stores.gameData, backupData);
+        }
+        
+        // Manter apenas os últimos 3 backups por perfil
+        await this.cleanupProfileBackups(profileId);
+        if (DEBUG_SAVE) console.log(`💾 [DEBUG_SAVE] Auto-save COMMIT para perfil: ${profileId}`);
     }
 
     /**
@@ -308,30 +387,6 @@ export class DataManager {
         return 'Jogador';
     }
     
-    async savePlayerData(playerData) {
-        try {
-            const data = {
-                id: 'player',
-                ...playerData,
-                lastUpdated: Date.now()
-            };
-            
-            await this.putData(this.stores.playerData, data);
-            return true;
-        } catch (error) {
-            console.error('❌ Failed to save player data:', error);
-            throw error;
-        }
-    }
-    
-    async loadPlayerData() {
-        try {
-            return await this.getData(this.stores.playerData, 'player');
-        } catch (error) {
-            console.error('❌ Failed to load player data:', error);
-            return null;
-        }
-    }
     
     async saveStatistic(type, data) {
         try {
@@ -578,18 +633,73 @@ export class DataManager {
     localStoragePut(storeName, data) {
         try {
             const key = `${this.dbName}_${storeName}_${data.id}`;
-            localStorage.setItem(key, JSON.stringify(data));
+            const DEBUG_SAVE = (localStorage.getItem('DEBUG_SAVE') === '1');
+            const str = JSON.stringify(data);
+            if (DEBUG_SAVE) console.log('💾 [DEBUG_SAVE] localStorage.setItem', key, 'bytes=', str.length);
+            // Escrita atômica crua com meta
+            this.localStoragePutRawAtomic(key, str, { storeName, id: data.id, schemaVersion: data.schemaVersion || this.schemaVersion });
             return Promise.resolve();
         } catch (error) {
             return Promise.reject(error);
         }
     }
 
+    // Escrita atômica no localStorage para stores indexados
+    async localStoragePutAtomic(storeName, data) {
+        const key = `${this.dbName}_${storeName}_${data.id}`;
+        const str = JSON.stringify(data);
+        this.localStoragePutRawAtomic(key, str, { storeName, id: data.id, schemaVersion: data.schemaVersion || this.schemaVersion });
+    }
+
+    // Escrita atômica crua com checksum e metadados
+    localStoragePutRawAtomic(key, str, extraMeta = {}) {
+        const stagingKey = `${key}__staging`;
+        const metaKey = `${key}__meta`;
+        const DEBUG_SAVE = (localStorage.getItem('DEBUG_SAVE') === '1');
+        const checksum = this.computeChecksum(str);
+        const meta = {
+            checksum,
+            bytes: str.length,
+            lastSaved: Date.now(),
+            ...extraMeta
+        };
+        try {
+            if (DEBUG_SAVE) console.log('💾 [DEBUG_SAVE] ATOMIC write start', key, 'bytes=', str.length, 'checksum=', checksum);
+            this.addToJournal('write_start', { key, bytes: str.length });
+            localStorage.setItem(stagingKey, str);
+            localStorage.setItem(key, str);
+            localStorage.setItem(metaKey, JSON.stringify(meta));
+            localStorage.removeItem(stagingKey);
+            this.addToJournal('write_commit', { key, bytes: str.length });
+            if (DEBUG_SAVE) console.log('✅ [DEBUG_SAVE] ATOMIC write ok', key);
+        } catch (e) {
+            console.warn('⚠️ Falha na escrita atômica, tentando fallback direto:', e);
+            try { localStorage.setItem(key, str); } catch(_) {}
+            try { localStorage.setItem(metaKey, JSON.stringify(meta)); } catch(_) {}
+            try { localStorage.removeItem(stagingKey); } catch(_) {}
+            this.addToJournal('write_fallback', { key });
+        }
+    }
+
     localStorageGet(storeName, id) {
         try {
             const key = `${this.dbName}_${storeName}_${id}`;
-            const data = localStorage.getItem(key);
-            return Promise.resolve(data ? JSON.parse(data) : null);
+            const metaKey = `${key}__meta`;
+            const dataStr = localStorage.getItem(key);
+            if (!dataStr) return Promise.resolve(null);
+            // Validar checksum quando disponível
+            try {
+                const meta = JSON.parse(localStorage.getItem(metaKey) || 'null');
+                if (meta && meta.checksum) {
+                    const sum = this.computeChecksum(dataStr);
+                    if (sum !== meta.checksum) {
+                        console.warn('⚠️ Checksum inválido para', key, 'esperado=', meta.checksum, 'obtido=', sum);
+                        this.addToJournal('checksum_mismatch', { key });
+                    }
+                }
+            } catch (_) { /* ignore meta parse */ }
+            const parsed = JSON.parse(dataStr);
+            return Promise.resolve(this.migrateSaveData(parsed));
         } catch (error) {
             return Promise.reject(error);
         }
@@ -618,9 +728,24 @@ export class DataManager {
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.startsWith(prefix)) {
+                    if (key.endsWith('__staging') || key.endsWith('__meta')) continue;
                     try {
-                        const parsed = JSON.parse(localStorage.getItem(key));
-                        if (parsed) results.push(parsed);
+                        const str = localStorage.getItem(key);
+                        if (!str) continue;
+                        // Validar checksum
+                        try {
+                            const meta = JSON.parse(localStorage.getItem(`${key}__meta`) || 'null');
+                            if (meta && meta.checksum) {
+                                const sum = this.computeChecksum(str);
+                                if (sum !== meta.checksum) {
+                                    console.warn('⚠️ Registro com checksum inválido ignorado:', key);
+                                    this.addToJournal('checksum_mismatch_skip', { key });
+                                    continue;
+                                }
+                            }
+                        } catch (_) { /* ignore meta parse */ }
+                        const parsed = JSON.parse(str);
+                        if (parsed) results.push(this.migrateSaveData(parsed));
                     } catch (e) {
                         console.warn('⚠️ Registro corrompido ignorado:', key);
                     }
@@ -1312,13 +1437,42 @@ export class DataManager {
     // ========================================
 
     /**
-     * Carrega os dados do jogo (usando localStorage como fallback)
+     * 🔄 UNIFIED SAVE LOADER: Carrega dados de TODAS as fontes e consolida
      */
     loadGameData() {
         try {
-            const data = localStorage.getItem('risingstar_gamedata');
-            if (data) {
-                const gameData = JSON.parse(data);
+            // 🎯 PRIORIDADE 1: Dados monolíticos (mais recente)
+            const monolithicData = localStorage.getItem('risingstar_gamedata');
+            let gameData = monolithicData ? JSON.parse(monolithicData) : {};
+
+            console.log('📖 Monolithic data carregado:', Object.keys(gameData));
+
+            // 🎯 PRIORIDADE 2: Verificar se profile stores têm dados mais recentes
+            const profileStores = this.listGameSaves();
+            if (profileStores.length > 0) {
+                // Encontrar o save mais recente dos profile stores
+                const latestProfile = profileStores.reduce((latest, current) => {
+                    return (current.lastModified > latest.lastModified) ? current : latest;
+                });
+
+                try {
+                    const profileData = this.loadGameDataFromSlot(latestProfile.id);
+                    const profileTime = new Date(latestProfile.lastModified).getTime();
+                    const monolithicTime = gameData.lastSaved ? new Date(gameData.lastSaved).getTime() : 0;
+
+                    if (profileTime > monolithicTime) {
+                        console.log(`🔄 Profile store mais recente detectado: ${latestProfile.id} (${latestProfile.lastModified})`);
+                        gameData = { ...profileData, lastSaved: latestProfile.lastModified };
+                    }
+                } catch (profileErr) {
+                    console.warn('⚠️ Erro ao carregar profile store:', profileErr);
+                }
+            }
+
+            // Se há algum dado carregado, consolidar com o estado do engine e retornar
+            gameData = this.migrateSaveData(gameData || {});
+            const hasAnyData = gameData && Object.keys(gameData).length > 0;
+            if (hasAnyData) {
                 console.log('📖 Dados carregados do localStorage:', Object.keys(gameData));
                 // Injetar fallback do estado atual do jogo (se existir)
                 try {
@@ -1342,24 +1496,144 @@ export class DataManager {
                         }
                     }
                 } catch (e) { /* noop */ }
+
+                console.log('📖 Dados finais consolidados:', Object.keys(gameData));
                 return gameData;
-            } else {
-                console.log('📖 Nenhum dado salvo encontrado, retornando dados vazios');
-                // Criar dados base a partir do engine se disponível
-                const base = {};
-                try {
-                    const enginePlayer = (typeof window !== 'undefined' && window.game && window.game.gameData && window.game.gameData.player) ? window.game.gameData.player : null;
-                    if (enginePlayer) {
-                        base.player = { ...enginePlayer };
-                        base.skills = { ...(enginePlayer.skills || {}) };
-                        base.energy = { current: enginePlayer.energy || DataManager.SkillBalance.energy.maxDefault, max: DataManager.SkillBalance.energy.maxDefault };
-                    }
-                } catch (_) { /* ignore */ }
-                return base;
             }
+
+            // Caso não haja nenhum dado salvo, criar base padrão
+            console.log('📖 Nenhum dado salvo encontrado, retornando dados vazios');
+            const base = {};
+            try {
+                const enginePlayer = (typeof window !== 'undefined' && window.game && window.game.gameData && window.game.gameData.player) ? window.game.gameData.player : null;
+                if (enginePlayer) {
+                    base.player = { ...enginePlayer };
+                    base.skills = { ...(enginePlayer.skills || {}) };
+                    // GARANTIR que energia sempre comece cheia para novos jogos
+                    base.energy = {
+                        current: DataManager.SkillBalance.energy.maxDefault,
+                        max: DataManager.SkillBalance.energy.maxDefault
+                    };
+                } else {
+                    // Fallback para quando não há engine player
+                    base.energy = {
+                        current: DataManager.SkillBalance.energy.maxDefault,
+                        max: DataManager.SkillBalance.energy.maxDefault
+                    };
+                }
+            } catch (_) {
+                // Garantir energia padrão mesmo em caso de erro
+                base.energy = {
+                    current: DataManager.SkillBalance.energy.maxDefault,
+                    max: DataManager.SkillBalance.energy.maxDefault
+                };
+            }
+            return base;
         } catch (error) {
             console.error('❌ Erro ao carregar dados:', error);
             return {};
+        }
+    }
+
+    /**
+     * Lista saves de perfil armazenados no store gameData (somente localStorage no momento)
+     * Retorna [{ id, lastModified, timestamp }]
+     */
+    listGameSaves() {
+        try {
+            const prefix = `${this.dbName}_${this.stores.gameData}_`;
+            const items = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (!key || !key.startsWith(prefix)) continue;
+                if (key.endsWith('__meta') || key.endsWith('__staging')) continue;
+                try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) continue;
+                    const data = JSON.parse(raw);
+                    if (!data || typeof data !== 'object') continue;
+                    const id = data.profileId || data.id;
+                    if (!id || typeof id !== 'string') continue;
+                    if (id.includes('_backup_')) continue; // ignorar backups
+                    if (!id.startsWith('profile_')) continue; // somente perfis
+                    const lastModified = data.lastSaved || new Date(data.timestamp || 0).toISOString();
+                    items.push({ id, lastModified, timestamp: data.timestamp || 0 });
+                } catch (_) { /* ignore */ }
+            }
+            return items;
+        } catch (_) {
+            return [];
+        }
+    }
+
+    /**
+     * Carrega dados do jogo de um slot de perfil específico (sincrono via localStorage)
+     */
+    loadGameDataFromSlot(profileId) {
+        try {
+            const key = `${this.dbName}_${this.stores.gameData}_${profileId}`;
+            const str = localStorage.getItem(key);
+            if (!str) return {};
+            const data = JSON.parse(str);
+            return this.migrateSaveData(data || {});
+        } catch (_) {
+            return {};
+        }
+    }
+
+    /**
+     * Salva dados do jogo em um slot de perfil específico (sincrono via localStorage)
+     */
+    saveGameDataToSlot(profileId, gameData) {
+        try {
+            const payload = {
+                id: profileId,
+                profileId,
+                ...gameData,
+                timestamp: Date.now(),
+                lastSaved: new Date().toISOString(),
+                schemaVersion: this.schemaVersion
+            };
+            const key = `${this.dbName}_${this.stores.gameData}_${profileId}`;
+            this.localStoragePutRawAtomic(key, JSON.stringify(payload), { storeName: this.stores.gameData, id: profileId, schemaVersion: this.schemaVersion });
+            return true;
+        } catch (e) {
+            try { localStorage.setItem(`${this.dbName}_${this.stores.gameData}_${profileId}`, JSON.stringify(gameData)); } catch(_) {}
+            return false;
+        }
+    }
+
+    /**
+     * 🔄 UNIFIED SAVE WRITER: Salva em AMBOS os sistemas (profile + monolithic) para compatibilidade
+     */
+    saveGameDataUnified(gameData) {
+        try {
+            // Adicionar timestamp
+            gameData.lastSaved = new Date().toISOString();
+            gameData.schemaVersion = this.schemaVersion;
+            
+            console.log('💾 UNIFIED SAVE: Salvando em ambos os sistemas...');
+            
+            // 1) Salvar no sistema monolítico (risingstar_gamedata)
+            try {
+                this.localStoragePutRawAtomic('risingstar_gamedata', JSON.stringify(gameData), { schemaVersion: this.schemaVersion });
+            } catch (e) {
+                localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            }
+            
+            // 2) Salvar no sistema de profile stores se houver perfil ativo
+            if (gameData.player?.name) {
+                const profileId = `profile_${gameData.player.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+                this.saveGameDataToSlot(profileId, gameData);
+                console.log(`💾 UNIFIED SAVE: Dados salvos em ambos os sistemas (monolithic + profile:${profileId})`);
+            } else {
+                console.log('💾 UNIFIED SAVE: Dados salvos apenas no sistema monolítico (sem nome de player)');
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Erro no UNIFIED SAVE:', error);
+            return false;
         }
     }
 
@@ -1371,15 +1645,8 @@ export class DataManager {
             // 🚫 BLOQUEAR SAVE APENAS NO MENU INICIAL
             if (typeof window !== 'undefined' && window.game) {
                 const gameState = window.game.gameState || window.game.state;
-                
-                // Verificar se estamos especificamente no menu principal
-                const isInMainMenu = (
-                    gameState === 'menu' || 
-                    gameState === 'main-menu' || 
-                    gameState === 'initial' ||
-                    (document.getElementById('main-menu') && document.getElementById('main-menu').style.display !== 'none')
-                );
-                
+                const menuEl = (typeof document !== 'undefined') ? document.getElementById('mainMenu') : null;
+                const isInMainMenu = (gameState === 'main_menu') || (menuEl && menuEl.style.display !== 'none');
                 if (isInMainMenu) {
                     console.log('🚫 saveGameData BLOQUEADO: Estamos no menu principal (estado:', gameState, ')');
                     return false;
@@ -1395,7 +1662,15 @@ export class DataManager {
                     }
                 }
             } catch (_) { /* ignore */ }
-            localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            // Escrita atômica com meta/checksum
+            try {
+                const str = JSON.stringify({ ...gameData, schemaVersion: this.schemaVersion });
+                this.localStoragePutRawAtomic('risingstar_gamedata', str, { schemaVersion: this.schemaVersion });
+            } catch (e) {
+                console.warn('⚠️ Falha na escrita atômica de risingstar_gamedata, fallback simples:', e);
+                try { localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData)); } catch(_) {}
+                try { localStorage.removeItem('risingstar_gamedata__staging'); } catch(_) {}
+            }
             console.log('💾 Dados salvos no localStorage:', Object.keys(gameData));
             return true;
         } catch (error) {
@@ -1412,15 +1687,8 @@ export class DataManager {
             // 🚫 BLOQUEAR SAVE APENAS NO MENU INICIAL
             if (typeof window !== 'undefined' && window.game) {
                 const gameState = window.game.gameState || window.game.state;
-                
-                // Verificar se estamos especificamente no menu principal
-                const isInMainMenu = (
-                    gameState === 'menu' || 
-                    gameState === 'main-menu' || 
-                    gameState === 'initial' ||
-                    (document.getElementById('main-menu') && document.getElementById('main-menu').style.display !== 'none')
-                );
-                
+                const menuEl = (typeof document !== 'undefined') ? document.getElementById('mainMenu') : null;
+                const isInMainMenu = (gameState === 'main_menu') || (menuEl && menuEl.style.display !== 'none');
                 if (isInMainMenu) {
                     console.log('🚫 savePlayerData BLOQUEADO: Estamos no menu principal (estado:', gameState, ')');
                     return false;
@@ -1473,8 +1741,7 @@ export class DataManager {
         training: {
             baseCost: 500,         // Custo base em dinheiro
             costMultiplier: 1.2,   // Multiplicador por nível
-            baseEnergyCost: 20,    // Energia base por treino
-            energyMultiplier: 1.1  // Multiplicador de energia por nível
+            // Energia: sistema customizado (currentLevel + 1)
         },
 
         // Sistema de energia
@@ -1513,10 +1780,11 @@ export class DataManager {
 
     /**
      * Calcula o custo em energia para treinar uma skill
+     * Sistema simplificado: Base 2 energia + nível atual
+     * Exemplo: nível 1 = 2, nível 10 = 11, nível 50 = 51
      */
     trainingEnergyCost(currentLevel) {
-        const { baseEnergyCost, energyMultiplier } = DataManager.SkillBalance.training;
-        return Math.floor(baseEnergyCost * Math.pow(energyMultiplier, Math.floor(currentLevel / 20)));
+        return currentLevel + 1;
     }
 
     /**
@@ -1584,8 +1852,11 @@ export class DataManager {
                     }
                 }
             } catch (_) { /* ignore */ }
-            
-            localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            try {
+                this.localStoragePutRawAtomic('risingstar_gamedata', JSON.stringify({ ...gameData, schemaVersion: this.schemaVersion }), { schemaVersion: this.schemaVersion });
+            } catch (_) {
+                localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            }
             console.log(`💾 Game data salvo diretamente após definir skill ${skillKey}`);
             return true;
         } catch (error) {
@@ -1608,6 +1879,11 @@ export class DataManager {
             console.log(`🎯 DEBUG trainSkill: skillState inicial =`, skillState);
             console.log(`🎯 DEBUG trainSkill: energyState =`, energyState);
             
+            // 🔧 DEBUG EXTRA: Verificar estado de sincronização
+            console.log('🔍 DEBUG SYNC CHECK:');
+            console.log('  - window.game.gameData.player:', window.game?.gameData?.player);
+            console.log('  - localStorage gameData:', JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}'));
+            
             // Verificar se já está no máximo
             if (skillState.level >= DataManager.SkillBalance.maxLevel) {
                 return { 
@@ -1623,31 +1899,46 @@ export class DataManager {
             
             console.log(`🎯 DEBUG trainSkill: custos - dinheiro=${moneyCost}, energia=${energyCost}`);
 
-            // Verificar se tem dinheiro
-            // Origem do dinheiro: preferir gameData.player.money; fallback: gameData.money
-            let currentMoney = (gameData.player && typeof gameData.player.money === 'number') ? gameData.player.money : gameData.money;
-            if (typeof currentMoney !== 'number') currentMoney = 0;
+            // 🎯 PRIORIDADE ABSOLUTA: Usar dados do engine (sempre mais atualizados)
+            let currentMoney = 0;
+            let currentEnergy = energyState.current;
             
-            console.log(`🎯 DEBUG trainSkill: dinheiro atual=${currentMoney}, necessário=${moneyCost}`);
+            // Buscar recursos do engine se disponível
+            if (window?.game?.gameData?.player) {
+                const enginePlayer = window.game.gameData.player;
+                currentMoney = enginePlayer.money || 0;
+                // Para energia, preferir o energyState do DataManager que tem a lógica completa
+                if (typeof enginePlayer.energy === 'number') {
+                    currentEnergy = enginePlayer.energy;
+                }
+                console.log(`💰 Recursos do ENGINE: dinheiro=$${currentMoney}, energia=${currentEnergy}`);
+            } else {
+                // Fallback para dados salvos
+                currentMoney = (gameData.player?.money) || (gameData.money) || 0;
+                console.log(`💰 Recursos do SAVE: dinheiro=$${currentMoney}, energia=${currentEnergy}`);
+            }
+            
+            console.log(`🎯 DEBUG trainSkill: FINAL - dinheiro=${currentMoney}, energia=${currentEnergy}`);
+            console.log(`🎯 DEBUG trainSkill: NECESSÁRIO - dinheiro=${moneyCost}, energia=${energyCost}`);
             
             if (currentMoney < moneyCost) {
                 return { 
                     success: false, 
-                    reason: `Você precisa de $${moneyCost.toLocaleString()} para treinar esta skill!`,
+                    reason: `Você precisa de $${moneyCost.toLocaleString()} para treinar esta skill! (Atual: $${currentMoney.toLocaleString()})`,
                     currentLevel: skillState.level,
-                    cost: moneyCost
+                    cost: moneyCost,
+                    currentMoney: currentMoney
                 };
             }
 
             // Verificar se tem energia
-            console.log(`🎯 DEBUG trainSkill: energia atual=${energyState.current}, necessária=${energyCost}`);
-            
-            if (energyState.current < energyCost) {
+            if (currentEnergy < energyCost) {
                 return { 
                     success: false, 
-                    reason: `Você precisa de ${energyCost} de energia para treinar esta skill!`,
+                    reason: `Você precisa de ${energyCost} de energia para treinar esta skill! (Atual: ${currentEnergy})`,
                     currentLevel: skillState.level,
-                    energyCost: energyCost
+                    energyCost: energyCost,
+                    currentEnergy: currentEnergy
                 };
             }
 
@@ -1655,17 +1946,27 @@ export class DataManager {
             
             // Realizar o treinamento
             currentMoney -= moneyCost;
-            energyState.current -= energyCost;
+            currentEnergy -= energyCost;
             skillState.level += 1;
             
             console.log(`🎯 DEBUG trainSkill: DEPOIS DO INCREMENTO - skill ${skillKey} level=${skillState.level}`);
 
-            // Salvar mudanças parciais de forma atômica
-            // 1) Persistir skill e energia diretamente (evita bloqueios e grava parcial)
-            this.setSkillState(skillKey, skillState.level);
-            this.setEnergyState(energyState.current, energyState.max);
+            // 🎯 SINCRONIZAR IMEDIATAMENTE COM ENGINE SE DISPONÍVEL
+            if (window?.game?.gameData?.player) {
+                window.game.gameData.player.money = currentMoney;
+                window.game.gameData.player.energy = currentEnergy;
+                // Sincronizar skills também
+                if (!window.game.gameData.player.skills) window.game.gameData.player.skills = {};
+                window.game.gameData.player.skills[skillKey] = skillState.level;
+                console.log(`✅ Dados sincronizados com engine: money=${currentMoney}, energy=${currentEnergy}, ${skillKey}=${skillState.level}`);
+            }
 
-            // 2) Recarregar o estado mais recente e mesclar dinheiro/espelhos sem sobrescrever energia/skills
+            // Salvar mudanças de forma atômica
+            // 1) Persistir skill e energia diretamente
+            this.setSkillState(skillKey, skillState.level);
+            this.setEnergyState(currentEnergy, energyState.max);
+
+            // 2) Recarregar estado mais recente e atualizar dinheiro sem sobrescrever energia/skills
             const latest = this.loadGameData();
             if (!latest.player) latest.player = {};
             // Atualizar dinheiro (fonte de verdade aqui)
@@ -1679,16 +1980,38 @@ export class DataManager {
             if (!latest.player.skills) latest.player.skills = {};
             latest.player.skills[skillKey] = skillState.level;
 
-            // 3) Sincronizar com window.game (runtime)
+            // 3) Sincronizar com window.game (runtime) - BIDIRECIONAL
             try {
                 if (typeof window !== 'undefined' && window.game && window.game.gameData && window.game.gameData.player) {
+                    // Atualizar engine com novos valores
                     window.game.gameData.player.money = latest.player.money;
                     window.game.gameData.player.energy = latest.player.energy;
                     if (!window.game.gameData.player.skills) window.game.gameData.player.skills = {};
                     window.game.gameData.player.skills[skillKey] = skillState.level;
-                    console.log(`💰 Dinheiro sincronizado: $${latest.player.money}`);
-                    console.log(`⚡ Energia sincronizada: ${latest.player.energy}`);
-                    console.log(`🎯 SKILL ${skillKey} sincronizada: Nível ${skillState.level}`);
+                    
+                    console.log(`💰 Dinheiro sincronizado no engine: $${latest.player.money}`);
+                    console.log(`⚡ Energia sincronizada no engine: ${latest.player.energy}`);
+                    console.log(`🎯 SKILL ${skillKey} sincronizada no engine: Nível ${skillState.level}`);
+                    
+                    // IMPORTANTE: Forçar atualização da UI imediatamente
+                    setTimeout(() => {
+                        try {
+                            if (window.game?.updatePlayerUI) {
+                                window.game.updatePlayerUI();
+                                console.log('🎨 UI do player atualizada após treinamento');
+                            }
+                            if (window.gameHub?.updateMetrics) {
+                                window.gameHub.updateMetrics();
+                                console.log('📊 Métricas do hub atualizadas após treinamento');
+                            }
+                            if (window.gameHub?.updateResources) {
+                                window.gameHub.updateResources();
+                                console.log('⚡ Recursos do hub atualizados após treinamento');
+                            }
+                        } catch (uiErr) {
+                            console.warn('⚠️ Erro ao atualizar UI:', uiErr);
+                        }
+                    }, 100); // Pequeno delay para garantir que as mudanças sejam propagadas
                 }
             } catch (_) { /* ignore */ }
 
@@ -1783,8 +2106,11 @@ export class DataManager {
                     }
                 }
             } catch (_) { /* ignore */ }
-            
-            localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            try {
+                this.localStoragePutRawAtomic('risingstar_gamedata', JSON.stringify({ ...gameData, schemaVersion: this.schemaVersion }), { schemaVersion: this.schemaVersion });
+            } catch (_) {
+                localStorage.setItem('risingstar_gamedata', JSON.stringify(gameData));
+            }
             console.log(`⚡ Estado da energia salvo diretamente: current=${gameData.energy.current}, max=${gameData.energy.max}`);
             return true;
         } catch (error) {
@@ -1835,6 +2161,23 @@ export class DataManager {
             // Persistir
             this.setEnergyState(newEnergy, energyState.max);
 
+            // CRÍTICO: Sincronizar com window.game.gameData.player para manter consistência
+            try {
+                if (typeof window !== 'undefined' && window.game && window.game.gameData && window.game.gameData.player) {
+                    window.game.gameData.player.energy = newEnergy;
+                    console.log(`⚡ Energia sincronizada no engine: ${newEnergy}`);
+                    
+                    // Também sincronizar dinheiro atual se existir discrepância
+                    const gameData = this.loadGameData();
+                    if (gameData.player && typeof gameData.player.money === 'number') {
+                        window.game.gameData.player.money = gameData.player.money;
+                        console.log(`💰 Dinheiro sincronizado no engine: ${gameData.player.money}`);
+                    }
+                }
+            } catch (syncErr) {
+                console.warn('⚠️ Erro ao sincronizar com engine:', syncErr);
+            }
+
             console.log(`🔄 Energia regenerada (total): ${previous.current} → ${newEnergy} (max ${energyState.max})`);
 
             return {
@@ -1877,6 +2220,91 @@ export class DataManager {
         } catch (error) {
             console.error('Erro ao zerar skills:', error);
             return false;
+        }
+    }
+    
+    // =============================
+    // 🔧 UTILITÁRIOS E MIGRAÇÃO
+    // =============================
+    computeChecksum(str) {
+        // FNV-1a 32-bit
+        let h = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        // Coagir para unsigned 32-bit e retornar como hex
+        return (h >>> 0).toString(16);
+    }
+
+    migrateSaveData(save) {
+        try {
+            if (!save || typeof save !== 'object') return save;
+            const migrated = { ...save };
+            const v = migrated.schemaVersion || 1;
+            if (v < 2) {
+                // Garantir estrutura de energia
+                if (!migrated.energy) {
+                    migrated.energy = { current: DataManager.SkillBalance.energy.maxDefault, max: DataManager.SkillBalance.energy.maxDefault };
+                } else {
+                    if (typeof migrated.energy.current !== 'number') migrated.energy.current = DataManager.SkillBalance.energy.maxDefault;
+                    if (typeof migrated.energy.max !== 'number') migrated.energy.max = DataManager.SkillBalance.energy.maxDefault;
+                }
+                // Espelhar energia em player
+                migrated.player = migrated.player || {};
+                migrated.player.energy = migrated.energy.current;
+                // Skills: garantir presença em raiz e player
+                if (migrated.skills && typeof migrated.skills === 'object') {
+                    migrated.player.skills = { ...(migrated.player.skills || {}), ...migrated.skills };
+                }
+                // Perfil
+                if (!migrated.profileId && typeof migrated.id === 'string' && migrated.id.startsWith('profile_')) {
+                    migrated.profileId = migrated.id;
+                }
+                // Timestamp
+                migrated.lastSaved = migrated.lastSaved || new Date().toISOString();
+                migrated.schemaVersion = 2;
+            }
+            return migrated;
+        } catch (_) {
+            return save;
+        }
+    }
+
+    addToJournal(event, detail = {}) {
+        try {
+            const key = 'risingstar_journal';
+            const list = JSON.parse(localStorage.getItem(key) || '[]');
+            list.push({ t: Date.now(), event, ...detail });
+            // Rotacionar para 50 entradas
+            while (list.length > 50) list.shift();
+            localStorage.setItem(key, JSON.stringify(list));
+        } catch (_) { /* noop */ }
+    }
+
+    recoverIncompleteWrites() {
+        try {
+            const suffix = '__staging';
+            const keysToFix = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.endsWith(suffix)) keysToFix.push(k);
+            }
+            keysToFix.forEach(stagingKey => {
+                const baseKey = stagingKey.substring(0, stagingKey.length - suffix.length);
+                try {
+                    const stagingVal = localStorage.getItem(stagingKey);
+                    const baseVal = localStorage.getItem(baseKey);
+                    if (stagingVal && !baseVal) {
+                        // Promover staging para base com meta
+                        this.localStoragePutRawAtomic(baseKey, stagingVal, {});
+                        this.addToJournal('staging_promoted', { key: baseKey });
+                    }
+                } catch (_) { /* noop */ }
+                try { localStorage.removeItem(stagingKey); } catch(_) {}
+            });
+        } catch (e) {
+            console.warn('⚠️ Erro ao recuperar staging:', e);
         }
     }
 }

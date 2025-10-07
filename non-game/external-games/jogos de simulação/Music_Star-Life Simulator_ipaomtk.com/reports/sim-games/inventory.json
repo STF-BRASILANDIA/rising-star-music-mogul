@@ -1,0 +1,44 @@
+﻿{
+    "scannedAt":  "2025-09-15T02:53:30",
+    "root":  "d:\\Documentos\\GitHub\\rising-star-music-mogul\\jogos de simulaÃ§Ã£o",
+    "counts":  {
+                   "jsons":  0,
+                   "assemblies":  0,
+                   "dex":  0,
+                   "il2cppLibs":  0,
+                   "dbs":  0,
+                   "il2cppMeta":  0
+               },
+    "assemblies":  {
+
+                   },
+    "il2cpp":  {
+                   "meta":  {
+
+                            },
+                   "libs":  {
+
+                            }
+               },
+    "dbs":  {
+
+            },
+    "dex":  {
+
+            },
+    "jsons":  {
+
+              },
+    "extracted":  {
+                      "root":  "d:\\Documentos\\GitHub\\rising-star-music-mogul\\reports\\sim-games\\extracted",
+                      "obbs":  {
+
+                               },
+                      "apks":  {
+
+                               },
+                      "ipas":  {
+
+                               }
+                  }
+}

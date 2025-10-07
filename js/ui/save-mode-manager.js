@@ -9,11 +9,20 @@ export class SaveModeManager {
     }
     
     loadSaveMode() {
-        return localStorage.getItem('risingstar_save_mode') || 'local';
+        try {
+            const fromService = window.storageService?.getString('risingstar_save_mode', null);
+            if (fromService) return fromService;
+        } catch (_) {}
+        try { 
+            const legacy = localStorage.getItem('risingstar_save_mode');
+            if (legacy) return legacy;
+        } catch (_) {}
+        return 'local';
     }
     
     setSaveMode(mode) {
-        localStorage.setItem('risingstar_save_mode', mode);
+        try { window.storageService?.setString('risingstar_save_mode', mode); } catch (_) {}
+        try { localStorage.setItem('risingstar_save_mode', mode); } catch (_) {}
         this.currentMode = mode;
         console.log(`💾 Modo de save alterado para: ${mode}`);
     }

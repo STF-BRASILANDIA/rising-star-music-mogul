@@ -6,19 +6,25 @@
 
 /* ===== VARIÁVEIS GLOBAIS ===== */
 :root {
-  /* Safe area nativa do dispositivo */
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-right: env(safe-area-inset-right, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-left: env(safe-area-inset-left, 0px);
+  /* Safe area nativa do dispositivo (só aplicada quando habilitada) */
+  --safe-area-enabled: 0; /* 0 = desabilitado, 1 = habilitado */
+  --safe-area-top: calc(env(safe-area-inset-top, 0px) * var(--safe-area-enabled));
+  --safe-area-right: calc(env(safe-area-inset-right, 0px) * var(--safe-area-enabled));
+  --safe-area-bottom: calc(env(safe-area-inset-bottom, 0px) * var(--safe-area-enabled));
+  --safe-area-left: calc(env(safe-area-inset-left, 0px) * var(--safe-area-enabled));
   
   /* Safe area extra configurável pelo usuário */
   --safe-area-extra-top: 0px;
   --safe-area-extra-bottom: 0px;
   
-  /* Combinação total */
+  /* Combinação total (só quando habilitado) */
   --safe-area-total-top: calc(var(--safe-area-top) + var(--safe-area-extra-top));
   --safe-area-total-bottom: calc(var(--safe-area-bottom) + var(--safe-area-extra-bottom));
+}
+
+/* Classe para habilitar safe area quando configurado pelo usuário */
+.safe-area-enabled {
+  --safe-area-enabled: 1;
 }
 
 /* ===== APLICAÇÃO GLOBAL ===== */

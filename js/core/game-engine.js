@@ -6,6 +6,7 @@
 import { AISimulation } from './ai-simulation.js';
 import { DataManager } from './data-manager.js';
 import { MusicCreation } from './music-creation.js';
+import { StudioManager } from './studio-manager.js';
 import { InterfaceManager } from '../ui/interface-manager.js';
 import { MainMenu } from '../ui/main-menu.js';
 
@@ -30,6 +31,7 @@ export class RisingStarGame {
             interfaceManager: null,
             mainMenu: null,
             musicCreation: null,
+            studioManager: null,
             careerManagement: null,
             socialSystem: null,
             industrySimulation: null
@@ -170,6 +172,18 @@ export class RisingStarGame {
             this.systems.mainMenu = null;
         }
 
+        // StudioManager
+        try {
+            console.log('🔧 initializeSystems: initializing StudioManager');
+            this.systems.studioManager = new StudioManager(this);
+            window.studioManager = this.systems.studioManager;
+            window.StudioManager = this.systems.studioManager;
+            console.log('✅ StudioManager initialized');
+        } catch (err) {
+            console.error('❌ initializeSystems: StudioManager failed:', err);
+            this.systems.studioManager = null;
+        }
+
         // GameHub (Dashboard)
         try {
             console.log('🔧 initializeSystems: importing GameHub module');
@@ -237,14 +251,9 @@ export class RisingStarGame {
             }
         });
         
-        // Save antes de fechar a página
-        window.addEventListener('beforeunload', async (e) => {
-            // Save síncrono rápido para não bloquear
-            try {
-                await this.onBeforeUnload();
-            } catch (error) {
-                console.error('❌ Erro no save antes de fechar:', error);
-            }
+        // Save antes de fechar a página (delegando para onBeforeUnload consolidado)
+        window.addEventListener('beforeunload', async () => {
+            try { await this.onBeforeUnload(); } catch (error) { console.error('❌ Erro no save antes de fechar:', error); }
         });
         
         // Visibilidade da página - pausar/resumir e save quando necessário
@@ -265,23 +274,7 @@ export class RisingStarGame {
         });
     }
     
-    async onBeforeUnload() {
-        // Save rápido e síncrono antes de fechar
-        if (this.gameData.player && this.gameState === 'playing') {
-            // Força save sem backup para ser mais rápido
-            const saveData = {
-                timestamp: Date.now(),
-                gameData: this.gameData,
-                version: this.gameVersion || '1.0.0'
-            };
-            
-            // Save direto no localStorage (sync)
-            const saveId = this.systems.dataManager.getProfileSaveId(this.gameData.player);
-            localStorage.setItem(saveId, JSON.stringify(saveData));
-            
-            console.log('💾 Save rápido antes de fechar executado');
-        }
-    }
+    // Removido manipulador legado que escrevia direto no localStorage.
     
     startGameLoop() {
         const gameLoop = (timestamp) => {
@@ -386,10 +379,92 @@ export class RisingStarGame {
      * Avança manualmente uma semana e executa progressos semanais
      */
     async passWeek() {
+        console.log('🕰️ === INICIANDO PASSAR SEMANA ===');
         try {
+            // 1) Mostrar modal de carregamento glassmorphism (se disponível)
+            let closeFn = null;
+            try {
+                if (window.notificationModals?.showWeeklyLoading) {
+                    console.log('🔄 Mostrando modal de carregamento...');
+                    closeFn = window.notificationModals.showWeeklyLoading();
+                }
+            } catch(_) { /* opcional */ }
+
+            const prevEnergy = this.systems?.dataManager?.getEnergyState()?.current ?? (this.gameData?.player?.energy ?? 100);
+            const prevDate = new Date(this.currentDate);
+
+            // 2) Avançar data em 7 dias
             const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
             this.currentDate = new Date(this.currentDate.getTime() + ONE_WEEK_MS);
+
+            // 3) Processar rotinas semanais
             await this.onTurnPassed('manual');
+
+            // 3.5) Studio Manager weekly update
+            try {
+                if (this.systems.studioManager && this.systems.studioManager.weeklyUpdate) {
+                    console.log('🎵 Executando atualização semanal do StudioManager...');
+                    this.systems.studioManager.weeklyUpdate();
+                }
+            } catch (err) {
+                console.error('❌ Erro na atualização semanal do Studio:', err);
+            }
+
+            // 4) Atualizar UI de tempo explicitamente
+            try { window.gameHub?.updateTimeInfo?.(); } catch(_) {}
+
+            // 5) Fechar loading e abrir resumo semanal
+            try {
+                const energyInfo = this.systems?.dataManager?.getEnergyState?.() || { current: this.gameData?.player?.energy ?? 100, max: 100 };
+                const deltaEnergy = Math.max(0, energyInfo.current - prevEnergy);
+                if (closeFn) closeFn();
+                if (window.notificationModals?.showWeeklySummary) {
+                    window.notificationModals.showWeeklySummary({
+                        dateFrom: prevDate,
+                        dateTo: new Date(this.currentDate),
+                        energyRegenerated: deltaEnergy,
+                        energyNow: energyInfo.current,
+                        energyMax: energyInfo.max
+                    });
+                }
+            } catch(_) { /* opcional */ }
+
+            // 6) Garantir atualização explícita da UI (energia, métricas)
+            try { this.updatePlayerUI?.(); } catch(_) {}
+            try { window.gameHub?.updateResources?.(); } catch(_) {}
+            try { window.gameHub?.updateTimeInfo?.(); } catch(_) {}
+            
+            // 7) CRÍTICO: Força sincronização COMPLETA entre DataManager e Engine
+            try {
+                if (this.systems?.dataManager) {
+                    const gameData = this.systems.dataManager.loadGameData();
+                    if (gameData.player && this.gameData.player) {
+                        // Sincronizar TODOS os dados críticos
+                        this.gameData.player.energy = gameData.player.energy || gameData.energy?.current || 100;
+                        this.gameData.player.money = gameData.player.money || 0;
+                        
+                        // 🎯 SINCRONIZAR SKILLS TAMBÉM (CRÍTICO)
+                        if (gameData.player.skills) {
+                            if (!this.gameData.player.skills) this.gameData.player.skills = {};
+                            Object.assign(this.gameData.player.skills, gameData.player.skills);
+                            console.log(`🎯 Skills sincronizadas:`, this.gameData.player.skills);
+                        }
+                        
+                        console.log(`🔄 Pós-semana SINCRONIZADO: Energia=${this.gameData.player.energy}, Dinheiro=$${this.gameData.player.money}`);
+                        
+                        // Forçar nova atualização da UI com dados sincronizados
+                        setTimeout(() => {
+                            this.updatePlayerUI?.();
+                            window.gameHub?.updateMetrics?.();
+                            window.gameHub?.updateResources?.();
+                            console.log('✅ UI atualizada após sincronização pós-semana');
+                        }, 200);
+                    }
+                }
+            } catch (syncErr) {
+                console.error('❌ Erro na sincronização pós-semana:', syncErr);
+            }
+
             if (this.systems.interfaceManager?.showNotification) {
                 this.systems.interfaceManager.showNotification('Semana avançada', 'success', 3000);
             }
@@ -561,6 +636,10 @@ export class RisingStarGame {
         // Adicionar dados padrão ao player
         this.gameData.player = {
             ...playerData,
+            // Garantir um profileId único por perfil
+            profileId: (playerData.profileId && typeof playerData.profileId === 'string')
+                ? playerData.profileId
+                : `profile_${(playerData.name||playerData.artistName||'player').toLowerCase().replace(/[^a-z0-9]/g,'_')}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`,
             money: playerData.money || 10000, // $10k inicial
             energy: playerData.energy || 100,
             creativity: playerData.creativity || 100,
@@ -605,6 +684,14 @@ export class RisingStarGame {
                 console.error('❌ DataManager não inicializado!');
                 return;
             }
+
+            // ✅ Desbloquear saves para perfis recriados com o mesmo nome
+            try {
+                const profileId = this.systems.dataManager.getProfileSaveId({ player: this.gameData.player });
+                if (this.systems.dataManager.unmarkProfileAsDeleted) {
+                    this.systems.dataManager.unmarkProfileAsDeleted(profileId);
+                }
+            } catch (_) { /* ignore */ }
             
             // 💾 SALVAR DADOS COMPLETOS DO PLAYER
             const playerSaved = this.systems.dataManager.savePlayerData(this.gameData.player);
@@ -618,7 +705,22 @@ export class RisingStarGame {
             
             console.log('✅ SINCRONIZAÇÃO COMPLETA DO PLAYER REALIZADA');
             
-            // 🔍 VERIFICAÇÃO FINAL: ler dados de volta
+            // � GARANTIR ENERGIA CHEIA PARA NOVOS JOGADORES
+            if (this.systems.dataManager) {
+                const energyState = this.systems.dataManager.getEnergyState();
+                console.log('🔋 Estado atual da energia:', energyState);
+                
+                // Se a energia estiver zerada, definir como cheia
+                if (energyState.current === 0 || energyState.current < 50) {
+                    console.log('🔋 CORRIGINDO: Energia baixa detectada, definindo como cheia');
+                    this.systems.dataManager.setEnergyState(100, 100);
+                    
+                    // Atualizar também no player do engine
+                    this.gameData.player.energy = 100;
+                }
+            }
+            
+            // �🔍 VERIFICAÇÃO FINAL: ler dados de volta
             console.log('🔍 VERIFICAÇÃO: Testando carregamento...');
             const loadedPlayer = this.systems.dataManager.loadPlayerData();
             if (loadedPlayer) {
@@ -650,14 +752,22 @@ export class RisingStarGame {
             this.updatePlayerUI();
         }, 1500);
         
-        // Marcar que dados foram alterados e forçar save imediato do novo perfil
-        this.markDataChanged();
-        
         // Auto-save imediato para garantir que o perfil seja salvo
         setTimeout(async () => {
             try {
+                console.log('💾 Tentando salvar perfil inicial...');
                 await this.forceSave();
-                console.log('💾 Perfil salvo automaticamente após criação');
+                console.log('✅ Perfil salvo automaticamente após criação');
+                
+                // Verificar se realmente foi salvo
+                if (this.systems.dataManager) {
+                    const saved = this.systems.dataManager.loadPlayerData();
+                    if (saved && saved.firstName) {
+                        console.log('✅ Confirmação: Save encontrado para', saved.firstName);
+                    } else {
+                        console.error('❌ Save não foi criado corretamente!');
+                    }
+                }
             } catch (error) {
                 console.error('❌ Erro ao salvar perfil inicial:', error);
             }
@@ -723,31 +833,30 @@ export class RisingStarGame {
                 }
             });
             
-            // Atualizar elementos de energia (priorizar DataManager se disponível)
+            // Atualizar elementos de energia (priorizar DataManager; exibir MAX/CURRENT)
             const energyElements = document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val');
             console.log(`⚡ Encontrados ${energyElements.length} elementos de energia:`, Array.from(energyElements).map(el => el.id || el.className));
+            let energyDisplay = '';
+            try {
+                let currentEnergy = typeof player.energy === 'number' ? player.energy : 100;
+                let maxEnergy = 100;
+                if (this.systems?.dataManager) {
+                    const energyState = this.systems.dataManager.getEnergyState();
+                    currentEnergy = energyState.current;
+                    maxEnergy = energyState.max;
+                    console.log(`⚡ Energia do DataManager: ${currentEnergy}/${maxEnergy}`);
+                }
+                if (typeof currentEnergy !== 'number' || currentEnergy < 0) currentEnergy = 100;
+                if (typeof maxEnergy !== 'number' || maxEnergy <= 0) maxEnergy = 100;
+                energyDisplay = `${maxEnergy}/${currentEnergy}`;
+            } catch(e) {
+                console.warn('⚠️ Erro ao montar display de energia:', e);
+                energyDisplay = '100/100';
+            }
             energyElements.forEach(element => {
                 if (element) {
-                    let currentEnergy = player.energy;
-                    
-                    // Priorizar energia do DataManager se disponível
-                    try {
-                        if (this.systems?.dataManager) {
-                            const energyState = this.systems.dataManager.getEnergyState();
-                            currentEnergy = energyState.current;
-                            console.log(`⚡ Energia obtida do DataManager: ${currentEnergy}`);
-                        }
-                    } catch(e) {
-                        console.warn('⚠️ Erro ao obter energia do DataManager, usando player.energy:', e);
-                    }
-                    
-                    // Fallback para 100 apenas se não houver valor válido
-                    if (typeof currentEnergy !== 'number' || currentEnergy < 0) {
-                        currentEnergy = 100;
-                    }
-                    
-                    element.textContent = currentEnergy;
-                    console.log(`⚡ Energia atualizada (${element.id || element.className}): ${currentEnergy}`);
+                    element.textContent = energyDisplay;
+                    console.log(`⚡ Energia atualizada (${element.id || element.className}): ${energyDisplay}`);
                 }
             });
             
@@ -811,7 +920,8 @@ export class RisingStarGame {
         }
 
         try {
-            console.log(`💾 Auto-save triggered by event: ${eventType}`);
+            const DEBUG_SAVE = (localStorage.getItem('DEBUG_SAVE') === '1');
+            if (DEBUG_SAVE) console.log(`💾 [DEBUG_SAVE] Auto-save triggered by event: ${eventType}`);
             
             // Registrar a ação que causou o save
             this.addPendingAction({
@@ -821,9 +931,17 @@ export class RisingStarGame {
             });
             
             // Realizar save com backup redundante
-            await this.saveGameWithBackup();
-            
-            console.log(`✅ Save realizado com sucesso para evento: ${eventType}`);
+            // Debounce/coalescência: evitar salvar muitas vezes em sequência
+            clearTimeout(this._saveDebounceTimer);
+            this._saveDebounceTimer = setTimeout(async () => {
+                try {
+                    await this.saveGameWithBackup();
+                    if (DEBUG_SAVE) console.log(`✅ [DEBUG_SAVE] Save realizado com sucesso para evento: ${eventType}`);
+                } catch (err) {
+                    console.error(`❌ Erro no save debounced (${eventType}):`, err);
+                    await this.tryRecoverFromBackup();
+                }
+            }, 350);
             
         } catch (error) {
             console.error(`❌ Erro no save para evento ${eventType}:`, error);
@@ -853,6 +971,20 @@ export class RisingStarGame {
         
         // Calcular hash para verificar integridade
         const saveHash = this.calculateSaveHash(saveData);
+        const DEBUG_SAVE = (localStorage.getItem('DEBUG_SAVE') === '1');
+        if (DEBUG_SAVE) {
+            try {
+                const size = JSON.stringify(saveData).length;
+                console.log(`💾 [DEBUG_SAVE] Iniciando save (size=${size} bytes, hash=${saveHash})`);
+            } catch(_) {}
+        }
+        // Garantir um profileId válido para verificações e operações relacionadas
+        let profileIdForVerify;
+        try {
+            if (this.systems?.dataManager?.getProfileSaveId) {
+                profileIdForVerify = this.systems.dataManager.getProfileSaveId(saveData);
+            }
+        } catch (_) { /* ignore */ }
         
         // Tentar salvar 3 vezes com backups diferentes
         let saveSuccess = false;
@@ -860,12 +992,26 @@ export class RisingStarGame {
         
         for (let attempt = 0; attempt < 3; attempt++) {
             try {
-                await this.systems.dataManager.saveGame(saveData);
+                try {
+                    await this.systems.dataManager.saveGame(saveData);
+                } catch (e) {
+                    // Tentar identificar QuotaExceededError
+                    const msg = e?.message || '';
+                    if (/quota|storage|exceeded/i.test(msg)) {
+                        console.warn('⚠️ Possível QuotaExceeded durante save. Tentando liberar espaço de backups antigos...');
+                        try {
+                            const profileId = this.systems.dataManager.getProfileSaveId(saveData);
+                            await this.systems.dataManager.cleanupProfileBackups(profileId);
+                        } catch(_) {}
+                    }
+                    throw e;
+                }
                 
                 // Verificar se save foi corrompido
-                const verification = await this.verifySaveIntegrity(saveData.profileId);
+                const verification = await this.verifySaveIntegrity(profileIdForVerify);
                 if (verification.isValid) {
                     this.lastSaveHash = saveHash;
+                    if (DEBUG_SAVE) console.log('✅ [DEBUG_SAVE] Save verificado com sucesso');
                     saveSuccess = true;
                     break;
                 } else {
@@ -1111,7 +1257,16 @@ export class RisingStarGame {
      */
     async onBeforeUnload() {
         console.log('🚪 Salvando antes de sair...');
-        await this.saveOnEvent('before_unload');
+        try {
+            // Cancelar debounce pendente e salvar imediatamente
+            if (this._saveDebounceTimer) {
+                clearTimeout(this._saveDebounceTimer);
+                this._saveDebounceTimer = null;
+            }
+            await this.saveGameWithBackup();
+        } catch (e) {
+            console.error('❌ Erro ao salvar no onBeforeUnload:', e);
+        }
     }
 
     /**

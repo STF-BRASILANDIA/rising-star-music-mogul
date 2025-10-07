@@ -80,6 +80,24 @@ export class GameHub {
         console.log('✅ GameHub exibido com sucesso');
     }
 
+    // Determina o profileId atual para escopar dados por save
+    _getCurrentProfileId() {
+        try {
+            const dm = this.game?.systems?.dataManager;
+            if (dm && typeof dm.getProfileSaveId === 'function') {
+                return dm.getProfileSaveId(this.game?.gameData || {});
+            }
+            // Fallback: tentar do próprio player
+            const p = this.game?.gameData?.player || this.game?.player;
+            return p?.profileId || null;
+        } catch (_) { return null; }
+    }
+
+    _getAvatarStorageKey() {
+        const pid = this._getCurrentProfileId();
+        return pid ? `playerAvatarImage::${pid}` : null;
+    }
+
     hide() {
         if (this.root) {
             this.root.style.display = 'none';
@@ -260,8 +278,10 @@ export class GameHub {
         // Atualizar dados dinâmicos
         const ovrEl = document.getElementById('activity-ovr');
         if (ovrEl && this.game?.player) {
-            // Calcular OVR baseado nas skills do player
-            const skills = this.game.player.skills || {};
+            // 🎯 SKILLS: USAR FONTE ÚNICA window.game.gameData.player.skills
+            const skills = (window?.game?.gameData?.player?.skills) || this.game.player.skills || {};
+            console.log('🎯 GameHub: Skills carregadas de', window?.game?.gameData?.player?.skills ? 'window.game.gameData.player.skills' : 'fallback this.game.player.skills');
+            
             const ovr = Math.round((
                 (skills.vocals || 1) + 
                 (skills.songWriting || 1) + 
@@ -396,11 +416,16 @@ export class GameHub {
     updateProfileInfo() {
         const p = this.game?.gameData?.player || this.game?.player || {};
 
-        // Fallback: se não houver avatar em p mas existir em localStorage, injeta
+        // Fallback: se não houver avatar em p mas existir salvo por perfil, injeta
         if (!p.avatarImage) {
             try {
-                const storedDirect = localStorage.getItem('playerAvatarImage');
-                if (storedDirect) { p.avatarImage = storedDirect; }
+                const key = this._getAvatarStorageKey();
+                if (key) {
+                    let storedDirect = null;
+                    try { storedDirect = window.storageService?.getString(key, null); } catch(_) { storedDirect = null; }
+                    if (!storedDirect) { try { storedDirect = localStorage.getItem(key); } catch(_) { storedDirect = null; } }
+                    if (storedDirect) { p.avatarImage = storedDirect; }
+                }
             } catch(storageReadErr) { /* silencioso */ }
         }
         
@@ -470,67 +495,345 @@ export class GameHub {
      * - Carrega avatar salvo no primeiro init se existir
      */
     _initAvatarUpload() {
-        if (this._avatarUploadInitialized) return; // evita múltiplos binds
-        const editBtn = document.getElementById('editAvatarBtn');
-        const fileInput = document.getElementById('avatarFileInput');
-        const avatarClickable = document.getElementById('newDesktopAvatar');
-        const avatarInlineClickable = document.getElementById('newMobileAvatar');
-        if (!editBtn || !fileInput) return; // elementos não presentes ainda
+    console.log('🚀 Inicializando sistema de upload do avatar...');
+    
+    if (this._avatarUploadInitialized) {
+        console.log('⚠️ Upload de avatar já inicializado — rechecando e reanexando overlays...');
+        // Não retornamos: garantimos overlays e listeners após troca de perfil/DOM
+    }
+    
+    // Validação completa dos elementos DOM
+    console.log('🔍 Verificando elementos do DOM...');
+    
+    let fileInput = document.getElementById('avatarFileInput');
+    const avatarClickable = document.getElementById('newDesktopAvatar');
+    const avatarInlineClickable = document.getElementById('newMobileAvatar');
+    const sidebarAvatarWrapper = document.getElementById('sidebarAvatarWrapper');
+    const inlineAvatarWrapper = document.querySelector('#inlineProfileBar .avatar-wrapper');
+    
+    console.log('🔍 Elementos encontrados:');
+    console.log('  - fileInput:', fileInput);
+    console.log('  - avatarClickable:', avatarClickable);
+    console.log('  - avatarInlineClickable:', avatarInlineClickable);
+    console.log('  - sidebarAvatarWrapper:', sidebarAvatarWrapper);
+    console.log('  - inlineAvatarWrapper:', inlineAvatarWrapper);
+    
+    // Se o input não existir, criar um
+    if (!fileInput) {
+        console.log('🖼️ Criando input de arquivo para avatar...');
+        fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.id = 'avatarFileInput';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+    }
+    
+    if (!fileInput) {
+        console.error('❌ Não foi possível criar/encontrar input de arquivo');
+        return; // elemento essencial
+    }
+    
+    console.log('🖼️ Input de arquivo configurado:', fileInput);
 
-        const openPicker = (e) => { e.preventDefault(); fileInput.click(); };
-        editBtn.addEventListener('click', openPicker);
-        if (avatarClickable) avatarClickable.addEventListener('click', openPicker);
-        if (avatarInlineClickable) avatarInlineClickable.addEventListener('click', openPicker);
+    // Configuração de input (melhor experiência em mobile)
+    try {
+        fileInput.setAttribute('accept', 'image/*');
+        // Sugere câmera em dispositivos móveis compatíveis
+        fileInput.setAttribute('capture', 'environment');
+    } catch(_) {}
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            if (!file.type.startsWith('image/')) {
-                this.pushToast('Arquivo inválido. Selecione uma imagem.');
-                fileInput.value = '';
-                return;
-            }
-            const maxBytes = 2 * 1024 * 1024; // 2MB
-            if (file.size > maxBytes) {
-                this.pushToast('Imagem muito grande (máx 2MB).');
-                fileInput.value = '';
-                return;
-            }
+    // Detecção global de iOS Safari
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    const isIOSSafari = isIOS && isSafari;
 
-            const reader = new FileReader();
-            reader.onload = () => {
-                const dataUrl = reader.result;
-                try {
-                    const player = this.game?.gameData?.player || this.game?.player;
-                    if (player) {
-                        player.avatarImage = dataUrl;
-                    }
-                    try { localStorage.setItem('playerAvatarImage', dataUrl); } catch(storageErr) { /* ignore */ }
-                    this.updateProfileInfo();
-                    this.pushToast('Avatar atualizado');
-                } catch(err) {
-                    console.error('Erro aplicando avatar:', err);
-                    this.pushToast('Falha ao atualizar avatar');
-                }
-            };
-            reader.readAsDataURL(file);
+    // Handler único para processamento do arquivo
+    const onFileChange = (e) => {
+        console.log('🖼️ onFileChange disparado:', e);
+        console.log('🖼️ Event target:', e?.target);
+        console.log('🖼️ Files:', e?.target?.files);
+        
+        const file = e?.target?.files?.[0];
+        if (!file) { 
+            console.warn('🖼️ Nenhum arquivo selecionado'); 
+            return; 
+        }
+        
+        console.log('🖼️ Arquivo selecionado:', {
+            name: file.name,
+            size: file.size,
+            type: file.type
         });
+        
+        if (!file.type?.startsWith?.('image/')) {
+            console.error('❌ Tipo de arquivo inválido:', file.type);
+            try {
+                if (this.pushToast) {
+                    this.pushToast('Arquivo inválido. Selecione uma imagem.');
+                } else {
+                    alert('Arquivo inválido. Selecione uma imagem.');
+                }
+            } catch(_) {}
+            try { e.target.value = ''; } catch(_) {}
+            return;
+        }
+        
+        const maxBytes = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxBytes) {
+            console.error('❌ Arquivo muito grande:', file.size, 'bytes');
+            try {
+                if (this.pushToast) {
+                    this.pushToast('Imagem muito grande (máx 2MB).');
+                } else {
+                    alert('Imagem muito grande (máx 2MB).');
+                }
+            } catch(_) {}
+            try { e.target.value = ''; } catch(_) {}
+            return;
+        }
 
-        // Carregar avatar salvo previamente (uma vez)
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = reader.result;
+            console.log('🖼️ DataURL gerado, aplicando avatar...');
+            try {
+                const player = this.game?.gameData?.player || this.game?.player;
+                if (player) {
+                    player.avatarImage = dataUrl;
+                }
+                // Persistência: gravar avatar por perfil (sem vazar entre saves)
+                try {
+                    const key = this._getAvatarStorageKey();
+                    if (key) {
+                        try { window.storageService?.setString(key, dataUrl); } catch(_) {}
+                        try { localStorage.setItem(key, dataUrl); } catch(_) {}
+                    }
+                } catch(_) { /* ignore */ }
+
+                // Forçar preview com estilos inline caso CSS não exista
+                try {
+                    ['newDesktopAvatar', 'newMobileAvatar'].forEach(cid => {
+                        const el = document.getElementById(cid);
+                        if (!el) return;
+                        let img = el.querySelector('img.player-avatar-img');
+                        if (!img) {
+                            img = document.createElement('img');
+                            img.className = 'player-avatar-img';
+                            el.innerHTML = '';
+                            el.appendChild(img);
+                        }
+                        img.src = dataUrl;
+                        img.alt = 'Avatar';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '50%';
+                        el.classList.add('has-image');
+                    });
+                } catch(previewErr) { console.warn('Preview inline falhou, atualizando perfil:', previewErr); }
+
+                this.updateProfileInfo?.();
+                
+                // Notificação simples
+                try {
+                    if (this.pushToast) {
+                        this.pushToast('Avatar atualizado');
+                    } else {
+                        console.log('✅ Avatar atualizado com sucesso');
+                        // Fallback: notificação visual no console para debug
+                        if (typeof window !== 'undefined' && window.console) {
+                            console.log('%c✅ Avatar atualizado!', 'color: #4CAF50; font-weight: bold; font-size: 14px;');
+                        }
+                    }
+                } catch (notifErr) {
+                    console.log('✅ Avatar atualizado (sem notificação visual)');
+                }
+                
+                // Persistir avatar no save de perfil (auto-save baseado em evento)
+                try {
+                    if (this.game?.systems?.dataManager?.savePlayerData) {
+                        this.game.systems.dataManager.savePlayerData(this.game.gameData.player);
+                    }
+                    if (typeof this.game?.saveOnEvent === 'function') {
+                        this.game.saveOnEvent('avatar_updated', { length: dataUrl?.length || 0 });
+                    }
+                } catch (persistErr) {
+                    console.warn('Falha ao persistir avatar no save:', persistErr);
+                }
+            } catch(err) {
+                console.error('Erro aplicando avatar:', err);
+                try {
+                    if (this.pushToast) {
+                        this.pushToast('Falha ao atualizar avatar');
+                    } else {
+                        console.error('❌ Falha ao atualizar avatar');
+                    }
+                } catch (notifErr) {
+                    console.error('❌ Falha ao atualizar avatar (sem notificação)');
+                }
+            }
+            // Permitir selecionar o mesmo arquivo novamente no futuro
+            try { e.target.value = ''; } catch(_) { /* ignore */ }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Método para anexar um input overlay invisível em cima do avatar (iOS Safari)
+    const attachOverlayInput = (containerEl) => {
+        if (!containerEl) return null;
+        try { containerEl.style.position = containerEl.style.position || 'relative'; } catch(_) {}
+        let overlay = containerEl.querySelector('input.avatar-overlay-input[type=file]');
+        if (!overlay) {
+            overlay = document.createElement('input');
+            overlay.type = 'file';
+            overlay.className = 'avatar-overlay-input';
+            overlay.accept = 'image/*';
+            overlay.setAttribute('capture', 'environment');
+            overlay.style.position = 'absolute';
+            overlay.style.inset = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.opacity = '0';
+            overlay.style.cursor = 'pointer';
+            overlay.style.zIndex = '9999';
+            overlay.style.pointerEvents = 'auto';
+            containerEl.appendChild(overlay);
+            console.log('🍎 Overlay input anexado ao container:', containerEl.id);
+        }
+        // Garantir handler
+        overlay.removeEventListener('change', onFileChange);
+        overlay.addEventListener('change', onFileChange);
+        return overlay;
+    };
+
+    const openPicker = (e) => { 
+        console.log('🖼️ Avatar clicado - abrindo seletor de arquivo');
+        console.log('🖼️ Event:', e);
+        console.log('🖼️ Target:', e?.target);
+        console.log('🖼️ FileInput element:', fileInput);
+        console.log('🖼️ isIOSSafari:', isIOSSafari);
+        
+        try { e?.preventDefault?.(); e?.stopPropagation?.(); } catch(_) {}
+
+        if (isIOSSafari) {
+            console.log('🍎 iOS Safari detectado - clique nativo via overlay input');
+            // No iOS Safari, não usamos click() programático. O overlay já captura o toque.
+            return;
+        }
+
+        // Demais navegadores: clique programático imediato dentro do gesto do usuário
         try {
-            const stored = localStorage.getItem('playerAvatarImage');
+            console.log('🖼️ Chamando fileInput.click() (imediato)...');
+            fileInput.click();
+            console.log('🖼️ fileInput.click() executado (imediato)');
+            return; // se funcionou, não precisa de fallback
+        } catch (errImmediate) {
+            console.warn('⚠️ Click imediato falhou, ajustando estilo e tentando novamente:', errImmediate);
+        }
+
+        // Ajustar estilo e tentar novamente ainda no mesmo gesto
+        try { 
+            fileInput.style.pointerEvents = 'auto'; 
+            fileInput.style.display = 'block';
+            fileInput.style.position = 'fixed';
+            fileInput.style.left = '-9999px';
+            fileInput.style.top = '-9999px';
+            fileInput.style.zIndex = '999999';
+            fileInput.focus();
+            console.log('🖼️ Tentando fileInput.click() após ajustes...');
+            fileInput.click();
+            console.log('🖼️ fileInput.click() executado após ajustes');
+            return;
+        } catch (errAdjusted) {
+            console.warn('⚠️ Click após ajustes falhou, tentando fallback:', errAdjusted);
+        }
+
+        // Último recurso: criar novo input e clicar
+        try {
+            console.log('🔄 Tentando fallback com novo input...');
+            const fallbackInput = document.createElement('input');
+            fallbackInput.type = 'file';
+            fallbackInput.accept = 'image/*';
+            fallbackInput.style.position = 'fixed';
+            fallbackInput.style.left = '-9999px';
+            fallbackInput.style.top = '-9999px';
+            fallbackInput.style.opacity = '0';
+            fallbackInput.addEventListener('change', onFileChange);
+            document.body.appendChild(fallbackInput);
+            fallbackInput.click();
+            setTimeout(() => fallbackInput.remove(), 1000);
+        } catch (fallbackErr) {
+            console.error('❌ Fallback também falhou:', fallbackErr);
+        }
+    };
+    // Tornar clicável em todos os alvos disponíveis (com capture para priorizar)
+    console.log('🖼️ Vinculando listeners de avatar:', {
+        avatarClickable: !!avatarClickable,
+        avatarInlineClickable: !!avatarInlineClickable, 
+        sidebarAvatarWrapper: !!sidebarAvatarWrapper,
+        inlineAvatarWrapper: !!inlineAvatarWrapper,
+        fileInput: !!fileInput
+    });
+    
+    // Teste simples: adicionar listener de clique geral para debug
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+        if (
+            target.id === 'newDesktopAvatar' ||
+            target.id === 'newMobileAvatar' ||
+            (typeof target.closest === 'function' && (target.closest('#newDesktopAvatar') || target.closest('#newMobileAvatar')))
+        ) {
+            console.log('🖼️ Clique detectado no avatar:', target);
+        }
+    });
+    
+    // Sempre anexamos overlay inputs sobre os avatares (robusto em todos os navegadores)
+    attachOverlayInput(avatarClickable);
+    attachOverlayInput(avatarInlineClickable);
+    if (sidebarAvatarWrapper) attachOverlayInput(sidebarAvatarWrapper);
+    if (inlineAvatarWrapper) attachOverlayInput(inlineAvatarWrapper);
+    console.log('🖼️ Overlay inputs prontos (clique direto sobre o avatar)');
+
+    // Observação: não vinculamos openPicker aos contêineres quando há overlay,
+    // pois preventDefault em fase de captura poderia impedir a abertura nativa do picker.
+
+    // Sempre escutamos o change do input global também (desktop e fallback)
+    fileInput.removeEventListener('change', onFileChange);
+    fileInput.addEventListener('change', onFileChange);
+
+        // Carregar avatar salvo previamente (uma vez), por perfil
+        try {
+            const key = this._getAvatarStorageKey();
+            let stored = null;
+            if (key) {
+                try { stored = window.storageService?.getString(key, null); } catch(_) { stored = null; }
+                if (!stored) {
+                    try { stored = localStorage.getItem(key); } catch(_) { stored = null; }
+                }
+            }
             if (stored) {
                 const player = this.game?.gameData?.player || this.game?.player;
                 if (player && !player.avatarImage) {
                     player.avatarImage = stored;
                     this.updateProfileInfo();
                 }
+            } else {
+                // Se já existir avatar em gameData e a chave por perfil não existir, persiste para fixar vínculo
+                try {
+                    const player = this.game?.gameData?.player || this.game?.player;
+                    if (player?.avatarImage && key) {
+                        try { window.storageService?.setString(key, player.avatarImage); } catch(_) {}
+                        try { localStorage.setItem(key, player.avatarImage); } catch(_) {}
+                    }
+                } catch(_) { /* ignore */ }
             }
         } catch(loadErr) {
             console.warn('Não foi possível carregar avatar salvo:', loadErr);
         }
 
-        this._avatarUploadInitialized = true;
+    this._avatarUploadInitialized = true;
     }
 
     updateMetrics() {
@@ -562,7 +865,19 @@ export class GameHub {
         const p = this.game?.gameData?.player || this.game?.player || {};
         
         this._fillResource('creativity', p.creativity || 75);
-        this._fillResource('energy', p.energy || 85);
+        // Energia é atualizada pelo GameEngine.updatePlayerUI para usar formato MAX/CURRENT; evitar sobrescrever aqui.
+        try {
+            if (window.game?.systems?.dataManager) {
+                const e = window.game.systems.dataManager.getEnergyState();
+                // Mantém o fill bar baseado em percentual atual, mas não mexe no texto do cabeçalho
+                const percent = Math.round((e.current / (e.max || 100)) * 100);
+                this._fillResource('energy', percent);
+            } else {
+                this._fillResource('energy', p.energy || 85);
+            }
+        } catch(_) {
+            this._fillResource('energy', p.energy || 85);
+        }
         this._fillResource('morale', p.morale || 90);
     }
 
@@ -613,19 +928,35 @@ export class GameHub {
 
     updateTimeInfo() {
         try {
-            // Usar a data corrente do engine como fonte de verdade
-            const date = (this.game?.getCurrentDate && this.game.getCurrentDate()) || this.game?.currentDate || new Date();
-            if (!date) return;
-            // Semana do ano: calcula a partir de 1º de janeiro do ano corrente
-            const startOfYear = new Date(date.getFullYear(), 0, 1);
+            // 🎯 USAR SEMPRE A DATA DO ENGINE COMO FONTE ÚNICA DE VERDADE
+            const date = this.game?.currentDate || new Date();
+            if (!date) {
+                console.warn('⚠️ updateTimeInfo: Nenhuma data disponível');
+                return;
+            }
+            
+            console.log(`🕒 updateTimeInfo: Data do engine: ${date.toISOString()}`);
+            
+            // 🎯 SEMANA DO ANO: Usar SEMPRE o ano da data do engine, não o ano atual
+            const gameYear = date.getFullYear(); // ANO DA DATA DO JOGO, não o ano real
+            const startOfGameYear = new Date(gameYear, 0, 1);
             const millisPerDay = 24 * 60 * 60 * 1000;
-            const dayOfYear = Math.floor((date - startOfYear) / millisPerDay) + 1;
+            const dayOfYear = Math.floor((date - startOfGameYear) / millisPerDay) + 1;
             let weekOfYear = Math.floor((dayOfYear - 1) / 7) + 1; // semana 1 cobre dias 1-7
             if (weekOfYear > 52) weekOfYear = 52; // fixar em 52 semanas por ano
+            
+            console.log(`📅 updateTimeInfo: Ano do jogo: ${gameYear}, Semana calculada: ${weekOfYear}`);
+            
             this._setText('weekIndicator', `Semana ${weekOfYear}/52`);
 
             const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
             this._setText('dayIndicator', days[date.getDay()]);
+
+            // Atualizar o time-card (título e data)
+            const weekDayTitle = `Semana ${weekOfYear} - ${days[date.getDay()]}`;
+            const dateText = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+            this._setText('timeCardTitle', weekDayTitle);
+            this._setText('timeCardDate', dateText.charAt(0).toUpperCase() + dateText.slice(1));
         } catch (e) {
             console.warn('Falha ao atualizar info de tempo:', e);
         }
@@ -935,7 +1266,8 @@ if (typeof window !== 'undefined') {
             return;
         }
         
-        window.gameHub = new GameHub(window.game);
+    // Instanciar apenas via init controlado para evitar duplicidade com GameEngine
+    window.gameHub = new GameHub(window.game);
         
         // Integrar com eventos do game engine se existir
         if (window.game.addEventListener) {

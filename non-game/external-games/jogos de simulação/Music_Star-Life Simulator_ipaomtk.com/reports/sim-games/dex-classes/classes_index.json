@@ -1,0 +1,25 @@
+{
+  "root": "d:\\Documentos\\GitHub\\rising-star-music-mogul\\jogos de simulação\\com-mwcompany-musicwarsrockstar-316-68224530-8dae856aa1879986a40f4676e1a4ab2b",
+  "dexFiles": [
+    {
+      "dex": "classes.dex",
+      "count": 0,
+      "error": "Androguard não está instalado. Instale com: pip install androguard",
+      "output": "classes.dex.classes.json"
+    },
+    {
+      "dex": "classes2.dex",
+      "count": 0,
+      "error": "Androguard não está instalado. Instale com: pip install androguard",
+      "output": "classes2.dex.classes.json"
+    },
+    {
+      "dex": "classes3.dex",
+      "count": 0,
+      "error": "Androguard não está instalado. Instale com: pip install androguard",
+      "output": "classes3.dex.classes.json"
+    }
+  ],
+  "totalDex": 3,
+  "uniqueClasses": 0
+}

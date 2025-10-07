@@ -1218,7 +1218,16 @@ class NotificationModals {
             document.getElementById('modalStatFollowers').textContent = document.getElementById('statListeners')?.textContent || '0';
             document.getElementById('modalStatHype').textContent = document.getElementById('statHype')?.textContent || '0';
             document.getElementById('modalStatLevel').textContent = document.getElementById('statLevel')?.textContent || '1';
-            document.getElementById('modalStatEnergy').textContent = document.getElementById('statEnergy')?.textContent || '100';
+            try {
+                if (window.game?.systems?.dataManager) {
+                    const { current, max } = window.game.systems.dataManager.getEnergyState();
+                    document.getElementById('modalStatEnergy').textContent = `${max}/${current}`;
+                } else {
+                    document.getElementById('modalStatEnergy').textContent = document.getElementById('statEnergy')?.textContent || '100/100';
+                }
+            } catch(_) {
+                document.getElementById('modalStatEnergy').textContent = document.getElementById('statEnergy')?.textContent || '100/100';
+            }
         }
     }
 
@@ -1297,51 +1306,110 @@ class NotificationModals {
     syncCalendar() { console.log('🔄 Sincronizando agenda'); }
     shareAchievements() { console.log('🏆 Compartilhando conquistas'); }
 
+    // ===== PASSAGEM SEMANAL (GLASSMORPHISM) =====
+    showWeeklyLoading() {
+        // Evitar múltiplas instâncias
+        const existing = document.getElementById('weekly-loading-modal');
+        if (existing) {
+            this.modalSystem.openModal(existing);
+            return () => this.modalSystem.closeModal('weekly-loading-modal');
+        }
+
+        const content = `
+            <div class="notification-card" style="text-align:center;">
+                <div class="notification-header">
+                    <div class="notification-icon">⏳</div>
+                    <div class="notification-meta">
+                        <div class="notification-source">Avançando Semana</div>
+                        <div class="notification-timestamp">Processando resultados...</div>
+                    </div>
+                </div>
+                <h3 class="notification-title">Carregando</h3>
+                <p class="notification-summary">Atualizando data, regenerando energia e consolidando atividades</p>
+                <div class="loading-spinner" style="margin:16px auto; width:40px; height:40px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin 1s linear infinite;"></div>
+                <style>
+                    @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+                </style>
+            </div>
+        `;
+
+        const modal = this.modalSystem.createModal({
+            id: 'weekly-loading-modal',
+            title: 'Semana em andamento',
+            content,
+            size: 'notif-modal'
+        });
+        this.modalSystem.openModal(modal);
+        return () => this.modalSystem.closeModal('weekly-loading-modal');
+    }
+
+    showWeeklySummary(summary) {
+        // summary: { dateFrom, dateTo, energyRegenerated, energyNow, energyMax }
+        const df = summary?.dateFrom ? new Date(summary.dateFrom) : null;
+        const dt = summary?.dateTo ? new Date(summary.dateTo) : null;
+        const dateRange = df && dt ? `${df.toLocaleDateString('pt-BR')} → ${dt.toLocaleDateString('pt-BR')}` : '';
+        const energyLine = `Energia: +${summary?.energyRegenerated ?? 0} (agora ${summary?.energyMax ?? 100}/${summary?.energyNow ?? 100})`;
+
+        const content = `
+            <div class="notification-card">
+                <div class="notification-header">
+                    <div class="notification-icon achievement">📅</div>
+                    <div class="notification-meta">
+                        <div class="notification-source">Resumo Semanal</div>
+                        <div class="notification-timestamp">${dateRange}</div>
+                    </div>
+                </div>
+                <h3 class="notification-title">Semana concluída</h3>
+                <p class="notification-summary">Veja o que aconteceu nesta semana</p>
+                <ul class="notification-list">
+                    <li class="notification-item">${energyLine}</li>
+                    <li class="notification-item">Streams e álbuns continuam gerando receita (em breve)</li>
+                    <li class="notification-item">Ganhos/perdas financeiras detalhadas (em breve)</li>
+                    <li class="notification-item">Seguidores e fama atualizados (em breve)</li>
+                </ul>
+                <div class="notification-actions">
+                    <button class="notification-btn primary" onclick="window.modernModalSystem?.closeModal('weekly-summary-modal')">Ok</button>
+                </div>
+            </div>
+        `;
+
+        // Evitar duplicatas
+        const existing = document.getElementById('weekly-summary-modal');
+        if (existing && existing.classList.contains('active')) {
+            this.modalSystem.updateModalContent('weekly-summary-modal', content);
+            return existing;
+        }
+        const modal = this.modalSystem.createModal({
+            id: 'weekly-summary-modal',
+            title: 'Resumo Semanal',
+            content,
+            size: 'notif-modal'
+        });
+        this.modalSystem.openModal(modal);
+        return modal;
+    }
+
     /**
-     * 🌟 Modal para Sistema de Habilidades - SISTEMA ATUALIZADO
+     * 🌟 Modal para Sistema de Habilidades - SISTEMA UNIFICADO
      */
     openSkillsModal() {
-        // 🎯 BUSCAR DADOS REAIS DO CHARACTER CREATOR E DATA MANAGER
+        // 🎯 BUSCAR DADOS APENAS DO DATA MANAGER (FONTE ÚNICA DE VERDADE)
         const getSkillData = (skillKey, name, icon) => {
-            let level = 0; // ✅ padrão
+            let level = 0;
             let maxLevel = 100;
             
-            // 🎯 PRIORIDADE 1: window.game.gameData.player.skills (dados sincronizados)
+            // 🎯 ÚNICA FONTE: DataManager via window.game.gameData.player.skills
             try {
+                // Garantir que temos os dados sincronizados
                 if (window.game?.gameData?.player?.skills && 
                     typeof window.game.gameData.player.skills[skillKey] === 'number') {
                     level = window.game.gameData.player.skills[skillKey];
-                    console.log(`🎯 Skill ${skillKey} carregada do window.game.gameData.player: ${level}`);
-                }
-                // 🎯 PRIORIDADE 2: DataManager skillState 
-                else if (window.game?.systems?.dataManager) {
-                    const dm = window.game.systems.dataManager;
-                    const skillState = dm.getSkillState(skillKey);
-                    level = skillState.level || 0;
-                    maxLevel = skillState.maxLevel || 100;
-                    console.log(`🎯 Skill ${skillKey} carregada do skillState: level=${level}`);
-                    
-                    // Fallback para playerData se necessário
-                    if (level === 0) {
-                        const playerData = dm.loadPlayerData();
-                        if (playerData?.skills && typeof playerData.skills[skillKey] === 'number') {
-                            level = playerData.skills[skillKey];
-                            console.log(`🎯 Skill ${skillKey} carregada do player data: level=${level}`);
-                        }
-                    }
+                    console.log(`🎯 Skill ${skillKey} carregada (fonte única): ${level}`);
                 } else {
-                    // Fallback: localStorage
-                    const gameData = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
-                    if (gameData.player?.skills && typeof gameData.player.skills[skillKey] === 'number') {
-                        level = gameData.player.skills[skillKey];
-                        console.log(`💾 Skill ${skillKey} carregada do localStorage (player): level=${level}`);
-                    } else if (gameData.skills && typeof gameData.skills[skillKey] === 'number') {
-                        level = gameData.skills[skillKey];
-                        console.log(`💾 Skill ${skillKey} carregada do localStorage (skills): level=${level}`);
-                    }
+                    console.warn(`⚠️ Skill ${skillKey} não encontrada em window.game.gameData.player.skills`);
                 }
             } catch (error) {
-                console.warn(`Erro ao buscar dados da skill ${skillKey}:`, error);
+                console.error(`❌ Erro ao buscar dados da skill ${skillKey}:`, error);
             }
             
             // Calcular custos baseados no sistema real
@@ -1531,12 +1599,20 @@ class NotificationModals {
                         });
                     }
                     if (result.remainingEnergy !== undefined) {
-                        document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
-                            if (el) {
-                                el.textContent = String(result.remainingEnergy);
-                                console.log(`⚡ Energia atualizada: ${el.id || el.className} = ${result.remainingEnergy}`);
+                        try {
+                            if (window.game?.systems?.dataManager) {
+                                const es = window.game.systems.dataManager.getEnergyState();
+                                const display = `${es.max}/${es.current}`;
+                                document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                                    if (el) el.textContent = display;
+                                });
+                                console.log(`⚡ Energia atualizada: ${display}`);
+                            } else {
+                                document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                                    if (el) el.textContent = String(result.remainingEnergy);
+                                });
                             }
-                        });
+                        } catch(_) { /* noop */ }
                     }
                     
                     // ✅ ATUALIZAR MODAL SEM FECHAR - apenas re-renderizar conteúdo
@@ -1555,7 +1631,16 @@ class NotificationModals {
                 
                 // FALLBACK: Sistema básico que atualiza localStorage diretamente
                 const currentMoney = parseInt(document.getElementById('statMoney')?.textContent?.replace(/[$,]/g, '') || '0');
-                const currentEnergy = parseInt(document.getElementById('statEnergy')?.textContent || '100');
+                let currentEnergy = 100;
+                try {
+                    if (window.game?.gameData?.player?.energy !== undefined) {
+                        currentEnergy = window.game.gameData.player.energy;
+                    } else {
+                        const gd = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
+                        if (gd.energy && typeof gd.energy.current === 'number') currentEnergy = gd.energy.current;
+                        else if (gd.player && typeof gd.player.energy === 'number') currentEnergy = gd.player.energy;
+                    }
+                } catch(_) { /* keep default */ }
                 
                 if (currentMoney >= cost && currentEnergy >= energyCost) {
                     // Deduzir recursos
@@ -1589,12 +1674,18 @@ class NotificationModals {
                                 console.log(`💰 Dinheiro atualizado (fallback): ${el.id || el.className} = $${newMoney.toLocaleString()}`);
                             }
                         });
-                        document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
-                            if (el) {
-                                el.textContent = String(newEnergy);
-                                console.log(`⚡ Energia atualizada (fallback): ${el.id || el.className} = ${newEnergy}`);
-                            }
-                        });
+                        try {
+                            const max = (gameData.energy && typeof gameData.energy.max === 'number') ? gameData.energy.max : 100;
+                            const display = `${max}/${newEnergy}`;
+                            document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                                if (el) el.textContent = display;
+                            });
+                            console.log(`⚡ Energia atualizada (fallback): ${display}`);
+                        } catch(_) {
+                            document.querySelectorAll('#statEnergy, #statEnergyInline, .energy-display, .stat-energy .val').forEach(el => {
+                                if (el) el.textContent = String(newEnergy);
+                            });
+                        }
                         
                         // ✅ ATUALIZAR MODAL SEM FECHAR - apenas re-renderizar conteúdo  
                         this._refreshSkillsModalInPlace();
@@ -1632,42 +1723,22 @@ class NotificationModals {
         
         console.log('🔄 Atualizando conteúdo do modal de skills IN-PLACE...');
         
-        // 🎯 REGENERAR CONTEÚDO COM DADOS ATUALIZADOS
+        // 🎯 REGENERAR CONTEÚDO COM DADOS ATUALIZADOS - FONTE ÚNICA
         const getSkillData = (skillKey, name, icon) => {
             let level = 0;
             let maxLevel = 100;
             
             try {
-                // 🎯 PRIORIDADE 1: window.game.gameData.player.skills (dados sincronizados)
+                // 🎯 ÚNICA FONTE: window.game.gameData.player.skills (sincronizado)
                 if (window.game?.gameData?.player?.skills && 
                     typeof window.game.gameData.player.skills[skillKey] === 'number') {
                     level = window.game.gameData.player.skills[skillKey];
-                    console.log(`🔄 Refresh - Skill ${skillKey} do gameData.player: level=${level}`);
-                }
-                // 🎯 PRIORIDADE 2: DataManager skillState 
-                else if (window.game?.systems?.dataManager) {
-                    const dm = window.game.systems.dataManager;
-                    const skillState = dm.getSkillState(skillKey);
-                    level = skillState.level || 0;
-                    maxLevel = skillState.maxLevel || 100;
-                    console.log(`🔄 Refresh - Skill ${skillKey} do skillState: level=${level}`);
-                    
-                    if (level === 0) {
-                        const playerData = dm.loadPlayerData();
-                        if (playerData?.skills && typeof playerData.skills[skillKey] === 'number') {
-                            level = playerData.skills[skillKey];
-                        }
-                    }
+                    console.log(`🔄 Refresh - Skill ${skillKey} (fonte única): level=${level}`);
                 } else {
-                    const gameData = JSON.parse(localStorage.getItem('risingstar_gamedata') || '{}');
-                    if (gameData.player?.skills && typeof gameData.player.skills[skillKey] === 'number') {
-                        level = gameData.player.skills[skillKey];
-                    } else if (gameData.skills && typeof gameData.skills[skillKey] === 'number') {
-                        level = gameData.skills[skillKey];
-                    }
+                    console.warn(`⚠️ Refresh - Skill ${skillKey} não encontrada em gameData.player.skills`);
                 }
             } catch (error) {
-                console.warn(`Erro ao buscar dados da skill ${skillKey}:`, error);
+                console.error(`❌ Refresh - Erro ao buscar skill ${skillKey}:`, error);
             }
             
             let cost = 500;

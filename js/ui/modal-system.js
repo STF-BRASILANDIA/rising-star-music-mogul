@@ -81,7 +81,11 @@ class ModernModalSystem {
                 transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 max-width: 90vw !important;
                 max-height: 90vh !important;
+                height: auto !important;
+                min-height: auto !important;
                 overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
             }
 
@@ -92,7 +96,7 @@ class ModernModalSystem {
             }
 
             body .modern-modal .modern-modal-header {
-                padding: 20px 80px 16px 24px !important;
+                padding: 16px 40px 12px 20px !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
                 background: rgba(255, 255, 255, 0.1) !important;
                 backdrop-filter: blur(30px) !important;
@@ -114,10 +118,10 @@ class ModernModalSystem {
                 font-weight: 700 !important;
                 color: #1d1d1f !important;
                 margin: 0 !important;
-                padding: 0 40px 0 0 !important;
+                padding: 0 !important;
                 display: block !important;
                 text-align: center !important;
-                max-width: calc(100% - 80px) !important;
+                max-width: calc(100% - 40px) !important;
                 position: relative !important;
                 line-height: 1.2 !important;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
@@ -126,82 +130,211 @@ class ModernModalSystem {
                 white-space: nowrap !important;
             }
 
-            body .modern-modal .modern-modal-close {
+            body .modern-modal .modern-modal-close,
+            body .modern-modal button.modern-modal-close,
+            .modern-modal .modern-modal-close,
+            .modern-modal button.modern-modal-close {
                 position: absolute !important;
-                top: 12px !important; /* um pouco mais pra cima */
-                right: 16px !important;
-                width: 36px !important;
-                height: 36px !important;
+                top: 12px !important;
+                right: 10px !important;
+                width: 30px !important;
+                height: 30px !important;
+                min-width: 30px !important;
+                min-height: 30px !important;
+                max-width: 30px !important;
+                max-height: 30px !important;
                 border-radius: 50% !important;
-                border: 1px solid rgba(0, 0, 0, 0.08) !important;
-                background: rgba(255, 255, 255, 0.65) !important; /* mais visível em light */
-                color: #000 !important;
+                border: none !important;
+                background: #ff4757 !important;
+                color: white !important;
                 cursor: pointer !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                transition: all 0.2s ease !important;
-                font-size: 20px !important; /* X mais legível */
-                font-weight: 700 !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                font-size: 18px !important;
+                font-weight: 600 !important;
                 z-index: 10 !important;
                 line-height: 1 !important;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
-                backdrop-filter: blur(10px) !important;
-                -webkit-backdrop-filter: blur(10px) !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
+                box-shadow: 
+                    0 4px 12px rgba(255, 71, 87, 0.3),
+                    0 2px 4px rgba(0, 0, 0, 0.1) !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                text-shadow: none !important;
+                transform: none !important;
             }
 
-            body .modern-modal .modern-modal-close:hover {
-                background: rgba(255, 255, 255, 0.8) !important;
-                transform: scale(1.07) !important;
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22) !important;
+            body .modern-modal .modern-modal-close:hover,
+            body .modern-modal button.modern-modal-close:hover,
+            .modern-modal .modern-modal-close:hover,
+            .modern-modal button.modern-modal-close:hover {
+                background: #ff3742 !important;
+                transform: scale(1.1) !important;
+                box-shadow: 
+                    0 6px 16px rgba(255, 71, 87, 0.4),
+                    0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            body .modern-modal .modern-modal-close:active {
+                transform: scale(0.95) !important;
+                box-shadow: 
+                    0 1px 4px rgba(0, 0, 0, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
             }
 
             body .modern-modal .modern-modal-body {
                 padding: 0 !important;
                 overflow-y: auto !important;
-                max-height: calc(90vh - 140px) !important;
+                max-height: calc(90vh - 100px) !important;
                 background: transparent !important;
+                flex: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
 
             body .modern-modal .modern-modal-footer {
-                padding: 16px 24px 24px !important;
+                padding: 12px 20px 16px !important;
                 border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
                 background: rgba(255, 255, 255, 0.9) !important;
                 backdrop-filter: blur(15px) !important;
                 -webkit-backdrop-filter: blur(15px) !important;
                 border-radius: 0 0 20px 20px !important;
                 display: flex !important;
-                gap: 12px !important;
+                gap: 10px !important;
                 justify-content: flex-end !important;
             }
 
-            /* Tamanhos de modais */
+            /* Tamanhos de modais otimizados - altura automática */
+            body .modern-modal.small {
+                width: 400px !important;
+                max-width: 90vw !important;
+                min-height: auto !important;
+                height: fit-content !important;
+                max-height: 80vh !important;
+            }
+            
+            body .modern-modal.medium {
+                width: 600px !important;
+                max-width: 92vw !important;
+                min-height: auto !important;
+                height: fit-content !important;
+                max-height: 85vh !important;
+            }
+            
+            body .modern-modal.large {
+                width: 800px !important;
+                max-width: 95vw !important;
+                min-height: auto !important;
+                height: fit-content !important;
+                max-height: 90vh !important;
+            }
+            
+            body .modern-modal.extra-large {
+                width: 1000px !important;
+                max-width: 98vw !important;
+                min-height: auto !important;
+                height: fit-content !important;
+                max-height: 95vh !important;
+            }
+            
             body .modern-modal.notif-modal {
                 width: 800px !important;
                 max-width: 92vw !important;
+                min-height: auto !important;
+                height: fit-content !important;
+                max-height: 85vh !important;
             }
 
             /* 📱 Responsividade iOS/macOS */
             @media (max-width: 768px) {
                 body .modern-modal {
-                    width: 95vw !important;
-                    height: 90vh !important;
+                    width: 96vw !important;
+                    height: fit-content !important;
+                    min-height: auto !important;
                     max-width: none !important;
-                    max-height: none !important;
-                    border-radius: 16px !important;
+                    max-height: 95vh !important;
+                    border-radius: 20px !important;
                 }
                 
                 body .modern-modal .modern-modal-header {
-                    padding: 20px 20px 16px !important;
+                    padding: 16px 35px 12px 16px !important;
                 }
                 
                 body .modern-modal .modern-modal-title {
+                    font-size: 17px !important;
+                    max-width: calc(100% - 35px) !important;
+                }
+                
+                body .modern-modal .modern-modal-close {
+                    top: 8px !important;
+                    right: 8px !important;
+                    width: 30px !important;
+                    height: 30px !important;
+                    min-width: 30px !important;
+                    min-height: 30px !important;
+                    max-width: 30px !important;
+                    max-height: 30px !important;
                     font-size: 18px !important;
+                    border-radius: 50% !important;
+                }
+                
+                body .modern-modal .modern-modal-body {
+                    max-height: calc(95vh - 90px) !important;
+                }
+                
+                body .modern-modal .modern-modal-footer {
+                    padding: 10px 16px 14px !important;
                 }
             }
 
-            /* 🌙 Dark mode support */
+            /* � Estilos específicos por tipo de modal */
+            
+            /* Modal de Habilidades */
+            body .modal-type-skills .skills-grid {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+                gap: 16px !important;
+                padding: 8px !important;
+            }
+            
+            /* Modal do Estúdio */
+            body .modal-type-studio .studio-workspace {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 20px !important;
+                padding: 8px !important;
+            }
+            
+            /* Modal de Analytics */
+            body .modal-type-analytics .analytics-dashboard {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                padding: 8px !important;
+            }
+            
+            /* Modal de Configurações */
+            body .modal-type-settings .settings-container {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 16px !important;
+                padding: 8px !important;
+            }
+            
+            /* Modal de Criação */
+            body .modal-type-creation .creation-form {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 20px !important;
+                padding: 8px !important;
+            }
+
+            /* �🌙 Dark mode support */
             @media (prefers-color-scheme: dark) {
                 body .modern-modal {
                     background: rgba(28, 28, 30, 0.10) !important; /* dark translúcido suave */
@@ -216,8 +349,16 @@ class ModernModalSystem {
                     color: #f2f2f7 !important;
                 }
                 
+                body .modern-modal .modern-modal-close {
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    border-color: rgba(255, 255, 255, 0.25) !important;
+                    color: rgba(255, 255, 255, 0.8) !important;
+                }
+                
                 body .modern-modal .modern-modal-close:hover {
-                    background: rgba(255, 255, 255, 0.28) !important;
+                    background: rgba(255, 255, 255, 0.2) !important;
+                    border-color: rgba(255, 255, 255, 0.4) !important;
+                    color: rgba(255, 255, 255, 1) !important;
                 }
                 
                 body .modern-modal .modern-modal-footer {
@@ -370,7 +511,15 @@ class ModernModalSystem {
     }
 
     /**
-     * Cria um modal dinamicamente
+     * Cria um modal dinamicamente com tipos padronizados
+     * 
+     * Tipos disponíveis:
+     * - 'standard': Modal padrão (título + conteúdo + botão fechar)
+     * - 'skills': Modal de habilidades com layout de cards
+     * - 'studio': Modal do estúdio com layout de gravação
+     * - 'analytics': Modal de estatísticas com gráficos
+     * - 'settings': Modal de configurações com abas
+     * - 'creation': Modal de criação com formulários
      */
     createModal(options = {}) {
         const {
@@ -378,8 +527,10 @@ class ModernModalSystem {
             title = 'Modal',
             content = '',
             size = 'medium',
+            type = 'standard',
             showFooter = false,
-            footerContent = ''
+            footerContent = '',
+            customClass = ''
         } = options;
 
         // 🚧 VERIFICAR SE JÁ EXISTE UM MODAL COM ESTE ID
@@ -391,22 +542,11 @@ class ModernModalSystem {
 
         const modal = document.createElement('div');
         modal.id = id;
-        modal.className = `modern-modal ${size}`;
+        modal.className = `modern-modal ${size} modal-type-${type} ${customClass}`.trim();
 
-        modal.innerHTML = `
-            <div class="modern-modal-header">
-                <h2 class="modern-modal-title">${title}</h2>
-                <button class="modern-modal-close" type="button">×</button>
-            </div>
-            <div class="modern-modal-body">
-                ${content}
-            </div>
-            ${showFooter ? `
-                <div class="modern-modal-footer">
-                    ${footerContent}
-                </div>
-            ` : ''}
-        `;
+        // Define o layout baseado no tipo
+        const modalLayout = this.getModalLayout(type, { title, content, showFooter, footerContent });
+        modal.innerHTML = modalLayout;
 
         // Adiciona event listener para o botão de fechar
         const closeBtn = modal.querySelector('.modern-modal-close');
@@ -416,6 +556,91 @@ class ModernModalSystem {
 
         document.body.appendChild(modal);
         return modal;
+    }
+
+    /**
+     * Define o layout do modal baseado no tipo
+     */
+    getModalLayout(type, { title, content, showFooter, footerContent }) {
+        const baseHeader = `
+            <div class="modern-modal-header">
+                <h2 class="modern-modal-title">${title}</h2>
+                <button class="modern-modal-close" type="button"></button>
+            </div>
+        `;
+
+        const baseFooter = showFooter ? `
+            <div class="modern-modal-footer">
+                ${footerContent}
+            </div>
+        ` : '';
+
+        switch (type) {
+            case 'skills':
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body modal-skills-layout">
+                        <div class="skills-grid">
+                            ${content}
+                        </div>
+                    </div>
+                    ${baseFooter}
+                `;
+
+            case 'studio':
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body modal-studio-layout">
+                        <div class="studio-workspace">
+                            ${content}
+                        </div>
+                    </div>
+                    ${baseFooter}
+                `;
+
+            case 'analytics':
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body modal-analytics-layout">
+                        <div class="analytics-dashboard">
+                            ${content}
+                        </div>
+                    </div>
+                    ${baseFooter}
+                `;
+
+            case 'settings':
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body modal-settings-layout">
+                        <div class="settings-container">
+                            ${content}
+                        </div>
+                    </div>
+                    ${baseFooter}
+                `;
+
+            case 'creation':
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body modal-creation-layout">
+                        <div class="creation-form">
+                            ${content}
+                        </div>
+                    </div>
+                    ${baseFooter}
+                `;
+
+            case 'standard':
+            default:
+                return `
+                    ${baseHeader}
+                    <div class="modern-modal-body">
+                        ${content}
+                    </div>
+                    ${baseFooter}
+                `;
+        }
     }
 }
 

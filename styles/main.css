@@ -2156,8 +2156,8 @@ body.in-game #mainMenu {
   font-family: 'Arial', 'Helvetica', sans-serif;
   overflow: hidden;
   z-index: 1000;
-    /* Inclusão de suporte para notch / dynamic island no menu principal */
-    padding: calc(env(safe-area-inset-top, 0px) + var(--safe-area-extra-top, 0px)) clamp(1rem, 3vh, 2rem) clamp(1rem, 3vh, 2rem) clamp(1rem, 3vh, 2rem);
+    /* Safe area aplicada apenas quando habilitada pelo usuário */
+    padding: var(--safe-area-total-top, 0px) clamp(1rem, 3vh, 2rem) var(--safe-area-total-bottom, 0px) clamp(1rem, 3vh, 2rem);
   box-sizing: border-box;
 }
 
@@ -3187,10 +3187,11 @@ body.in-game #mainMenu {
 }
 
 /* ============================================
-   MODALS E OVERLAYS - DESIGN PREMIUM CINEMATOGRÁFICO
+   MODALS E OVERLAYS - REMOVIDOS (MIGRADOS PARA modal-system.js)
    ============================================ */
 
-.modal {
+/* DESABILITADO - CONFLITAVA COM O SISTEMA MODERNO
+.modal-old-system {
     position: fixed;
     top: 0;
     left: 0;
@@ -3261,7 +3262,7 @@ body.in-game #mainMenu {
             rgba(25, 25, 45, 0.99) 75%,
             rgba(15, 15, 30, 1) 100%);
     border: 2px solid transparent;
-    border-radius: 16px;
+    border-radius: 20px;
     background-clip: padding-box;
     padding: 0;
     max-width: 90%;
@@ -3590,6 +3591,8 @@ body.in-game #mainMenu {
     margin: 1rem 0 0;
     opacity: 0.8;
 }
+
+FIM DO COMENTÁRIO DOS MODAIS ANTIGOS */
 
 /* Saved Games Modal */
 .saved-games {
@@ -4191,11 +4194,11 @@ body.in-game #mainMenu {
     margin: 0;
 }
 
-/* Botão de fechar - Posicionamento corrigido e design melhorado */
-.close-btn {
+/* DESABILITADO - CONFLITAVA COM SISTEMA MODAL MODERNO
+.close-btn-old {
     position: absolute;
-    top: 20px; /* Alinhado com o padding do header */
-    right: 24px; /* Mais margem da borda */
+    top: 20px;
+    right: 24px;
     background: 
         linear-gradient(135deg,
             rgba(255, 107, 53, 0.2) 0%,
@@ -4212,13 +4215,13 @@ body.in-game #mainMenu {
     align-items: center;
     justify-content: center;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 20; /* Aumentado para ficar sobre tudo */
+    z-index: 20;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
-.close-btn:hover {
+.close-btn-old:hover {
     background: 
         linear-gradient(135deg,
             rgba(255, 107, 53, 0.4) 0%,
@@ -4230,9 +4233,10 @@ body.in-game #mainMenu {
         0 0 20px rgba(255, 107, 53, 0.2);
 }
 
-.close-btn:active {
+.close-btn-old:active {
     transform: scale(0.95) rotate(90deg);
 }
+FIM DO COMENTÁRIO */
 
 /* Botões dos modais - Design coerente com o projeto */
 .btn {
@@ -4333,7 +4337,7 @@ body.in-game #mainMenu {
         max-height: 90vh;
         padding: 0;
         margin: 1rem;
-        border-radius: 12px;
+        border-radius: 20px;
     }
     
     .modal-header {
@@ -4361,13 +4365,15 @@ body.in-game #mainMenu {
         min-width: auto;
     }
     
-    .close-btn {
-    top: 12px; /* Ajuste para não descer no mobile */
-    right: 16px; /* Mantém respiro mas evita desalinhamento horizontal */
+    /* DESABILITADO - CONFLITAVA COM SISTEMA MODAL MODERNO
+    .close-btn-old {
+        top: 12px;
+        right: 16px;
         width: 32px;
         height: 32px;
         font-size: 1.1rem;
     }
+    */
     
     .modal-header {
         padding: 1.5rem 3rem 1rem 1.5rem; /* Ajustado para mobile */

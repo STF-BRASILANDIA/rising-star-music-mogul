@@ -329,6 +329,17 @@ export class MainMenu {
                 this.testDashboard();
             });
         }
+
+        // Unificação: ouvir ações do sistema de modais sem re-click
+        try {
+            document.addEventListener('menu:action', (ev) => {
+                const { action, mode } = ev.detail || {};
+                if (action === 'testDashboard') {
+                    console.log('🧭 Recebido menu:action -> testDashboard', mode);
+                    this.testDashboard();
+                }
+            });
+        } catch (e) { /* noop */ }
         
         // Load Game modal
         document.getElementById('closeLoadGameBtn')?.addEventListener('click', () => {
@@ -960,8 +971,13 @@ export class MainMenu {
         };
         
         try {
-            const saved = localStorage.getItem('risingstar_settings');
-            return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+            // Preferir StorageService; fallback para localStorage
+            let savedRaw = null;
+            try { savedRaw = window.storageService?.getString('risingstar_settings', null); } catch(_) { savedRaw = null; }
+            if (!savedRaw) {
+                try { savedRaw = localStorage.getItem('risingstar_settings'); } catch(_) { savedRaw = null; }
+            }
+            return savedRaw ? { ...defaultSettings, ...JSON.parse(savedRaw) } : defaultSettings;
         } catch (error) {
             console.warn('Erro ao carregar configurações:', error);
             return defaultSettings;
@@ -982,7 +998,9 @@ export class MainMenu {
                 safeAreaOffset: parseInt(document.getElementById('safeAreaOffset')?.value || '0')
             };
             
-            localStorage.setItem('risingstar_settings', JSON.stringify(settings));
+            // Dual-write: StorageService e localStorage
+            try { window.storageService?.setString('risingstar_settings', JSON.stringify(settings)); } catch(_) {}
+            try { localStorage.setItem('risingstar_settings', JSON.stringify(settings)); } catch(_) {}
             this.settings = settings;
             this.applySettings();
             this.hideSettings();
@@ -998,7 +1016,9 @@ export class MainMenu {
     
     resetSettings() {
         if (confirm('Restaurar todas as configurações para os valores padrão?')) {
-            this.settings = this.loadSettings();
+            this.settings = { animationsEnabled: true, notificationsEnabled: true, uiScale: 1.0, autoSaveEnabled: true, autoSaveInterval: 2, fastModeEnabled: false, cloudSyncEnabled: false, analyticsEnabled: true, safeAreaOffset: 0 };
+            try { window.storageService?.setString('risingstar_settings', JSON.stringify(this.settings)); } catch(_) {}
+            try { localStorage.setItem('risingstar_settings', JSON.stringify(this.settings)); } catch(_) {}
             this.populateSettingsForm();
             this.showNotification('Configurações restauradas!', 'info');
         }

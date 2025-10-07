@@ -26,6 +26,11 @@ class ConfigManager {
                 autoSaveInterval: 30000, // 30 segundos
                 theme: 'dark',
                 language: 'pt-BR',
+                safeArea: {
+                    enabled: false, // Desabilitado por padrão
+                    extraTop: 0,
+                    extraBottom: 0
+                },
                 accessibility: {
                     highContrast: false,
                     reduceMotion: false,
@@ -94,12 +99,16 @@ class ConfigManager {
         // Disponibilizar globalmente
         window.configManager = this;
         
+        // Aplicar configurações de safe area
+        this.applySafeAreaSettings();
+        
         // Log inicial
         if (this.config.debug?.enabled) {
             console.info('⚙️ ConfigManager inicializado', {
                 version: this.version,
                 debug: this.config.debug.enabled,
-                theme: this.config.ui.theme
+                theme: this.config.ui.theme,
+                safeArea: this.config.ui.safeArea.enabled
             });
         }
     }
@@ -316,6 +325,29 @@ class ConfigManager {
         console.group('⚙️ Configuração Atual');
         console.table(this.config);
         console.groupEnd();
+    }
+
+    /**
+     * Aplica configurações de safe area
+     */
+    applySafeAreaSettings() {
+        const safeAreaConfig = this.get('ui.safeArea');
+        const root = document.documentElement;
+        
+        // Habilita/desabilita safe area
+        if (safeAreaConfig.enabled) {
+            document.body.classList.add('safe-area-enabled');
+            root.style.setProperty('--safe-area-enabled', '1');
+        } else {
+            document.body.classList.remove('safe-area-enabled');
+            root.style.setProperty('--safe-area-enabled', '0');
+        }
+        
+        // Aplica espaçamento extra configurado pelo usuário
+        root.style.setProperty('--safe-area-extra-top', `${safeAreaConfig.extraTop}px`);
+        root.style.setProperty('--safe-area-extra-bottom', `${safeAreaConfig.extraBottom}px`);
+        
+        console.log('📱 Safe Area configurada:', safeAreaConfig);
     }
 }
 

@@ -1,0 +1,233 @@
+/**
+ * 🎵 STUDIO COMPOSER MODAL STYLES
+ * Estilos específicos para o modal de composição usando Modern Modal System
+ */
+
+/* Backdrop neutro combinando com o modal */
+.studio-modal.song-composer-modal ~ .modern-modal-backdrop,
+.modern-modal-backdrop:has(.studio-modal.song-composer-modal) {
+    background: 
+        linear-gradient(135deg,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(10, 10, 15, 0.35) 25%,
+            rgba(15, 15, 20, 0.4) 75%,
+            rgba(5, 5, 10, 0.45) 100%);
+    backdrop-filter: blur(15px) brightness(0.85);
+    -webkit-backdrop-filter: blur(15px) brightness(0.85);
+}
+
+/* Modal específico do estúdio - cores harmonizadas */
+.studio-modal.song-composer-modal .modern-modal-content {
+    background: linear-gradient(135deg,
+        rgba(20, 20, 25, 0.92) 0%,
+        rgba(25, 25, 35, 0.95) 25%,
+        rgba(22, 22, 30, 0.97) 75%,
+        rgba(18, 18, 25, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(138, 43, 226, 0.2);
+    backdrop-filter: blur(15px) saturate(1.1);
+    -webkit-backdrop-filter: blur(15px) saturate(1.1);
+    max-width: 580px;
+    width: 85%;
+    max-height: 80vh;
+    transform: scale(0.95);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.studio-modal.song-composer-modal.show .modern-modal-content {
+    transform: scale(1);
+}
+
+/* Formulário de composição */
+.composer-form {
+    padding: 16px;
+}
+
+.composer-form .form-group {
+    margin-bottom: 16px;
+}
+
+.composer-form .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.composer-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Inputs e selects */
+.composer-form input,
+.composer-form select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.composer-form input:focus,
+.composer-form select:focus {
+    outline: none;
+    border-color: rgba(138, 43, 226, 0.7);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 
+        0 0 20px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.composer-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.composer-form select option {
+    background: #2a1f3d;
+    color: #fff;
+    padding: 8px;
+}
+
+/* Preview da composição */
+.composition-preview {
+    margin-top: 18px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.composition-preview h4 {
+    margin: 0 0 12px 0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.preview-content {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.preview-song h5 {
+    color: rgba(138, 43, 226, 1);
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+}
+
+.song-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.detail-item {
+    background: rgba(138, 43, 226, 0.2);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+.song-concept {
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+    margin: 8px 0 0 0;
+    font-size: 14px;
+}
+
+/* Botões */
+.composer-form .btn-primary {
+    background: linear-gradient(135deg, #8a2be2 0%, #9932cc 100%);
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3);
+}
+
+.composer-form .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(138, 43, 226, 0.4);
+    background: linear-gradient(135deg, #9932cc 0%, #8a2be2 100%);
+}
+
+.composer-form .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
+}
+
+.composer-form .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.composer-form .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .composer-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .composition-preview {
+        padding: 16px;
+    }
+    
+    .song-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .detail-item {
+        align-self: flex-start;
+    }
+}
+
+/* Animações */
+@keyframes composeGlow {
+    0% { box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3); }
+    50% { box-shadow: 0 12px 35px rgba(138, 43, 226, 0.5); }
+    100% { box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3); }
+}
+
+.composer-form .btn-primary:not(:disabled) {
+    animation: composeGlow 2s ease-in-out infinite;
+}

@@ -54,12 +54,23 @@ export class InterfaceManager {
                 const btn = document.getElementById('advanceTimeBtn');
                 if (btn && !btn._weekBound) {
                     btn.addEventListener('click', () => {
-                        try { this.gameEngine.passWeek?.(); } catch (e) { console.warn('Falha ao passar semana:', e); }
+                        console.log('🕰️ Botão Passar Semana clicado!');
+                        try { 
+                            if (this.gameEngine && this.gameEngine.passWeek) {
+                                console.log('🕰️ Chamando passWeek...');
+                                this.gameEngine.passWeek();
+                            } else {
+                                console.error('❌ gameEngine.passWeek não encontrado!');
+                            }
+                        } catch (e) { 
+                            console.error('❌ Erro ao passar semana:', e); 
+                        }
                     });
                     btn._weekBound = true;
+                    console.log('✅ Botão Passar Semana vinculado com sucesso!');
                 }
             } catch (e) {
-                console.warn('⚠️ Não foi possível bindar End Week:', e);
+                console.error('❌ Erro ao vincular End Week:', e);
             }
 
             // Start update timers only when interface is shown and game is ready
@@ -97,20 +108,24 @@ export class InterfaceManager {
             playerMoney.textContent = this.formatMoney(player.money || 0);
         }
         
-    // Atualizar estatísticas - ARTIST TRAITS
-        this.updateStatDisplay('vocalsStat', player.skills?.vocals || 0);
-        this.updateStatDisplay('songWritingStat', player.skills?.songWriting || 0);
-        this.updateStatDisplay('rhythmStat', player.skills?.rhythm || 0);
-        this.updateStatDisplay('charismaStat', player.skills?.charisma || 0);
-        this.updateStatDisplay('viralityStat', player.skills?.virality || 0);
-        this.updateStatDisplay('videoDirectingStat', player.skills?.videoDirecting || 0);
+        // 🎯 SKILLS: USAR FONTE ÚNICA window.game.gameData.player.skills
+        const skills = (window?.game?.gameData?.player?.skills) || player.skills || {};
+        console.log('🎯 InterfaceManager: Skills carregadas de', window?.game?.gameData?.player?.skills ? 'window.game.gameData.player.skills' : 'fallback player.skills');
+        
+        // Atualizar estatísticas - ARTIST TRAITS
+        this.updateStatDisplay('vocalsStat', skills.vocals || 0);
+        this.updateStatDisplay('songWritingStat', skills.songWriting || 0);
+        this.updateStatDisplay('rhythmStat', skills.rhythm || 0);
+        this.updateStatDisplay('charismaStat', skills.charisma || 0);
+        this.updateStatDisplay('viralityStat', skills.virality || 0);
+        this.updateStatDisplay('videoDirectingStat', skills.videoDirecting || 0);
         
         // Atualizar estatísticas - BUSINESS TRAITS
-        this.updateStatDisplay('leadershipStat', player.skills?.leadership || 0);
-        this.updateStatDisplay('marketingStat', player.skills?.marketing || 0);
-        this.updateStatDisplay('negotiationStat', player.skills?.negotiation || 0);
-        this.updateStatDisplay('recruitingStat', player.skills?.recruiting || 0);
-        this.updateStatDisplay('salesStat', player.skills?.sales || 0);
+        this.updateStatDisplay('leadershipStat', skills.leadership || 0);
+        this.updateStatDisplay('marketingStat', skills.marketing || 0);
+        this.updateStatDisplay('negotiationStat', skills.negotiation || 0);
+        this.updateStatDisplay('recruitingStat', skills.recruiting || 0);
+        this.updateStatDisplay('salesStat', skills.sales || 0);
         
     console.log('✅ Informações do jogador atualizadas na interface');
     }
@@ -581,50 +596,20 @@ export class InterfaceManager {
     }
     
     showModal(modalContent, options = {}) {
-        const modalId = Date.now().toString();
-        const modal = {
-            id: modalId,
+        // MIGRADO: Usar modernModalSystem ao invés do sistema antigo
+        const modal = window.modernModalSystem.createModal({
+            id: `interface-modal-${Date.now()}`,
+            title: options.title || 'Modal',
             content: modalContent,
-            options
-        };
+            size: options.size || 'medium',
+            type: options.type || 'standard'
+        });
         
-        this.modals.push(modal);
-        this.renderModal(modal);
-        
-        return modalId;
+        window.modernModalSystem.openModal(modal);
+        return modal.id;
     }
     
-    renderModal(modal) {
-        const modalElement = document.createElement('div');
-        modalElement.className = 'modal-overlay';
-        modalElement.dataset.id = modal.id;
-        
-        modalElement.innerHTML = `
-            <div class="modal-content ${modal.options.size || 'medium'}">
-                <div class="modal-header">
-                    <h3>${modal.options.title || ''}</h3>
-                    <button class="modal-close">×</button>
-                </div>
-                <div class="modal-body">
-                    ${modal.content}
-                </div>
-                ${modal.options.footer ? `<div class="modal-footer">${modal.options.footer}</div>` : ''}
-            </div>
-        `;
-        
-        document.body.appendChild(modalElement);
-        
-        // Animate in
-        setTimeout(() => {
-            modalElement.classList.add('show');
-        }, 10);
-        
-        // Focus first input
-        const firstInput = modalElement.querySelector('input, select, textarea, button');
-        if (firstInput) {
-            setTimeout(() => firstInput.focus(), 100);
-        }
-    }
+    // REMOVIDO: renderModal migrado para modernModalSystem
     
     closeTopModal() {
         if (this.modals.length === 0) return;
@@ -1007,5 +992,36 @@ export class InterfaceManager {
             this.gameEngine.resumeGame();
             this.showNotification('Jogo retomado', 'success');
         }
+    }
+
+    // Funções de atualização que estavam faltando (implementações básicas)
+    updateCareerStats() {
+        console.log('🎯 updateCareerStats() called - implementação básica');
+        // TODO: Implementar estatísticas de carreira quando necessário
+    }
+
+    updateContracts() {
+        console.log('📋 updateContracts() called - implementação básica');
+        // TODO: Implementar contratos quando necessário
+    }
+
+    updateOpportunities() {
+        console.log('🚪 updateOpportunities() called - implementação básica');
+        // TODO: Implementar oportunidades quando necessário
+    }
+
+    updateSocialStats() {
+        console.log('📱 updateSocialStats() called - implementação básica');
+        // TODO: Implementar estatísticas sociais quando necessário
+    }
+
+    updateSocialFeed() {
+        console.log('📰 updateSocialFeed() called - implementação básica');
+        // TODO: Implementar feed social quando necessário
+    }
+
+    updateTrendingTopics() {
+        console.log('🔥 updateTrendingTopics() called - implementação básica');
+        // TODO: Implementar tópicos em alta quando necessário
     }
 }

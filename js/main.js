@@ -306,18 +306,9 @@ window.addEventListener('unhandledrejection', (event) => {
     }
 });
 
-// Visibility change handling (pause/resume game)
-document.addEventListener('visibilitychange', () => {
-    if (game) {
-        if (document.hidden) {
-            game.pauseGame();
-            console.log('🎮 Game paused (tab hidden)');
-        } else {
-            game.resumeGame();
-            console.log('🎮 Game resumed (tab visible)');
-        }
-    }
-});
+// ❌ EVENT LISTENER DUPLICADO REMOVIDO
+// O visibilitychange já é gerenciado pelo game-engine.js de forma mais robusta
+// Centralização: apenas o engine gerencia eventos de pausa/resume
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (event) => {
@@ -446,38 +437,9 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     console.log('🔧 Development helpers loaded. Type "dev" in console for available commands.');
 }
 
-// Avatar change functionality for game
-function initGameAvatarChange() {
-    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
-    const gamePhotoUpload = document.getElementById('gamePhotoUpload');
-    
-    if (changeAvatarBtn && gamePhotoUpload) {
-        changeAvatarBtn.addEventListener('click', () => {
-            gamePhotoUpload.click();
-        });
-        
-        gamePhotoUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                console.log('📸 Foto selecionada - funcionalidade será implementada');
-                // TODO: Implementar novo sistema de avatar quando character creator for recriado
-            }
-        });
-    }
-}
-
-function updateGameAvatar(avatarDataUrl) {
-    const headerAvatar = document.getElementById('headerAvatar');
-    if (headerAvatar && avatarDataUrl) {
-        headerAvatar.src = avatarDataUrl;
-        headerAvatar.style.display = 'block';
-    }
-}
-
-// Initialize avatar change functionality when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    initGameAvatarChange();
-});
+// SISTEMA DE AVATAR REMOVIDO - AGORA GERENCIADO PELO GAME-HUB.JS
+// O sistema antigo estava conflitando com o novo sistema integrado.
+// Avatar management é agora responsabilidade exclusiva do GameHub.
 
 // Export for use in other modules
 export { game };
