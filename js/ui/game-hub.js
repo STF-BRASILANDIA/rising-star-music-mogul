@@ -165,14 +165,34 @@ export class GameHub {
             this._handleQuickAction(action);
         });
 
-        // Mobile navigation
+        // Mobile/Bottom navigation (ambos footers)
         document.getElementById('mobileNav')?.addEventListener('click', (e) => {
             const btn = e.target.closest('.m-btn');
             if (!btn) return;
-            
+            // Intercepta no desktop para evitar handlers antigos
+            if (window.innerWidth >= 1024) { e.preventDefault(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }
             const view = btn.dataset.view;
             this._handleMobileNav(view);
         });
+        document.getElementById('studioMobileNav')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.m-btn');
+            if (!btn) return;
+            // Intercepta no desktop para evitar handlers antigos
+            if (window.innerWidth >= 1024) { e.preventDefault(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+            const view = btn.dataset.view;
+            this._handleMobileNav(view);
+        });
+
+        // Captura global: garante que em qualquer menu inferior a navegação desktop seja forçada
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.m-btn');
+            if (!btn) return;
+            if (window.innerWidth < 1024) return; // mobile segue fluxo normal
+            e.preventDefault();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            const view = btn.dataset.view;
+            this._handleMobileNav(view);
+        }, true);
 
         // Notificações
         document.getElementById('openNotifications')?.addEventListener('click', () => {
@@ -252,6 +272,11 @@ export class GameHub {
     renderCurrent() {
         if (!this.panels) return;
         
+        // No desktop, renderCurrent só executa para activity (quando em home)
+        if (window.innerWidth >= 1024 && this.currentTab !== 'activity') {
+            return;
+        }
+        
         switch (this.currentTab) {
             case 'activity': return this.renderActivity(); // Nova aba
             case 'overview': return this.renderOverview();
@@ -270,7 +295,7 @@ export class GameHub {
         const allPanels = document.querySelectorAll('.hub-panel');
         allPanels.forEach(panel => panel.style.display = 'none');
         
-        const activityPanel = document.getElementById('panel-activity');
+        const activityPanel = document.getElementById('panel-profile');
         if (activityPanel) {
             activityPanel.style.display = 'block';
         }
@@ -295,6 +320,9 @@ export class GameHub {
     }
 
     renderOverview() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             ${this._metricCard('Fama', 'fame')}
             ${this._metricCard('Seguidores Totais', 'listeners')}
@@ -321,6 +349,9 @@ export class GameHub {
     }
 
     renderResources() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Recursos do Artista</h3>
@@ -335,6 +366,9 @@ export class GameHub {
     }
 
     renderFeed() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Feed de Eventos</h3>
@@ -345,6 +379,9 @@ export class GameHub {
     }
 
     renderGoals() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Metas e Objetivos</h3>
@@ -355,6 +392,9 @@ export class GameHub {
     }
 
     renderCareer() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Progresso de Carreira</h3>
@@ -364,6 +404,9 @@ export class GameHub {
     }
 
     renderStreaming() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Streaming e Audiência</h3>
@@ -373,6 +416,9 @@ export class GameHub {
     }
 
     renderEconomy() {
+        // No desktop, não renderizar - usar páginas especiais
+        if (window.innerWidth >= 1024) return;
+        
         this.panels.innerHTML = `
             <div class="hub-card panel-full">
                 <h3>Economia e Finanças</h3>
@@ -1106,45 +1152,160 @@ export class GameHub {
             btn.classList.toggle('active', btn.dataset.view === view)
         );
         
-        // Mapear views mobile para tabs desktop
-        const viewToTab = {
-            'profile': 'activity', // Home mobile = Atividade desktop
-            'activity': 'activity',
-            'overview': 'overview',
-            'studio': 'resources',
-            'social': 'feed',
-            'more': 'economy'
-        };
-        
-        const targetTab = viewToTab[view] || 'activity';
-        
-        // Atualizar tab ativa se diferente
-        if (this.currentTab !== targetTab) {
-            this.currentTab = targetTab;
+        // 🖥️ DESKTOP: Sempre usar sistema de páginas especiais
+    if (window.innerWidth >= 1024) {
+            console.log('🖥️ Desktop navigation:', view);
             
-            // Atualizar visualmente as tabs desktop
-            [...document.querySelectorAll('.tab-btn')].forEach(btn => 
-                btn.classList.toggle('active', btn.dataset.tab === targetTab)
+            // Mapear views para painéis desktop
+            const desktopPages = {
+                'home': 'panel-profile',     // Home = Perfil detalhado
+                'activity': 'panel-profile', // fallback activity -> perfil
+                'profile': 'panel-profile',
+                'studio': 'panel-studio',
+                'career': 'panel-career', 
+                'social': 'panel-social', 
+                'finance': 'panel-finance',
+                'more': 'panel-finance',
+                'overview': 'panel-profile'
+            };
+            
+            const desktopPanel = desktopPages[view] || 'panel-profile'; // Fallback para perfil
+            
+            // Montar conteúdo da página desktop (clonando a versão mobile para dentro do painel)
+            try { this._mountDesktopPage(view, desktopPanel); } catch (e) { console.warn('⚠️ mount desktop page failed', e); }
+
+            // Garantir que estamos no container principal e esconder telas legadas
+            const gi = document.getElementById('gameInterface');
+            if (gi) gi.style.display = 'block';
+            ['studioPage','careerPage','socialPage','financePage'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            // Esconder todos os painéis (incluindo páginas desktop)
+            [...document.querySelectorAll('.hub-panel')].forEach(panel => 
+                panel.style.display = 'none'
             );
             
-            // Atualizar título
-            const titleEl = document.getElementById('currentViewTitle');
-            if (titleEl) {
-                const titles = {
-                    'activity': 'Atividade',
-                    'overview': 'Visão Geral',
-                    'resources': 'Recursos', 
-                    'goals': 'Metas',
-                    'feed': 'Feed',
-                    'career': 'Carreira',
-                    'streaming': 'Streaming',
-                    'economy': 'Economia'
-                };
-                titleEl.textContent = titles[targetTab] || 'Dashboard';
+            // Mostrar o painel específico
+            const targetPanel = document.getElementById(desktopPanel);
+            if (targetPanel) {
+                targetPanel.style.display = 'block';
+                console.log('🖥️ Exibindo painel desktop:', desktopPanel);
+            } else {
+                console.warn('🖥️ Painel não encontrado:', desktopPanel);
+                // Fallback: mostrar atividade
+                const activityPanel = document.getElementById('panel-activity');
+                if (activityPanel) {
+                    activityPanel.style.display = 'block';
+                }
             }
             
-            this.renderCurrent();
+            // Gerenciar top bar - só mostra na atividade/home
+            const topBar = document.querySelector('.top-bar');
+            if (topBar) {
+                if (view === 'home' || view === 'profile' || view === 'activity' || view === 'overview') {
+                    topBar.style.display = '';
+                } else {
+                    topBar.style.display = 'none';
+                }
+            }
+            
+            return; // Parar aqui - DESKTOP sempre usa páginas especiais
         }
+        
+        // 📱 MOBILE APENAS: Usar sistema de tabs original
+        if (window.innerWidth < 1024) {
+            const viewToTab = {
+                'profile': 'activity', // Home mobile = Atividade desktop
+                'activity': 'activity',
+                'overview': 'overview',
+                'studio': 'resources',
+                'social': 'feed',
+                'more': 'economy'
+            };
+            
+            const targetTab = viewToTab[view] || 'activity';
+            
+            // Atualizar tab ativa se diferente
+            if (this.currentTab !== targetTab) {
+                this.currentTab = targetTab;
+                
+                // Atualizar visualmente as tabs desktop
+                [...document.querySelectorAll('.tab-btn')].forEach(btn => 
+                    btn.classList.toggle('active', btn.dataset.tab === targetTab)
+                );
+                
+                // Atualizar título
+                const titleEl = document.getElementById('currentViewTitle');
+                if (titleEl) {
+                    const titles = {
+                        'activity': 'Atividade',
+                        'overview': 'Visão Geral',
+                        'resources': 'Recursos', 
+                        'goals': 'Metas',
+                        'feed': 'Feed',
+                        'career': 'Carreira',
+                        'streaming': 'Streaming',
+                        'economy': 'Economia'
+                    };
+                    titleEl.textContent = titles[targetTab] || 'Dashboard';
+                }
+                
+                this.renderCurrent();
+            }
+        }
+    }
+
+    // Clona o conteúdo da tela mobile para dentro do painel desktop correspondente (apenas uma vez)
+    _mountDesktopPage(view, panelId) {
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
+        if (panel.dataset.mounted === '1') return; // já montado
+
+        const targets = {
+            'panel-studio': '#studioPage .studio-page-container, #studioPage .page-container',
+            'panel-career': '#careerPage .page-container',
+            'panel-social': '#socialPage .page-container',
+            'panel-finance': '#financePage .page-container'
+        };
+
+        const selector = targets[panelId];
+        if (!selector) return;
+        let src = null;
+        // tentar múltiplos seletores
+        selector.split(',').some(sel => {
+            const el = document.querySelector(sel.trim());
+            if (el) { src = el; return true; }
+            return false;
+        });
+        if (!src) return;
+
+        // Onde inserir no painel
+        let container = panel.querySelector('.desktop-page-content');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'desktop-page-content';
+            panel.appendChild(container);
+        }
+
+        // Limpar conteúdo placeholder do painel
+        container.innerHTML = '';
+
+        // Wrapper para estilo de card
+        const wrapper = document.createElement('div');
+        wrapper.className = 'desktop-card-wrapper';
+
+        // Clonar conteúdo
+        const cloned = src.cloneNode(true);
+        cloned.classList.add('desktop-cloned');
+
+        // Remover/ocultar footers internos do mobile dentro do clone (no desktop não precisa)
+        cloned.querySelectorAll('.mobile-bottom-nav').forEach(el => el.remove());
+
+        wrapper.appendChild(cloned);
+        container.appendChild(wrapper);
+        panel.dataset.mounted = '1';
     }
 
     _showNotificationsModal() {

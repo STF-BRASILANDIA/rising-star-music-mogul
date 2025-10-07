@@ -289,6 +289,139 @@
                 .skills-main-btn:hover::before {
                     left: 100%;
                 }
+
+                /* Remover definitivamente a barra superior (duplicada) em todas as plataformas */
+                .top-bar { display: none !important; }
+
+                /* 🖥️ DESKTOP PAGES - VISÍVEL APENAS NO DESKTOP */
+                .desktop-page-panel {
+                    display: none !important;
+                }
+                
+                @media (min-width: 1024px) {
+                    /* Centralizar e limitar a largura dos painéis de abas (cards) no desktop */
+                    .hub-panels {
+                        max-width: 1280px;
+                        width: 100%;
+                        margin: 0 auto;
+                        justify-content: center; /* garante centrado quando houver sobra */
+                    }
+                    /* Tornar a rolagem invisível (mantém scroll funcional) */
+                    html, body {
+                        -ms-overflow-style: none; /* IE e Edge antigo */
+                        scrollbar-width: none;   /* Firefox */
+                    }
+                    html::-webkit-scrollbar,
+                    body::-webkit-scrollbar {
+                        width: 0 !important;
+                        height: 0 !important;
+                        background: transparent !important;
+                    }
+                    /* Painéis internos com rolagem invisível */
+                    .hub-panels {
+                        -ms-overflow-style: none !important;
+                        scrollbar-width: none !important;
+                    }
+                    .hub-panels::-webkit-scrollbar {
+                        width: 0 !important;
+                        height: 0 !important;
+                        background: transparent !important;
+                    }
+                    /* Escopo amplo: todo o ambiente do jogo no desktop sem barras visíveis */
+                    #gameInterface, #gameInterface * {
+                        -ms-overflow-style: none !important;
+                        scrollbar-width: none !important;
+                    }
+                    #gameInterface::-webkit-scrollbar,
+                    #gameInterface *::-webkit-scrollbar {
+                        width: 0 !important;
+                        height: 0 !important;
+                        background: transparent !important;
+                    }
+                    /* Garante invisibilidade imediata dentro do card desktop (inclui Studio clonado) */
+                    .desktop-card-wrapper,
+                    .desktop-card-wrapper * {
+                        -ms-overflow-style: none !important; /* IE/Edge legado */
+                        scrollbar-width: none !important;     /* Firefox */
+                    }
+                    .desktop-card-wrapper::-webkit-scrollbar,
+                    .desktop-card-wrapper *::-webkit-scrollbar {
+                        width: 0 !important;
+                        height: 0 !important;
+                        background: transparent !important;
+                    }
+                    /* Cada painel (perfil, notificações, loja etc.) deve ocupar toda a largura do grid */
+                    .hub-panels > .hub-panel {
+                        grid-column: 1 / -1;
+                    }
+                    .desktop-page-panel {
+                        display: none !important; /* Começa oculto, será mostrado via JS */
+                    }
+                    
+                    /* Oculta telas do modo mobile no desktop */
+                    #studioPage,
+                    #careerPage,
+                    #socialPage,
+                    #financePage {
+                        display: none !important;
+                    }
+
+                    /* Quando ativado pelo JS, forçar exibição */
+                    .desktop-page-panel[style*="display: block"] {
+                        display: block !important;
+                    }
+
+                    /* Corrige container pai dos cards desktop para não limitar a 1000px (remover deslocamento à direita) */
+                    .desktop-page-content {
+                        max-width: none !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        display: block;
+                    }
+
+                    /* Ocupa a largura total do grid para evitar ficar estreito */
+                    .hub-panels > .desktop-page-panel {
+                        grid-column: 1 / -1;
+                        /* padding simétrico para dar respiro à esquerda/direita sem hacks */
+                        padding: 0 12px !important;
+                        margin-left: 0 !important;
+                    }
+                    
+
+                    
+                    /* Hover effects para os cards das páginas desktop */
+                    .studio-card:hover, .career-card:hover, .social-card:hover, .finance-card:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+                    }
+                    
+                    .studio-card button:hover, .career-card button:hover, .social-card button:hover, .finance-card button:hover {
+                        transform: scale(1.05);
+                    }
+
+                    /* Wrapper que transforma a página mobile clonada em um card central no desktop */
+                    .desktop-card-wrapper {
+                        /* respeita o padding do painel (12px de cada lado => 24px total) */
+                        width: min(1280px, calc(100% - 24px));
+                        max-width: 1280px;
+                        margin: 24px auto;
+                        padding: 20px;
+                        background: rgba(20,22,28,0.7);
+                        border: 1px solid rgba(255,255,255,0.08);
+                        border-radius: 16px;
+                        backdrop-filter: blur(10px);
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+                        overflow: hidden;
+                        min-height: 60vh;
+                    }
+                    .desktop-card-wrapper .page-container,
+                    .desktop-card-wrapper .studio-page-container {
+                        padding: 0 !important;
+                        background: transparent !important;
+                        box-shadow: none !important;
+                    }
+                }
             </style>
 
             <!-- Step 2: Background Story (LAYOUT CORRIGIDO) -->
@@ -963,7 +1096,130 @@
                             </div>
                         </div>
                     </section>
+
+                    <!-- 🖥️ PÁGINAS DESKTOP - NA ÁREA CENTRAL -->
+                    <!-- Painel: Studio -->
+                    <section class="hub-panel desktop-page-panel" id="panel-studio" data-tab="studio" style="display: none;">
+                        <div class="desktop-page-content" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 30px; color: #fff; text-align: center; font-size: 2rem;" class="icon-text">
+                                <i class="fas fa-music"></i>
+                                Estúdio de Música
+                            </h2>
+                            <div class="desktop-studio-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div class="studio-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🎵</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Composição</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Crie suas próprias músicas originais</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Compor Música</button>
+                                </div>
+                                <div class="studio-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🎤</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Gravação</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Grave suas composições no estúdio</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Gravar</button>
+                                </div>
+                                <div class="studio-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🎧</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Produção</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Finalize e masterize suas faixas</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Produzir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Career -->
+                    <section class="hub-panel desktop-page-panel" id="panel-career" data-tab="career" style="display: none;">
+                        <div class="desktop-page-content" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 30px; color: #fff; text-align: center; font-size: 2rem;" class="icon-text">
+                                <i class="fas fa-trophy"></i>
+                                Carreira Musical
+                            </h2>
+                            <div class="desktop-career-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div class="career-card" style="background: linear-gradient(135deg, #ffd700, #daa520); padding: 30px; border-radius: 16px; color: #333; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🏆</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Conquistas</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.8;">Veja suas conquistas e prêmios</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Conquistas</button>
+                                </div>
+                                <div class="career-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">📊</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Estatísticas</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Analise seu progresso musical</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Stats</button>
+                                </div>
+                                <div class="career-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🎯</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Objetivos</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Metas e missões da carreira</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Objetivos</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Social -->
+                    <section class="hub-panel desktop-page-panel" id="panel-social" data-tab="social" style="display: none;">
+                        <div class="desktop-page-content" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 30px; color: #fff; text-align: center; font-size: 2rem;" class="icon-text">
+                                <i class="fas fa-users"></i>
+                                Rede Social
+                            </h2>
+                            <div class="desktop-social-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div class="social-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">👥</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Fãs</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Interaja com seus fãs</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Fãs</button>
+                                </div>
+                                <div class="social-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🤝</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Colaborações</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Trabalhe com outros artistas</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Colaborar</button>
+                                </div>
+                                <div class="social-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">🎪</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Eventos</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Shows e apresentações</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Eventos</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Painel: Finance -->
+                    <section class="hub-panel desktop-page-panel" id="panel-finance" data-tab="finance" style="display: none;">
+                        <div class="desktop-page-content" style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+                            <h2 style="margin: 0 0 30px; color: #fff; text-align: center; font-size: 2rem;" class="icon-text">
+                                <i class="fas fa-dollar-sign"></i>
+                                Gestão Financeira
+                            </h2>
+                            <div class="desktop-finance-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div class="finance-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">💰</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Receitas</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Acompanhe seus ganhos</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Receitas</button>
+                                </div>
+                                <div class="finance-card" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">📈</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Investimentos</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Faça seus investimentos</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Investir</button>
+                                </div>
+                                <div class="finance-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">📊</div>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Relatórios</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Relatórios financeiros</p>
+                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Ver Relatórios</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </main>
+
+
 
                 <footer class="mobile-bottom-nav" id="mobileNav">
                     <button data-view="home" class="m-btn active">
