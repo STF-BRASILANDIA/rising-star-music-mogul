@@ -89,6 +89,9 @@ class ModernModalSystem {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
             }
 
+            /* Remover margin-top herdada de safe-area-global que desloca o centro */
+            body .modern-modal { margin-top: 0 !important; }
+
             body .modern-modal.active {
                 opacity: 1 !important;
                 visibility: visible !important;
@@ -319,6 +322,44 @@ class ModernModalSystem {
                 }
             }
 
+            /* 📱 FULL SCREEN MOBILE SHEET MODE (aplicado via classe .mobile-full) */
+            @media (max-width: 810px) {
+                body .modern-modal.mobile-full {
+                    top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important; /* remove translateY para usar top */
+                    width: 100vw !important;
+                    max-width: 100vw !important;
+                    height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
+                    max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
+                    border-radius: 24px 24px 28px 28px !important;
+                }
+                body .modern-modal.mobile-full .modern-modal-header {
+                    position: sticky !important;
+                    top: 0 !important;
+                    z-index: 5 !important;
+                }
+                body .modern-modal.mobile-full .modern-modal-body {
+                    /* header + footer dinâmicos via variáveis setadas no JS */
+                    --mm-header-h: 60px;
+                    --mm-footer-h: 0px;
+                    max-height: calc(
+                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
+                    ) !important;
+                }
+                body .modern-modal.mobile-full.has-footer .modern-modal-body {
+                    max-height: calc(
+                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
+                    ) !important;
+                }
+                body .modern-modal.mobile-full .modern-modal-footer {
+                    position: sticky !important;
+                    bottom: 0 !important;
+                    z-index: 6 !important;
+                    backdrop-filter: blur(20px) !important;
+                }
+            }
+
             /* � Estilos específicos por tipo de modal */
             
             /* Modal de Habilidades */
@@ -497,46 +538,44 @@ class ModernModalSystem {
      */
     _adjustModalViewport(modalElement) {
         if (!modalElement || !modalElement.classList) return;
-        const isMobile = window.innerWidth <= 820; // margem de segurança para tablets pequenos
-        if (!isMobile) {
-            // Limpa estilos inline se existirem (desktop gerencia sozinho)
-            modalElement.style.removeProperty('height');
-            modalElement.style.removeProperty('max-height');
-            const bodyEl = modalElement.querySelector('.modern-modal-body');
-            if (bodyEl) bodyEl.style.removeProperty('max-height');
-            return;
-        }
-
-        const header = modalElement.querySelector('.modern-modal-header');
-        const footer = modalElement.querySelector('.modern-modal-footer');
         const bodyEl = modalElement.querySelector('.modern-modal-body');
         if (!bodyEl) return;
+        const header = modalElement.querySelector('.modern-modal-header');
+        const footer = modalElement.querySelector('.modern-modal-footer');
+        const isMobile = window.innerWidth <= 810;
 
-        const viewportH = window.innerHeight;
-        // Usar até 90% do viewport deixando espaço para gesto/navegação
-        const targetModalH = Math.min(Math.round(viewportH * 0.9), viewportH - 12);
-        modalElement.style.height = targetModalH + 'px';
-        modalElement.style.maxHeight = targetModalH + 'px';
+        const vh = window.innerHeight;
+        const headerH = header ? header.getBoundingClientRect().height : 0;
+        const footerH = footer ? footer.getBoundingClientRect().height : 0;
 
-        const headerH = header ? header.offsetHeight : 0;
-        const footerH = footer ? footer.offsetHeight : 0;
-        const paddingReserve = 8; // margem extra
-        const bodyMax = targetModalH - headerH - footerH - paddingReserve;
-        if (bodyMax > 80) { // sanity check
-            bodyEl.style.maxHeight = bodyMax + 'px';
+        if (isMobile) {
+            // Aplicar layout sheet full-screen controlado
+            if (!modalElement.classList.contains('mobile-full')) modalElement.classList.add('mobile-full');
+            const usable = vh - 16; // pequena margem
+            modalElement.style.height = usable + 'px';
+            modalElement.style.maxHeight = usable + 'px';
+            modalElement.style.top = 'calc(env(safe-area-inset-top, 0px) + 8px)';
+            modalElement.style.left = '50%';
+            // variáveis ajudam o CSS a recalcular se necessário
+            modalElement.style.setProperty('--mm-header-h', headerH + 'px');
+            modalElement.style.setProperty('--mm-footer-h', footerH + 'px');
+            const bodyMax = usable - headerH - footerH - 6;
+            if (bodyMax > 40) bodyEl.style.maxHeight = bodyMax + 'px';
+            bodyEl.style.overflowY = 'auto';
+        } else {
+            // Desktop / large screen: comportamento centrado, altura automática até limite
+            modalElement.classList.remove('mobile-full');
+            // Limpar estilos que interferem na centralização
+            ['height','max-height','top','left'].forEach(p => modalElement.style.removeProperty(p));
+            const targetMax = Math.min(Math.round(vh * 0.82), vh - 120); // ~82% do viewport ou menos
+            const bodyMax = targetMax - headerH - footerH - 8;
+            if (bodyMax > 160) {
+                bodyEl.style.maxHeight = bodyMax + 'px';
+            } else {
+                bodyEl.style.removeProperty('max-height');
+            }
+            bodyEl.style.overflowY = 'auto';
         }
-
-        // Se o conteúdo for pequeno, não forçar altura enorme – ajustar para conteúdo mínimo de 60% viewport
-        const naturalContentH = headerH + footerH + bodyEl.scrollHeight;
-        if (naturalContentH < targetModalH * 0.6) {
-            const minWanted = Math.round(viewportH * 0.6);
-            modalElement.style.height = Math.min(minWanted, targetModalH) + 'px';
-            modalElement.style.maxHeight = Math.min(minWanted, targetModalH) + 'px';
-            bodyEl.style.maxHeight = (Math.min(minWanted, targetModalH) - headerH - footerH - paddingReserve) + 'px';
-        }
-
-        // Garantir scroll se o conteúdo excede
-        bodyEl.style.overflowY = 'auto';
     }
 
     /**

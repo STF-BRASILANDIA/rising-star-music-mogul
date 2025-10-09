@@ -3,9 +3,9 @@
  * Provides PWA functionality, offline support, and caching
  */
 
-const CACHE_NAME = 'rising-star-v1.4.0';
-const STATIC_CACHE = 'rising-star-static-v1.2.0';
-const DYNAMIC_CACHE = 'rising-star-dynamic-v1.2.0';
+const CACHE_NAME = 'rising-star-v1.4.1';
+const STATIC_CACHE = 'rising-star-static-v1.2.1';
+const DYNAMIC_CACHE = 'rising-star-dynamic-v1.2.1';
 
 // Files to cache immediately
 const STATIC_FILES = [
@@ -23,6 +23,7 @@ const STATIC_FILES = [
     '/js/core/game-engine.js',
     '/js/core/ai-simulation.js',
     '/js/core/data-manager.js',
+    '/js/ui/modal-system.js',
     '/js/ui/interface-manager.js',
     '/js/ui/main-menu.js',
     // Ícones e manifest
