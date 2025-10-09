@@ -50,6 +50,11 @@ class ModernModalSystem {
             body:not(.mm-open) .modal-overlay, 
             body:not(.mm-open) .backdrop, 
             body:not(.mm-open) .legacy-modal-backdrop { pointer-events:none !important; opacity:0 !important; }
+            /* Scroll area refinada */
+            .modern-modal .modern-modal-body.mm-scrollable { overscroll-behavior: contain; scrollbar-width: thin; }
+            .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar { width: 8px; }
+            .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 6px; }
+            .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar-track { background: transparent; }
         `;
         document.head.appendChild(style);
     }
@@ -595,6 +600,12 @@ class ModernModalSystem {
         const headerH = header ? header.getBoundingClientRect().height : 0;
         const footerH = footer ? footer.getBoundingClientRect().height : 0;
 
+        // Reset de estilos possivelmente antigos antes de recalcular
+        bodyEl.style.removeProperty('height');
+        bodyEl.style.removeProperty('min-height');
+        bodyEl.style.removeProperty('max-height');
+        bodyEl.classList.add('mm-scrollable');
+
         if (isMobile) {
             // Aplicar layout sheet full-screen controlado
             if (!modalElement.classList.contains('mobile-full')) modalElement.classList.add('mobile-full');
@@ -607,8 +618,13 @@ class ModernModalSystem {
             modalElement.style.setProperty('--mm-header-h', headerH + 'px');
             modalElement.style.setProperty('--mm-footer-h', footerH + 'px');
             const bodyMax = usable - headerH - footerH - 6;
-            if (bodyMax > 40) bodyEl.style.maxHeight = bodyMax + 'px';
+            if (bodyMax > 40) {
+                bodyEl.style.maxHeight = bodyMax + 'px';
+            } else {
+                bodyEl.style.maxHeight = Math.max(usable - headerH - footerH - 6, 120) + 'px';
+            }
             bodyEl.style.overflowY = 'auto';
+            bodyEl.style.webkitOverflowScrolling = 'touch';
         } else {
             // Desktop / large screen: comportamento centrado, altura automática até limite
             modalElement.classList.remove('mobile-full');
@@ -622,7 +638,24 @@ class ModernModalSystem {
                 bodyEl.style.removeProperty('max-height');
             }
             bodyEl.style.overflowY = 'auto';
+            bodyEl.style.webkitOverflowScrolling = 'touch';
+            // Fallback se conteúdo exceder e nenhuma max-height aplicada
+            if (!bodyEl.style.maxHeight) {
+                const approx = Math.round(vh * 0.7);
+                if (bodyEl.scrollHeight > approx) {
+                    bodyEl.style.maxHeight = approx + 'px';
+                }
+            }
         }
+
+        // Fallback adicional: se ainda não houver scroll mas conteúdo extrapola
+        setTimeout(() => {
+            try {
+                if (bodyEl.scrollHeight > bodyEl.clientHeight + 4 && getComputedStyle(bodyEl).overflowY === 'visible') {
+                    bodyEl.style.overflowY = 'auto';
+                }
+            } catch {}
+        }, 120);
     }
 
     /**
