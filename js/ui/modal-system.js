@@ -188,14 +188,41 @@ class ModernModalSystem {
             }
 
             body .modern-modal .modern-modal-body {
-                padding: 0 !important;
+                /* 🔧 Robustez para mobile: evitar que o conteúdo desapareça em webviews (iOS) */
+                padding: 16px 18px 20px 18px !important;
                 overflow-y: auto !important;
                 max-height: calc(90vh - 100px) !important;
                 background: transparent !important;
                 flex: 1 !important;
                 display: flex !important;
                 flex-direction: column !important;
+                justify-content: flex-start !important;
+                align-items: stretch !important;
+                box-sizing: border-box !important;
+                position: relative !important;
             }
+
+            /* Garantir que filhos não sejam escondidos por CSS externo agressivo */
+            body .modern-modal .modern-modal-body > * {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            /* Placeholder quando vazio (corrida de renderização) */
+            body .modern-modal .modern-modal-body[data-empty="true"]::after {
+                content: '⏳ Carregando conteúdo...';
+                display: block !important;
+                text-align: center !important;
+                font-size: 14px !important;
+                color: #555 !important;
+                font-style: italic !important;
+                padding: 8px 0 !important;
+            }
+
+            /* Ícone padrão X se botão vier vazio */
+            body .modern-modal .modern-modal-close:empty::before,
+            .modern-modal .modern-modal-close:empty::before { content: '×'; font-weight: 600; font-size: 20px; line-height: 1; }
 
             body .modern-modal .modern-modal-footer {
                 padding: 12px 20px 16px !important;
@@ -426,6 +453,21 @@ class ModernModalSystem {
         // Ativa modal
         modalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
+
+        // 🩺 Diagnóstico: se o body estiver aparentemente vazio em 50ms, marcar para placeholder
+        try {
+            const bodyEl = modalElement.querySelector('.modern-modal-body');
+            if (bodyEl) {
+                bodyEl.toggleAttribute('data-empty', bodyEl.children.length === 0);
+                setTimeout(() => {
+                    if (bodyEl && bodyEl.isConnected) {
+                        bodyEl.toggleAttribute('data-empty', bodyEl.children.length === 0 || bodyEl.innerText.trim().length === 0);
+                    }
+                }, 60);
+            }
+        } catch (diagErr) {
+            console.warn('Modal body diag error', diagErr);
+        }
 
         // Setup close button
         const closeBtn = modalElement.querySelector('.modern-modal-close');
