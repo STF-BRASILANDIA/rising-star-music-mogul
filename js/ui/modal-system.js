@@ -10,11 +10,19 @@
  * - Sistema responsivo
  */
 
+const MODAL_SYSTEM_VERSION = '2.0.0'; // unificação & robustez
+
 class ModernModalSystem {
     constructor() {
+        if (window.__ModernModalSystemInstance) {
+            return window.__ModernModalSystemInstance; // singleton guard
+        }
         this.activeModals = new Set();
         this.modalStack = [];
         this.backdropElement = null;
+        this._mutationObserver = null;
+        this._visibilityCheckScheduled = false;
+        window.__ModernModalSystemInstance = this;
         
         this.init();
     }
@@ -23,6 +31,8 @@ class ModernModalSystem {
         this.createBackdrop();
         this.injectStyles();
         this.setupEventListeners();
+        this._ensureObserver();
+        console.info(`[ModalSystem] Versão ${MODAL_SYSTEM_VERSION}`);
         
         console.log('🎭 Modern Modal System initialized');
     }
@@ -80,6 +90,7 @@ class ModernModalSystem {
                 visibility: hidden !important;
                 transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 max-width: 90vw !important;
+                /* Altura base simplificada: cálculo refinado em _adjustModalViewport */
                 max-height: 90vh !important;
                 height: auto !important;
                 min-height: auto !important;
@@ -194,7 +205,8 @@ class ModernModalSystem {
                 /* 🔧 Robustez para mobile: evitar que o conteúdo desapareça em webviews (iOS) */
                 padding: 16px 18px 20px 18px !important;
                 overflow-y: auto !important;
-                max-height: calc(90vh - 100px) !important;
+                /* max-height dinâmica atribuída em runtime; manter um valor alto preventivo */
+                max-height: 9999px !important;
                 background: transparent !important;
                 flex: 1 !important;
                 display: flex !important;
@@ -282,12 +294,9 @@ class ModernModalSystem {
 
             /* 📱 Responsividade iOS/macOS */
             @media (max-width: 768px) {
-                body .modern-modal {
+                body .modern-modal:not(.mobile-full) {
                     width: 96vw !important;
-                    height: fit-content !important;
-                    min-height: auto !important;
                     max-width: none !important;
-                    max-height: 95vh !important;
                     border-radius: 20px !important;
                 }
                 
@@ -325,38 +334,27 @@ class ModernModalSystem {
             /* 📱 FULL SCREEN MOBILE SHEET MODE (aplicado via classe .mobile-full) */
             @media (max-width: 810px) {
                 body .modern-modal.mobile-full {
-                    top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
-                    left: 50% !important;
-                    transform: translateX(-50%) !important; /* remove translateY para usar top */
+                    top: 0 !important;
+                    left: 0 !important;
+                    transform: none !important;
                     width: 100vw !important;
+                    height: 100dvh !important; /* dynamic viewport height */
                     max-width: 100vw !important;
-                    height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
-                    max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
-                    border-radius: 24px 24px 28px 28px !important;
+                    max-height: 100dvh !important;
+                    border-radius: 20px 20px 24px 24px !important;
                 }
                 body .modern-modal.mobile-full .modern-modal-header {
                     position: sticky !important;
-                    top: 0 !important;
+                    top: env(safe-area-inset-top, 0px) !important;
                     z-index: 5 !important;
-                }
-                body .modern-modal.mobile-full .modern-modal-body {
-                    /* header + footer dinâmicos via variáveis setadas no JS */
-                    --mm-header-h: 60px;
-                    --mm-footer-h: 0px;
-                    max-height: calc(
-                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
-                    ) !important;
-                }
-                body .modern-modal.mobile-full.has-footer .modern-modal-body {
-                    max-height: calc(
-                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
-                    ) !important;
                 }
                 body .modern-modal.mobile-full .modern-modal-footer {
                     position: sticky !important;
-                    bottom: 0 !important;
+                    bottom: env(safe-area-inset-bottom, 0px) !important;
                     z-index: 6 !important;
-                    backdrop-filter: blur(20px) !important;
+                }
+                body .modern-modal.mobile-full .modern-modal-body {
+                    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
                 }
             }
 
@@ -530,6 +528,9 @@ class ModernModalSystem {
         }
 
         console.log('🎭 Modal opened:', modalElement.id || 'unnamed');
+
+        // Programar verificação de visibilidade pós ciclo
+        this._scheduleVisibilityAudit();
     }
 
     /**
@@ -543,39 +544,76 @@ class ModernModalSystem {
         const header = modalElement.querySelector('.modern-modal-header');
         const footer = modalElement.querySelector('.modern-modal-footer');
         const isMobile = window.innerWidth <= 810;
-
         const vh = window.innerHeight;
-        const headerH = header ? header.getBoundingClientRect().height : 0;
-        const footerH = footer ? footer.getBoundingClientRect().height : 0;
 
         if (isMobile) {
-            // Aplicar layout sheet full-screen controlado
-            if (!modalElement.classList.contains('mobile-full')) modalElement.classList.add('mobile-full');
-            const usable = vh - 16; // pequena margem
-            modalElement.style.height = usable + 'px';
-            modalElement.style.maxHeight = usable + 'px';
-            modalElement.style.top = 'calc(env(safe-area-inset-top, 0px) + 8px)';
-            modalElement.style.left = '50%';
-            // variáveis ajudam o CSS a recalcular se necessário
-            modalElement.style.setProperty('--mm-header-h', headerH + 'px');
-            modalElement.style.setProperty('--mm-footer-h', footerH + 'px');
-            const bodyMax = usable - headerH - footerH - 6;
-            if (bodyMax > 40) bodyEl.style.maxHeight = bodyMax + 'px';
-            bodyEl.style.overflowY = 'auto';
+            modalElement.classList.add('mobile-full');
+            // Alturas confiadas ao CSS (100dvh). Apenas ajustar body se necessário após medição.
+            requestAnimationFrame(() => {
+                const headerH = header ? header.getBoundingClientRect().height : 0;
+                const footerH = footer ? footer.getBoundingClientRect().height : 0;
+                const usable = vh - headerH - footerH - 10;
+                if (usable > 80) {
+                    bodyEl.style.maxHeight = usable + 'px';
+                }
+            });
         } else {
-            // Desktop / large screen: comportamento centrado, altura automática até limite
             modalElement.classList.remove('mobile-full');
-            // Limpar estilos que interferem na centralização
             ['height','max-height','top','left'].forEach(p => modalElement.style.removeProperty(p));
-            const targetMax = Math.min(Math.round(vh * 0.82), vh - 120); // ~82% do viewport ou menos
-            const bodyMax = targetMax - headerH - footerH - 8;
-            if (bodyMax > 160) {
-                bodyEl.style.maxHeight = bodyMax + 'px';
-            } else {
-                bodyEl.style.removeProperty('max-height');
-            }
-            bodyEl.style.overflowY = 'auto';
+            requestAnimationFrame(() => {
+                const headerH = header ? header.getBoundingClientRect().height : 0;
+                const footerH = footer ? footer.getBoundingClientRect().height : 0;
+                const targetMax = Math.min(Math.round(vh * 0.82), vh - 120);
+                const bodyMax = targetMax - headerH - footerH - 8;
+                if (bodyMax > 160) {
+                    bodyEl.style.maxHeight = bodyMax + 'px';
+                } else {
+                    bodyEl.style.removeProperty('max-height');
+                }
+                bodyEl.style.overflowY = 'auto';
+            });
         }
+    }
+
+    /** Agenda uma auditoria de visibilidade (evita várias em sequência) */
+    _scheduleVisibilityAudit() {
+        if (this._visibilityCheckScheduled) return;
+        this._visibilityCheckScheduled = true;
+        setTimeout(() => {
+            this._visibilityCheckScheduled = false;
+            this._auditActiveModals();
+        }, 120);
+    }
+
+    /** Verifica se algum modal ativo ficou invisível por conflito de estilos e reaplica classe */
+    _auditActiveModals() {
+        this.activeModals.forEach(modal => {
+            if (!modal.isConnected) return;
+            const styles = window.getComputedStyle(modal);
+            if (styles.visibility === 'hidden' || styles.opacity === '0') {
+                // Forçar reflow & reativação
+                modal.classList.add('active');
+            }
+        });
+    }
+
+    /** Inicializa um MutationObserver para detectar remoção acidental de "active" */
+    _ensureObserver() {
+        if (this._mutationObserver) return;
+        this._mutationObserver = new MutationObserver(mutations => {
+            let needsAudit = false;
+            for (const m of mutations) {
+                if (m.type === 'attributes' && m.attributeName === 'class' && m.target.classList.contains('modern-modal')) {
+                    if (this.activeModals.has(m.target) && !m.target.classList.contains('active')) {
+                        // Se for removido inadvertidamente, recolocar
+                        m.target.classList.add('active');
+                        needsAudit = true;
+                    }
+                }
+            }
+            if (needsAudit) this._scheduleVisibilityAudit();
+        });
+        this._mutationObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
     }
 
     /**
@@ -787,18 +825,16 @@ class ModernModalSystem {
 }
 
 // Instância global - inicializada após DOM ready
-window.addEventListener('DOMContentLoaded', function() {
-    window.modernModalSystem = new ModernModalSystem();
-    console.log('🎭 Modern Modal System carregado após DOM ready');
-});
-
-// Fallback para inicialização imediata se DOM já estiver pronto
-if (document.readyState === 'loading') {
-    // DOM ainda carregando, aguardar evento
-} else {
-    // DOM já carregado
-    window.modernModalSystem = new ModernModalSystem();
-    console.log('🎭 Modern Modal System carregado imediatamente');
+if (!window.modernModalSystem) {
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!window.modernModalSystem) window.modernModalSystem = new ModernModalSystem();
+            console.log('🎭 Modern Modal System carregado (DOMContentLoaded)');
+        });
+    } else {
+        window.modernModalSystem = new ModernModalSystem();
+        console.log('🎭 Modern Modal System carregado (immediate)');
+    }
 }
 
 // Para compatibilidade, também adiciona ao objeto global
