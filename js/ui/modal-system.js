@@ -58,6 +58,12 @@ class ModernModalSystem {
             .modern-modal .modern-modal-body.mm-force-scroll { overflow-y:auto !important; position:relative; }
             .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { min-height: fit-content; }
             .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { display:block; }
+            /* Bloqueio de chain scroll */
+            body.mm-open { overscroll-behavior: contain; touch-action: none; }
+            body.mm-open .modern-modal { touch-action: none; }
+            body.mm-open .modern-modal .modern-modal-body, \
+            body.mm-open .modern-modal .modern-modal-body.mm-scrollable, \
+            body.mm-open .modern-modal .modern-modal-body.mm-force-scroll { touch-action: pan-y; overscroll-behavior: contain; }
         `;
         document.head.appendChild(style);
     }
@@ -585,6 +591,9 @@ class ModernModalSystem {
                 if (target && target.focus) target.focus({ preventScroll: true });
             } catch {}
         }, 30);
+
+        // Configurar bloqueio de scroll de fundo e permitir apenas dentro do body
+        this._setupScrollIsolation(modalElement);
     }
 
     /**
@@ -1042,11 +1051,83 @@ class ModernModalSystem {
                         document.body.style.overflow = 'auto';
                         setTimeout(() => document.body.style.removeProperty('overflow'), 80);
                     }
+                    // Remover listeners globais de bloqueio se não há mais modais
+                    if (this._scrollBlockers) {
+                        this._scrollBlockers.forEach(off => { try { off(); } catch {} });
+                        this._scrollBlockers = null;
+                    }
                 }
             }, 500);
         } catch (err) {
             console.warn('Post close audit error', err);
         }
+    }
+
+    /**
+     * Configura isolamento de scroll: impede que wheel/touch move "escape" para o fundo.
+     */
+    _setupScrollIsolation(modalElement) {
+        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+        if (!this._scrollBlockers) this._scrollBlockers = [];
+
+        const isScrollable = (el) => {
+            if (!el) return false;
+            const cs = getComputedStyle(el);
+            const oy = cs.overflowY;
+            return (oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 2;
+        };
+
+        const target = bodyEl;
+        target.classList.add('mm-scrollable');
+        target.style.overscrollBehavior = 'contain';
+
+        // Função que trava propagação para fundo
+        const wheelHandler = (e) => {
+            if (!isScrollable(target)) {
+                e.preventDefault();
+                return;
+            }
+            const delta = e.deltaY;
+            const atTop = target.scrollTop <= 0;
+            const atBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1;
+            if ((delta < 0 && atTop) || (delta > 0 && atBottom)) {
+                e.preventDefault();
+            }
+        };
+        const touchState = { startY: 0, lastY:0 };
+        const touchStart = (e) => {
+            if (e.touches && e.touches.length) {
+                touchState.startY = touchState.lastY = e.touches[0].clientY;
+            }
+        };
+        const touchMove = (e) => {
+            if (!e.touches || !e.touches.length) return;
+            const y = e.touches[0].clientY;
+            const diff = y - touchState.lastY;
+            touchState.lastY = y;
+            if (!isScrollable(target)) { e.preventDefault(); return; }
+            const atTop = target.scrollTop <= 0;
+            const atBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1;
+            if ((diff > 0 && atTop) || (diff < 0 && atBottom)) {
+                e.preventDefault();
+            }
+        };
+        const preventBackdrop = (e) => { e.preventDefault(); };
+
+        // Listeners (passive:false para poder prevenir)
+        target.addEventListener('wheel', wheelHandler, { passive: false });
+        target.addEventListener('touchstart', touchStart, { passive: false });
+        target.addEventListener('touchmove', touchMove, { passive: false });
+        this.backdropElement.addEventListener('wheel', preventBackdrop, { passive: false });
+        this.backdropElement.addEventListener('touchmove', preventBackdrop, { passive: false });
+
+        // Guardar removers
+        this._scrollBlockers.push(() => target.removeEventListener('wheel', wheelHandler, { passive: false }));
+        this._scrollBlockers.push(() => target.removeEventListener('touchstart', touchStart, { passive: false }));
+        this._scrollBlockers.push(() => target.removeEventListener('touchmove', touchMove, { passive: false }));
+        this._scrollBlockers.push(() => this.backdropElement.removeEventListener('wheel', preventBackdrop, { passive: false }));
+        this._scrollBlockers.push(() => this.backdropElement.removeEventListener('touchmove', preventBackdrop, { passive: false }));
     }
 }
 
