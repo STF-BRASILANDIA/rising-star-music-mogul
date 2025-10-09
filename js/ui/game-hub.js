@@ -143,6 +143,12 @@ export class GameHub {
                 titleEl.textContent = titles[tab] || 'Dashboard';
             }
             
+            // Desktop: tab-nav só deve aparecer na HOME (profile)
+            if (window.innerWidth >= 1024) {
+                const tabsNav = document.getElementById('hubTabs');
+                if (tabsNav) tabsNav.style.display = (tab === 'profile') ? '' : 'none';
+            }
+
             this.renderCurrent();
         });
 
@@ -1209,6 +1215,14 @@ export class GameHub {
                 } else {
                     topBar.style.display = 'none';
                 }
+            }
+
+            // Gerenciar barra de abas (tab-nav) - deve aparecer apenas no HUB (home/perfil/notificações/loja)
+            const tabsNav = document.getElementById('hubTabs');
+            if (tabsNav) {
+                const isDesktopPage = ['panel-studio','panel-career','panel-social','panel-finance'].includes(desktopPanel);
+                // No HUB (perfil, notificações, loja), mantém visível; nas páginas desktop, esconde
+                tabsNav.style.display = isDesktopPage ? 'none' : '';
             }
             
             return; // Parar aqui - DESKTOP sempre usa páginas especiais

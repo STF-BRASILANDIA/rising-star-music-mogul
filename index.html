@@ -306,6 +306,12 @@
                         margin: 0 auto;
                         justify-content: center; /* garante centrado quando houver sobra */
                     }
+                    /* Ocultar barra de abas quando uma página desktop estiver ativa */
+                    .desktop-page-panel[style*="display: block"] ~ .tab-nav,
+                    .desktop-page-panel[style*="display: block"] + .tab-nav,
+                    .desktop-page-panel[style*="display: block"] .tab-nav {
+                        display: none !important;
+                    }
                     /* Tornar a rolagem invisível (mantém scroll funcional) */
                     html, body {
                         -ms-overflow-style: none; /* IE e Edge antigo */
@@ -1110,19 +1116,19 @@
                                     <div style="font-size: 3rem; margin-bottom: 16px;">🎵</div>
                                     <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Composição</h3>
                                     <p style="margin: 0 0 20px; opacity: 0.9;">Crie suas próprias músicas originais</p>
-                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Compor Música</button>
+                                    <button class="btn-primary" data-studio-action="compose-song" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Compor Música</button>
                                 </div>
                                 <div class="studio-card" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
                                     <div style="font-size: 3rem; margin-bottom: 16px;">🎤</div>
                                     <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Gravação</h3>
                                     <p style="margin: 0 0 20px; opacity: 0.9;">Grave suas composições no estúdio</p>
-                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Gravar</button>
+                                    <button class="btn-primary" data-studio-action="record-song" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Gravar</button>
                                 </div>
                                 <div class="studio-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 30px; border-radius: 16px; color: #fff; text-align: center; transition: transform 0.3s ease;">
                                     <div style="font-size: 3rem; margin-bottom: 16px;">🎧</div>
-                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Produção</h3>
-                                    <p style="margin: 0 0 20px; opacity: 0.9;">Finalize e masterize suas faixas</p>
-                                    <button class="btn-primary" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Produzir</button>
+                                    <h3 style="margin: 0 0 12px; font-size: 1.5rem;">Marketing</h3>
+                                    <p style="margin: 0 0 20px; opacity: 0.9;">Promova e lance suas músicas</p>
+                                    <button class="btn-primary" data-studio-action="marketing-song" style="padding: 12px 24px; background: #fff; color: #333; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Marketing</button>
                                 </div>
                             </div>
                         </div>
@@ -1272,6 +1278,28 @@
                 </div>
             </div>
 
+            <!-- Bordas arredondadas no banner do Estúdio -->
+            <style>
+                /* Aplica cantos arredondados ao hero do Estúdio e recorta os elementos internos */
+                #studioPage .studio-hero {
+                    border-radius: 16px;
+                    overflow: hidden; /* evita que o gradiente/ícones escapem dos cantos */
+                }
+                #studioPage .studio-hero-bg,
+                #studioPage .studio-hero-content {
+                    border-radius: inherit; /* herda o raio do container */
+                }
+                /* Quando o Studio for clonado para o card desktop, manter o mesmo visual */
+                .desktop-card-wrapper .studio-hero {
+                    border-radius: 16px;
+                    overflow: hidden;
+                }
+                .desktop-card-wrapper .studio-hero-bg,
+                .desktop-card-wrapper .studio-hero-content {
+                    border-radius: inherit;
+                }
+            </style>
+
             <!-- Dashboard Stats -->
             <div class="studio-dashboard">
                 <div class="dashboard-header">
@@ -1360,9 +1388,7 @@
                             <div class="nav-card-content">
                                 <h4>Gravar no Estúdio</h4>
                                 <p>Produzir suas composições</p>
-                                <div class="nav-card-status">
-                                    <i class="fas fa-circle"></i> 3 Pendentes
-                                </div>
+                                <div class="nav-card-status"></div>
                             </div>
                             <div class="nav-card-arrow">
                                 <i class="fas fa-chevron-right"></i>
@@ -1376,9 +1402,7 @@
                             <div class="nav-card-content">
                                 <h4>Marketing & Release</h4>
                                 <p>Promova e lance suas músicas</p>
-                                <div class="nav-card-status">
-                                    <i class="fas fa-circle"></i> 2 Prontas
-                                </div>
+                                <div class="nav-card-status"></div>
                             </div>
                             <div class="nav-card-arrow">
                                 <i class="fas fa-chevron-right"></i>
@@ -1390,15 +1414,15 @@
                 <div class="nav-section secondary-section">
                     <h3><i class="fas fa-users"></i> Colaboração & Analytics</h3>
                     <div class="nav-grid">
-                        <button class="nav-card collab-card">
+                        <button class="nav-card collab-card" data-studio-action="studio-collab">
                             <div class="nav-card-icon">
                                 <i class="fas fa-handshake"></i>
                             </div>
                             <div class="nav-card-content">
                                 <h4>Colaborações</h4>
-                                <p>Trabalhe com outros artistas</p>
+                                <p>Pedidos de feat recebidos</p>
                                 <div class="nav-card-status">
-                                    <i class="fas fa-circle"></i> 3 Disponíveis
+                                    <i class="fas fa-circle"></i> 0 Pedidos
                                 </div>
                             </div>
                             <div class="nav-card-arrow">
@@ -1422,15 +1446,15 @@
                             </div>
                         </button>
 
-                        <button class="nav-card equipment-card" data-studio-action="studio-equipment">
+                        <button class="nav-card team-card" data-studio-action="studio-team">
                             <div class="nav-card-icon">
-                                <i class="fas fa-cogs"></i>
+                                <i class="fas fa-user-friends"></i>
                             </div>
                             <div class="nav-card-content">
-                                <h4>Equipamentos</h4>
-                                <p>Gerencie seus equipamentos</p>
+                                <h4>Equipe</h4>
+                                <p>Contrate compositores, produtores etc.</p>
                                 <div class="nav-card-status">
-                                    <i class="fas fa-circle"></i> 12 Itens
+                                    <i class="fas fa-circle"></i> 0 Membros
                                 </div>
                             </div>
                             <div class="nav-card-arrow">
@@ -1453,15 +1477,7 @@
                         <i class="fas fa-handshake"></i>
                         <span>Contratos</span>
                     </button>
-                    <button class="quick-action trends-action" onclick="forceCloseModal()">
-                        <i class="fas fa-times"></i>
-                        <span>🔴 Fecha Modal</span>
-                    </button>
-                    <button class="quick-action social-action" onclick="forceOpenModal()">
-                        <i class="fas fa-share-alt"></i>
-              
-                        <span>🔧 Força Modal</span>
-                    </button>
+                    <!-- Removidos botões de teste -->
                 </div>
             </div>
 
@@ -1944,6 +1960,7 @@
     <script type="module" src="js/main.js?v=1.5.0"></script>
     <script type="module" src="js/core/ai-simulation.js?v=1.3.5"></script>
     <script type="module" src="js/core/data-manager.js?v=1.3.5"></script>
+    <script src="js/core/studio-recording-pro.js?v=1.0.0"></script>
     <script type="module" src="js/ui/interface-manager.js?v=1.3.5"></script>
     <script type="module" src="js/ui/main-menu.js?v=1.3.5"></script>
     

@@ -255,28 +255,19 @@ class ModernModalSystem {
                 body .modern-modal {
                     width: 96vw !important;
                     height: fit-content !important;
-                    min-height: 60vh !important;
+                    min-height: auto !important;
                     max-width: none !important;
-                    max-height: 90vh !important;
+                    max-height: 95vh !important;
                     border-radius: 20px !important;
-                    /* iOS específico: force visibility */
-                    -webkit-transform: translate(-50%, -50%) scale(0.9) !important;
-                }
-                
-                body .modern-modal.active {
-                    -webkit-transform: translate(-50%, -50%) scale(1) !important;
                 }
                 
                 body .modern-modal .modern-modal-header {
-                    padding: 16px 35px 16px 16px !important;
-                    flex-shrink: 0 !important;
-                    min-height: 60px !important;
+                    padding: 16px 35px 12px 16px !important;
                 }
                 
                 body .modern-modal .modern-modal-title {
                     font-size: 17px !important;
                     max-width: calc(100% - 35px) !important;
-                    line-height: 1.3 !important;
                 }
                 
                 body .modern-modal .modern-modal-close {
@@ -290,58 +281,14 @@ class ModernModalSystem {
                     max-height: 30px !important;
                     font-size: 18px !important;
                     border-radius: 50% !important;
-                    z-index: 10001 !important;
                 }
                 
                 body .modern-modal .modern-modal-body {
-                    max-height: calc(90vh - 120px) !important;
-                    min-height: calc(60vh - 120px) !important;
-                    flex: 1 !important;
-                    overflow-y: auto !important;
-                    -webkit-overflow-scrolling: touch !important;
-                    /* iOS: force content visibility */
-                    background: rgba(255, 255, 255, 0.05) !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    padding: 12px !important;
-                }
-                
-                body .modern-modal .modern-modal-body > * {
-                    /* Force child elements to be visible */
-                    display: block !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    flex-shrink: 0 !important;
+                    max-height: calc(95vh - 90px) !important;
                 }
                 
                 body .modern-modal .modern-modal-footer {
-                    padding: 12px 16px 16px !important;
-                    flex-shrink: 0 !important;
-                    min-height: 60px !important;
-                }
-            }
-            
-            /* iOS Safari específico */
-            @supports (-webkit-touch-callout: none) {
-                body .modern-modal {
-                    /* Force hardware acceleration */
-                    will-change: transform, opacity !important;
-                    -webkit-backface-visibility: hidden !important;
-                    backface-visibility: hidden !important;
-                }
-                
-                body .modern-modal .modern-modal-body {
-                    /* iOS scroll fix */
-                    overflow: auto !important;
-                    -webkit-overflow-scrolling: touch !important;
-                    min-height: 200px !important;
-                }
-                
-                body .modern-modal .modern-modal-body * {
-                    /* Force all content to be visible on iOS */
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    display: block !important;
+                    padding: 10px 16px 14px !important;
                 }
             }
 
@@ -480,64 +427,13 @@ class ModernModalSystem {
         modalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Setup close button com suporte iOS
+        // Setup close button
         const closeBtn = modalElement.querySelector('.modern-modal-close');
         if (closeBtn) {
-            this.addIOSButtonHandler(closeBtn, () => this.closeModal(modalElement));
+            closeBtn.onclick = () => this.closeModal(modalElement);
         }
-
-        // iOS: Force content visibility após um frame
-        setTimeout(() => this.forceIOSContentVisibility(modalElement), 50);
 
         console.log('🎭 Modal opened:', modalElement.id || 'unnamed');
-    }
-
-    /**
-     * Adiciona handler de botão compatível com iOS
-     */
-    addIOSButtonHandler(button, handler) {
-        if (!button) return;
-        
-        let pressed = false;
-        const wrapper = (e) => {
-            if (pressed) return;
-            pressed = true;
-            try {
-                e.preventDefault && e.preventDefault();
-                e.stopPropagation && e.stopPropagation();
-                handler(e);
-            } finally {
-                setTimeout(() => { pressed = false; }, 300);
-            }
-        };
-        
-        button.addEventListener('click', wrapper, { passive: false });
-        button.addEventListener('touchend', wrapper, { passive: false });
-        button.addEventListener('pointerup', wrapper, { passive: false });
-    }
-
-    /**
-     * Force content visibility no iOS
-     */
-    forceIOSContentVisibility(modalElement) {
-        try {
-            const body = modalElement.querySelector('.modern-modal-body');
-            if (body) {
-                // Force repaint
-                body.style.display = 'none';
-                body.offsetHeight; // trigger reflow
-                body.style.display = '';
-                
-                // Force all children to be visible
-                const allElements = body.querySelectorAll('*');
-                allElements.forEach(el => {
-                    el.style.opacity = '1';
-                    el.style.visibility = 'visible';
-                });
-            }
-        } catch (e) {
-            console.warn('Falha ao forçar visibilidade iOS:', e);
-        }
     }
 
     /**

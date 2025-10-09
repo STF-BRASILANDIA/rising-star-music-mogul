@@ -110,16 +110,19 @@ export class StudioManager {
                     this.openSongComposer();
                     break;
                 case 'record-song':
-                    this.openRecordingInterface();
+                    this.showRecordingInterface();
                     break;
                 case 'marketing-song':
                     this.openMarketingInterface();
+                    break;
+                case 'studio-collab':
+                    this.openCollabInbox();
                     break;
                 case 'studio-analytics':
                     this.openAnalytics();
                     break;
                 case 'studio-equipment':
-                    this.openEquipmentInterface();
+                    this.openTeamInterface();
                     break;
                 case 'studio-charts':
                     this.openAnalytics('charts');
@@ -243,74 +246,156 @@ export class StudioManager {
     }
 
     showRecordingInterface() {
-        const modal = window.modernModalSystem.createModal({
-            id: 'recording-modal',
-            title: 'Gravar Nova Música',
-            content: this.getRecordingHTML(),
-            type: 'studio'
-        });
-        window.modernModalSystem.openModal(modal);
-        this.setupRecordingEvents(modal);
+        // Verificar se há composições para gravar
+        if (!this.compositions || this.compositions.length === 0) {
+            this.showNotification('🎵 Você precisa compor algumas músicas primeiro!', 'warning');
+            return;
+        }
+
+        // Usar a nova interface profissional
+        if (window.StudioRecordingPro) {
+            const recordingPro = new window.StudioRecordingPro(this);
+            const modal = window.modernModalSystem.createModal({
+                id: 'recording-modal',
+                title: '🎛️ Estúdio Profissional',
+                content: recordingPro.getRecordingHTML(),
+                type: 'studio',
+                size: 'large'
+            });
+            window.modernModalSystem.openModal(modal);
+            this.setupRecordingEventsPro(modal, recordingPro);
+        } else {
+            // Fallback para interface básica
+            const modal = window.modernModalSystem.createModal({
+                id: 'recording-modal',
+                title: '🎤 Gravar no Estúdio',
+                content: this.getRecordingHTML(),
+                type: 'studio'
+            });
+            window.modernModalSystem.openModal(modal);
+            this.setupRecordingEvents(modal);
+        }
     }
 
     getRecordingHTML() {
-        const genres = ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Folk', 'Jazz', 'Country', 'R&B'];
-        const moods = ['Alegre', 'Melancólico', 'Energético', 'Romântico', 'Rebelde', 'Inspirador'];
+        // Lista de composições prontas para gravar
+        const compositions = this.compositions || [];
+        
+        // Produtores disponíveis (da equipe contratada + freelancers)
+        const teamProducers = (this.team || []).filter(m => m.role === 'Produtor');
+        const freelanceProducers = [
+            { name: 'Carlos Silva', skill: 0.7, cost: 2000, specialty: 'Pop/Rock' },
+            { name: 'Marina Santos', skill: 0.8, cost: 3500, specialty: 'Hip-Hop/R&B' },
+            { name: 'João Beats', skill: 0.9, cost: 5000, specialty: 'Electronic' }
+        ];
+        
+        // Artistas para feat (simulado)
+        const featArtists = [
+            { name: 'MC Flow', genre: 'Hip-Hop', cost: 8000, popularity: 0.8 },
+            { name: 'Ana Melodia', genre: 'Pop', cost: 12000, popularity: 0.9 },
+            { name: 'Rocking Pete', genre: 'Rock', cost: 6000, popularity: 0.7 }
+        ];
         
         return `
             <div class="recording-interface">
                 <div class="recording-header">
-                    <h3>🎵 Nova Gravação</h3>
-                    <p>Configure sua próxima música baseado nas tendências atuais</p>
+                    <h3>� Gravar no Estúdio</h3>
+                    <p>Selecione uma composição e configure a produção profissional</p>
                 </div>
                 
                 <div class="recording-form">
+                    <!-- Seleção de Composição -->
                     <div class="form-group">
-                        <label>Nome da Música</label>
-                        <input type="text" id="songName" placeholder="Digite o título da música" maxlength="50">
+                        <label><i class="fas fa-music"></i> Selecionar Composição</label>
+                        <select id="selectedComposition">
+                            <option value="">Escolha uma música para gravar...</option>
+                            ${compositions.map(comp => {
+                                const quality = Math.round(comp.quality * 100);
+                                return `<option value="${comp.id}" data-quality="${comp.quality}" data-genre="${comp.genre}">
+                                    "${comp.title}" (${comp.genre}) - ${quality}% qualidade
+                                </option>`;
+                            }).join('')}
+                        </select>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Gênero</label>
-                            <select id="songGenre">
-                                ${genres.map(genre => {
-                                    const trend = this.getTrendForGenre(genre);
-                                    const trendIcon = trend > 0.7 ? '🔥' : trend > 0.4 ? '📈' : '📉';
-                                    return `<option value="${genre}" data-trend="${trend}">${genre} ${trendIcon}</option>`;
-                                }).join('')}
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Mood</label>
-                            <select id="songMood">
-                                ${moods.map(mood => `<option value="${mood}">${mood}</option>`).join('')}
-                            </select>
+
+                    <!-- Equipamentos do Estúdio -->
+                    <div class="inline-equipments" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                        <div style="display:flex; align-items:center; justify-content: space-between; gap: 12px;">
+                            <div class="eq-left" style="display:flex; align-items:center; gap: 8px;">
+                                <i class="fas fa-cogs"></i>
+                                <div>
+                                    <div style="font-weight:600">Equipamentos do Estúdio</div>
+                                    <div style="opacity:.8; font-size:12px">Nível atual: <span id="eqTierLabel">${this.equipment?.tier || 'basic'}</span></div>
+                                </div>
+                            </div>
+                            <button id="manageEquipBtn" class="btn-secondary" style="padding:8px 12px;">Gerenciar</button>
                         </div>
                     </div>
-                    
+
+                    <!-- Seleção de Produtor -->
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tie"></i> Selecionar Produtor</label>
+                        <select id="selectedProducer">
+                            <option value="">Produção própria (gratuita)</option>
+                            ${teamProducers.map(prod => 
+                                `<option value="team_${prod.role}" data-skill="${prod.bonus}" data-cost="0">
+                                    ${prod.role} (Equipe) - Bônus: +${Math.round(prod.bonus * 100)}%
+                                </option>`
+                            ).join('')}
+                            ${freelanceProducers.map(prod => 
+                                `<option value="freelance_${prod.name}" data-skill="${prod.skill}" data-cost="${prod.cost}">
+                                    ${prod.name} (Freelance) - ${prod.specialty} - $${prod.cost.toLocaleString()}
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </div>
+
+                    <!-- Colaboração/Feat -->
+                    <div class="form-group">
+                        <label><i class="fas fa-microphone-alt"></i> Colaboração (Opcional)</label>
+                        <select id="selectedFeat">
+                            <option value="">Sem colaboração</option>
+                            ${featArtists.map(artist => 
+                                `<option value="${artist.name}" data-cost="${artist.cost}" data-popularity="${artist.popularity}">
+                                    ${artist.name} (${artist.genre}) - $${artist.cost.toLocaleString()} - ${Math.round(artist.popularity * 100)}% popularidade
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </div>
+
+                    <!-- Resumo de Custos -->
+                    <div class="cost-summary" id="costSummary" style="background: rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                        <h4 style="margin: 0 0 8px 0;"><i class="fas fa-calculator"></i> Resumo de Custos</h4>
+                        <div id="costBreakdown">
+                            <div>Gravação básica: $500</div>
+                            <div id="producerCost" style="display: none;">Produtor: $0</div>
+                            <div id="featCost" style="display: none;">Feat: $0</div>
+                            <hr style="margin: 8px 0; border: 1px solid rgba(255,255,255,0.2);">
+                            <div style="font-weight: bold;">Total: <span id="totalCost">$500</span></div>
+                        </div>
+                    </div>
+
                     <div class="recording-options">
-                        <h4>Opções de Gravação</h4>
+                        <h4><i class="fas fa-sliders-h"></i> Qualidade da Gravação</h4>
                         <div class="option-grid">
                             <label class="option-card">
-                                <input type="radio" name="quality" value="basic" checked>
+                                <input type="radio" name="recordingQuality" value="basic" checked>
                                 <div class="option-content">
-                                    <strong>Básica ($500)</strong>
+                                    <strong>Básica (+$0)</strong>
                                     <span>Qualidade padrão</span>
                                 </div>
                             </label>
                             <label class="option-card">
-                                <input type="radio" name="quality" value="professional" ${this.getPlayerMoney() < 2000 ? 'disabled' : ''}>
+                                <input type="radio" name="recordingQuality" value="professional">
                                 <div class="option-content">
-                                    <strong>Profissional ($2,000)</strong>
-                                    <span>Alta qualidade</span>
+                                    <strong>Profissional (+$1,500)</strong>
+                                    <span>Alta qualidade de áudio</span>
                                 </div>
                             </label>
                             <label class="option-card">
-                                <input type="radio" name="quality" value="premium" ${this.getPlayerMoney() < 5000 ? 'disabled' : ''}>
+                                <input type="radio" name="recordingQuality" value="premium">
                                 <div class="option-content">
-                                    <strong>Premium ($5,000)</strong>
+                                    <strong>Premium (+$4,500)</strong>
                                     <span>Qualidade excepcional</span>
                                 </div>
                             </label>
@@ -366,14 +451,74 @@ export class StudioManager {
 
     setupRecordingEvents(modal) {
         const startBtn = modal.querySelector('#startRecordingBtn');
-        const genreSelect = modal.querySelector('#songGenre');
+        const manageEquip = modal.querySelector('#manageEquipBtn');
+        const compositionSelect = modal.querySelector('#selectedComposition');
+        const producerSelect = modal.querySelector('#selectedProducer');
+        const featSelect = modal.querySelector('#selectedFeat');
+        const qualityRadios = modal.querySelectorAll('input[name="recordingQuality"]');
         
-        // Atualiza tendências quando muda gênero
-        genreSelect.addEventListener('change', (e) => {
-            this.updateTrendDisplay(modal, e.target.value);
-        });
+        // Função para atualizar custos
+        const updateCosts = () => {
+            const baseCost = 500;
+            const qualityValue = modal.querySelector('input[name="recordingQuality"]:checked')?.value || 'basic';
+            const qualityCosts = { basic: 0, professional: 1500, premium: 4500 };
+            
+            let producerCost = 0;
+            if (producerSelect.value && producerSelect.value.startsWith('freelance_')) {
+                const producerOption = producerSelect.querySelector('option:checked');
+                producerCost = parseInt(producerOption?.dataset.cost || 0);
+            }
+            
+            let featCost = 0;
+            if (featSelect.value) {
+                const featOption = featSelect.querySelector('option:checked');
+                featCost = parseInt(featOption?.dataset.cost || 0);
+            }
+            
+            const totalCost = baseCost + qualityCosts[qualityValue] + producerCost + featCost;
+            
+            // Atualizar display
+            const producerCostEl = modal.querySelector('#producerCost');
+            const featCostEl = modal.querySelector('#featCost');
+            const totalCostEl = modal.querySelector('#totalCost');
+            
+            if (producerCost > 0) {
+                producerCostEl.textContent = `Produtor: $${producerCost.toLocaleString()}`;
+                producerCostEl.style.display = 'block';
+            } else {
+                producerCostEl.style.display = 'none';
+            }
+            
+            if (featCost > 0) {
+                featCostEl.textContent = `Feat: $${featCost.toLocaleString()}`;
+                featCostEl.style.display = 'block';
+            } else {
+                featCostEl.style.display = 'none';
+            }
+            
+            totalCostEl.textContent = `$${totalCost.toLocaleString()}`;
+            
+            // Verificar se o usuário tem dinheiro suficiente
+            const playerMoney = this.getPlayerMoney();
+            if (totalCost > playerMoney) {
+                startBtn.disabled = true;
+                startBtn.textContent = '💸 Dinheiro Insuficiente';
+            } else {
+                startBtn.disabled = false;
+                startBtn.textContent = 'Iniciar Gravação 🎵';
+            }
+        };
+        
+        // Event listeners para atualizar custos
+        producerSelect.addEventListener('change', updateCosts);
+        featSelect.addEventListener('change', updateCosts);
+        qualityRadios.forEach(radio => radio.addEventListener('change', updateCosts));
         
         this.addPressHandler(startBtn, () => this.processRecording(modal));
+        this.addPressHandler(manageEquip, () => this.openEquipmentInline(modal));
+        
+        // Atualizar custos iniciais
+        updateCosts();
     }
 
     updateTrendDisplay(modal, selectedGenre) {
@@ -398,58 +543,110 @@ export class StudioManager {
     }
 
     processRecording(modal) {
-        const songName = modal.querySelector('#songName').value.trim();
-        const genre = modal.querySelector('#songGenre').value;
-        const mood = modal.querySelector('#songMood').value;
-        const quality = modal.querySelector('input[name="quality"]:checked').value;
+        const compositionId = modal.querySelector('#selectedComposition').value;
+        const recordingQuality = modal.querySelector('input[name="recordingQuality"]:checked').value;
+        const producerOption = modal.querySelector('#selectedProducer').value;
+        const featOption = modal.querySelector('#selectedFeat').value;
         
-        if (!songName) {
-            this.showNotification('Por favor, digite um nome para a música', 'error');
+        if (!compositionId) {
+            this.showNotification('⚠️ Selecione uma composição para gravar', 'warning');
             return;
         }
         
-        const costs = { basic: 500, professional: 2000, premium: 5000 };
-        const cost = costs[quality];
-        
-        if (this.getPlayerMoney() < cost) {
-            this.showNotification('Dinheiro insuficiente para esta qualidade de gravação', 'error');
+        // Encontrar a composição
+        const composition = this.compositions.find(c => c.id == compositionId);
+        if (!composition) {
+            this.showNotification('❌ Composição não encontrada', 'error');
             return;
         }
         
-        // Processa a gravação
+        // Calcular custos
+        const baseCost = 500;
+        const qualityCosts = { basic: 0, professional: 1500, premium: 4500 };
+        const recordingCost = qualityCosts[recordingQuality];
+        
+        let producerCost = 0;
+        let featCost = 0;
+        
+        if (producerOption && producerOption.startsWith('freelance_')) {
+            const producerEl = modal.querySelector('#selectedProducer option:checked');
+            producerCost = parseInt(producerEl?.dataset.cost || 0);
+        }
+        
+        if (featOption) {
+            const featEl = modal.querySelector('#selectedFeat option:checked');
+            featCost = parseInt(featEl?.dataset.cost || 0);
+        }
+        
+        const totalCost = baseCost + recordingCost + producerCost + featCost;
+        
+        if (this.getPlayerMoney() < totalCost) {
+            this.showNotification(`💸 Dinheiro insuficiente. Precisa de $${totalCost.toLocaleString()}`, 'error');
+            return;
+        }
+        
+        // Processa a gravação com os dados da composição
         this.executeRecording({
-            name: songName,
-            genre,
-            mood,
-            quality,
-            cost
+            composition: composition,
+            recordingQuality: recordingQuality,
+            producer: producerOption,
+            featArtist: featOption,
+            totalCost: totalCost
         });
         
         modal.remove();
     }
 
-    executeRecording(songData) {
-        console.log('🎵 Executando gravação:', songData);
+    executeRecording(recordingData) {
+        console.log('🎵 Executando gravação:', recordingData);
         
-        // Deduz o custo
-        this.gameEngine.gameData.player.money -= songData.cost;
+        const { composition, recordingQuality, producer, featArtist, totalCost } = recordingData;
         
-        // Calcula qualidade baseada em equipamentos + opção escolhida
-        const qualityMultipliers = { basic: 0.6, professional: 0.8, premium: 1.0 };
-        const baseQuality = this.equipment.quality * qualityMultipliers[songData.quality];
-        const trendBonus = this.getTrendForGenre(songData.genre) * 0.2;
-        const finalQuality = Math.min(1.0, baseQuality + trendBonus + (Math.random() * 0.1 - 0.05));
+        // Deduz o custo total
+        this.gameEngine.gameData.player.money -= totalCost;
         
-        // Cria a música
+        // Calcula qualidade final baseada na composição + melhorias
+        let finalQuality = composition.quality; // Começa com a qualidade da composição
+        
+        // Bônus do equipamento do estúdio
+        const equipmentMultipliers = { basic: 1.0, professional: 1.2, premium: 1.4, worldClass: 1.6 };
+        const equipmentBonus = (equipmentMultipliers[this.equipment?.tier || 'basic'] - 1.0) * 0.3;
+        
+        // Bônus da qualidade de gravação escolhida
+        const recordingBonuses = { basic: 0, professional: 0.1, premium: 0.2 };
+        const recordingBonus = recordingBonuses[recordingQuality];
+        
+        // Bônus do produtor
+        let producerBonus = 0;
+        if (producer && producer.startsWith('team_')) {
+            producerBonus = 0.05; // Produtor da equipe dá 5% de bônus
+        } else if (producer && producer.startsWith('freelance_')) {
+            producerBonus = 0.15; // Produtor freelance dá 15% de bônus
+        }
+        
+        // Bônus do feat
+        let featBonus = 0;
+        if (featArtist) {
+            featBonus = 0.1; // Feat dá 10% de bônus
+        }
+        
+        // Aplicar todos os bônus
+        finalQuality = Math.min(1.0, finalQuality + equipmentBonus + recordingBonus + producerBonus + featBonus);
+        
+        // Criar a música gravada
         const song = {
             id: Date.now().toString(),
-            name: songData.name,
-            genre: songData.genre,
-            mood: songData.mood,
+            name: composition.title,
+            genre: composition.genre,
+            theme: composition.theme,
+            topic: composition.topic,
             quality: finalQuality,
             createdAt: new Date(),
             streams: 0,
             revenue: 0,
+            recordingQuality: recordingQuality,
+            producer: producer,
+            featArtist: featArtist,
             // Use objeto simples para persistir corretamente em JSON
             chartPositions: {}
         };
@@ -460,13 +657,35 @@ export class StudioManager {
         }
         this.gameEngine.gameData.player.songs.push(song);
         
+        // Remove a composição da lista de pendentes
+        this.compositions = this.compositions.filter(c => c.id !== composition.id);
+        
         // Simula colocação inicial nos charts
     this.addSongToCharts(song);
         
         // Verifica ofertas de gravadoras
         this.checkLabelOffers();
         
-        this.showNotification(`🎵 "${song.name}" gravada com sucesso! Qualidade: ${Math.round(finalQuality * 100)}%`, 'success');
+        // Notificação detalhada sobre a gravação
+        const qualityPercent = Math.round(finalQuality * 100);
+        const improvementPercent = Math.round((finalQuality - composition.quality) * 100);
+        const improvements = [];
+        
+        if (equipmentBonus > 0) improvements.push('Equipamentos');
+        if (recordingBonus > 0) improvements.push('Gravação Pro');
+        if (producerBonus > 0) improvements.push('Produtor');
+        if (featBonus > 0) improvements.push('Feat');
+        
+        const improvementText = improvements.length > 0 ? ` (+${improvementPercent}% por ${improvements.join(', ')})` : '';
+        
+        this.showNotification(
+            `� "${song.name}" gravada!<br>` +
+            `<small>Qualidade final: ${qualityPercent}%${improvementText}<br>` +
+            `💰 Custo total: $${totalCost.toLocaleString()}</small>`, 
+            'success', 
+            6000
+        );
+        
         this.updateStudioStats();
         
         // Salva o progresso
@@ -660,157 +879,46 @@ export class StudioManager {
         }
     }
 
-    // Alias para compatibilidade - openAnalytics chama showAnalyticsInterface
-    openAnalytics(tab = 'charts') {
-        console.log('📊 Abrindo Analytics, aba:', tab);
-        console.log('📊 Estado do gameEngine:', !!this.gameEngine);
-        console.log('📊 Estado do player:', !!this.gameEngine?.gameData?.player);
-        console.log('📊 Estado do modernModalSystem:', !!window.modernModalSystem);
-        
-        try {
-            this.showAnalyticsInterface();
-            
-            // Se especificou uma aba, tentar ativá-la após um pequeno delay
-            if (tab && tab !== 'charts') {
-                setTimeout(() => {
-                    try {
-                        const modal = document.querySelector('#analytics-modal');
-                        if (modal) {
-                            const tabBtn = modal.querySelector(`[data-tab="${tab}"]`);
-                            if (tabBtn) {
-                                tabBtn.click();
-                            }
-                        }
-                    } catch (e) {
-                        console.warn('Falha ao ativar aba:', tab, e);
-                    }
-                }, 200);
-            }
-        } catch (error) {
-            console.error('❌ Erro ao abrir Analytics:', error);
-            this.showNotification('❌ Erro ao abrir Analytics. Tente novamente.', 'error');
-        }
-    }
-
     showAnalyticsInterface() {
-        try {
-            console.log('📊 showAnalyticsInterface chamado');
-            
-            if (!window.modernModalSystem) {
-                console.error('❌ modernModalSystem não disponível');
-                this.showNotification('❌ Sistema de modais não disponível', 'error');
-                return;
-            }
-
-            const content = this.getAnalyticsHTML();
-            console.log('📊 Conteúdo gerado:', content ? 'OK' : 'VAZIO');
-
-            const modal = window.modernModalSystem.createModal({
-                id: 'analytics-modal',
-                title: '📊 Analytics & Charts',
-                content: content,
-                type: 'analytics'
-            });
-            
-            if (!modal) {
-                console.error('❌ Falha ao criar modal');
-                this.showNotification('❌ Erro ao criar modal Analytics', 'error');
-                return;
-            }
-
-            window.modernModalSystem.openModal(modal);
-            this.setupAnalyticsEvents(modal);
-            console.log('✅ Analytics modal aberto com sucesso');
-            
-        } catch (error) {
-            console.error('❌ Erro em showAnalyticsInterface:', error);
-            this.showNotification('❌ Erro ao abrir Analytics: ' + error.message, 'error');
-        }
+        const modal = window.modernModalSystem.createModal({
+            id: 'analytics-modal',
+            title: '📊 Analytics & Charts',
+            content: this.getAnalyticsHTML(),
+            type: 'analytics'
+        });
+        window.modernModalSystem.openModal(modal);
+        this.setupAnalyticsEvents(modal);
     }
 
     getAnalyticsHTML() {
-        try {
-            console.log('📊 getAnalyticsHTML chamado');
-            
-            const player = this.gameEngine?.gameData?.player;
-            if (!player) {
-                console.warn('⚠️ Player não encontrado para Analytics');
-                return `
-                    <div class="analytics-interface">
-                        <div class="analytics-header">
-                            <h3>📊 Analytics não disponível</h3>
-                            <p>Dados do jogador não encontrados. Tente recarregar a página.</p>
-                        </div>
-                    </div>
-                `;
-            }
-
-            const songs = player.songs || [];
-            console.log('📊 Músicas encontradas:', songs.length);
-            
-            let chartsHTML = '';
-            let songsHTML = '';
-            let revenueHTML = '';
-            
-            try {
-                chartsHTML = this.getChartsHTML();
-            } catch (e) {
-                console.warn('⚠️ Erro ao gerar charts HTML:', e);
-                chartsHTML = '<p>Erro ao carregar charts</p>';
-            }
-            
-            try {
-                songsHTML = this.getSongsHTML(songs);
-            } catch (e) {
-                console.warn('⚠️ Erro ao gerar songs HTML:', e);
-                songsHTML = '<p>Erro ao carregar músicas</p>';
-            }
-            
-            try {
-                revenueHTML = this.getRevenueHTML(songs);
-            } catch (e) {
-                console.warn('⚠️ Erro ao gerar revenue HTML:', e);
-                revenueHTML = '<p>Erro ao carregar receitas</p>';
-            }
-            
-            return `
-                <div class="analytics-interface">
-                    <div class="analytics-header">
-                        <h3>📊 Suas Estatísticas Musicais</h3>
-                        <p>Músicas: ${songs.length} | Player: ${player.firstName || 'N/A'}</p>
-                    </div>
-                    
-                    <div class="analytics-tabs">
-                        <button class="tab-btn active" data-tab="charts">Charts Regionais</button>
-                        <button class="tab-btn" data-tab="songs">Suas Músicas</button>
-                        <button class="tab-btn" data-tab="revenue">Receita</button>
-                    </div>
-                    
-                    <div class="tab-content active" id="charts-tab">
-                        ${chartsHTML}
-                    </div>
-                    
-                    <div class="tab-content" id="songs-tab">
-                        ${songsHTML}
-                    </div>
-                    
-                    <div class="tab-content" id="revenue-tab">
-                        ${revenueHTML}
-                    </div>
+        const player = this.gameEngine.gameData.player;
+        const songs = player.songs || [];
+        
+        return `
+            <div class="analytics-interface">
+                <div class="analytics-header">
+                    <h3>📊 Suas Estatísticas Musicais</h3>
                 </div>
-            `;
-        } catch (error) {
-            console.error('❌ Erro em getAnalyticsHTML:', error);
-            return `
-                <div class="analytics-interface">
-                    <div class="analytics-header">
-                        <h3>❌ Erro no Analytics</h3>
-                        <p>Erro: ${error.message}</p>
-                        <p>Tente recarregar a página.</p>
-                    </div>
+                
+                <div class="analytics-tabs">
+                    <button class="tab-btn active" data-tab="charts">Charts Regionais</button>
+                    <button class="tab-btn" data-tab="songs">Suas Músicas</button>
+                    <button class="tab-btn" data-tab="revenue">Receita</button>
                 </div>
-            `;
-        }
+                
+                <div class="tab-content active" id="charts-tab">
+                    ${this.getChartsHTML()}
+                </div>
+                
+                <div class="tab-content" id="songs-tab">
+                    ${this.getSongsHTML(songs)}
+                </div>
+                
+                <div class="tab-content" id="revenue-tab">
+                    ${this.getRevenueHTML(songs)}
+                </div>
+            </div>
+        `;
     }
 
     getChartsHTML() {
@@ -940,33 +1048,175 @@ export class StudioManager {
     }
 
     showCollaborationInterface() {
-        this.showNotification('👥 Sistema de colaborações em desenvolvimento', 'info');
+        this.openCollabInbox();
     }
 
-    showEquipmentInterface() {
-        this.showNotification('🎛️ Gerenciamento de equipamentos em desenvolvimento', 'info');
+    // Inbox de colaborações recebidas (pedidos de feat)
+    openCollabInbox() {
+        const items = this.collabInbox && this.collabInbox.length ? this.collabInbox : [
+            { id:'c1', artist:'Nova Artista', message:'Feat em single Pop', genre:'Pop' },
+            { id:'c2', artist:'MC Flow', message:'Verso em faixa Hip-Hop', genre:'Hip-Hop' }
+        ];
+        const html = `
+            <div class="collab-inbox">
+                ${items.map(it => `
+                    <div class="collab-item" data-id="${it.id}">
+                        <div class="ci-main">
+                            <strong>${it.artist}</strong> • ${it.genre}
+                            <div class="ci-msg">${it.message}</div>
+                        </div>
+                        <div class="ci-actions">
+                            <button class="btn-secondary" data-act="reject">Recusar</button>
+                            <button class="btn-primary" data-act="accept">Aceitar</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+        const modal = window.modernModalSystem.createModal({ id:'collab-inbox', title:'👥 Colaborações Recebidas', content: html, size:'medium' });
+        window.modernModalSystem.openModal(modal);
+        modal.querySelectorAll('.collab-item .btn-primary').forEach(btn => {
+            this.addPressHandler(btn, (e) => {
+                const id = e.currentTarget.closest('.collab-item')?.dataset.id;
+                this.acceptCollab(id);
+                modal.remove();
+            });
+        });
+        modal.querySelectorAll('.collab-item .btn-secondary').forEach(btn => {
+            this.addPressHandler(btn, (e) => {
+                const id = e.currentTarget.closest('.collab-item')?.dataset.id;
+                this.rejectCollab(id);
+                e.currentTarget.closest('.collab-item')?.remove();
+            });
+        });
     }
+
+    acceptCollab(id) {
+        this.showNotification('🤝 Colaboração aceita! Bônus aplicado na próxima gravação.', 'success');
+        if (!this._acceptedCollabs) this._acceptedCollabs = new Set();
+        this._acceptedCollabs.add(id);
+    }
+    rejectCollab(id) {
+        this.showNotification('❌ Colaboração recusada.', 'info');
+    }
+
+    // Gestão de equipe (compositores, produtores etc.)
+    openTeamInterface() {
+        const members = this.team || [];
+        const candidates = [
+            { id:'t1', role:'Compositor', bonus:'+5% qualidade', cost:1500 },
+            { id:'t2', role:'Produtor', bonus:'+5% eficiência', cost:2000 },
+            { id:'t3', role:'Engenheiro de Áudio', bonus:'+5% masterização', cost:1800 }
+        ];
+        const html = `
+            <div class="team-screen">
+                <h4>Equipe Atual</h4>
+                <div class="team-list">${members.length? members.map(m=>`<div>• ${m.role}</div>`).join('') : '<em>Ninguém na equipe ainda</em>'}</div>
+                <h4 style="margin-top:12px;">Candidatos</h4>
+                <div class="team-candidates">
+                    ${candidates.map(c=>`<div class="cand" data-id="${c.id}">${c.role} — ${c.bonus} • $${c.cost.toLocaleString()} <button class="btn-primary" data-hire="${c.id}">Contratar</button></div>`).join('')}
+                </div>
+            </div>`;
+        const modal = window.modernModalSystem.createModal({ id:'studio-team', title:'👥 Equipe do Estúdio', content: html, size:'medium' });
+        window.modernModalSystem.openModal(modal);
+        modal.querySelectorAll('[data-hire]').forEach(btn => {
+            this.addPressHandler(btn, (e) => {
+                const id = e.currentTarget.getAttribute('data-hire');
+                const pick = candidates.find(c=>c.id===id);
+                if (!pick) return;
+                if (this.getPlayerMoney() < pick.cost) {
+                    this.showNotification('Dinheiro insuficiente para contratar', 'error');
+                    return;
+                }
+                this.gameEngine.gameData.player.money -= pick.cost;
+                if (!this.team) this.team = [];
+                this.team.push({ role: pick.role, bonus: pick.bonus });
+                this.showNotification(`✅ ${pick.role} contratado(a)!`, 'success');
+                modal.remove();
+                this.updateStudioStats();
+                this.gameEngine.systems?.dataManager?.saveGame?.();
+            });
+        });
+    }
+
+    // Gestão de equipamentos embutida na UI de gravação
+    openEquipmentInline(modal) {
+        const tiers = [
+            { id:'basic', label:'Básico', mult:1.0, cost:0 },
+            { id:'professional', label:'Profissional', mult:1.3, cost:15000 },
+            { id:'premium', label:'Premium', mult:1.6, cost:50000 },
+            { id:'worldClass', label:'World Class', mult:2.0, cost:150000 }
+        ];
+        const current = this.equipment?.tier || 'basic';
+        const html = `
+            <div class="equip-tier-list">
+                ${tiers.map(t=>`<label class="tier-item">
+                    <input type="radio" name="eqTier" value="${t.id}" ${t.id===current?'checked':''}>
+                    <div class="tier-content"><strong>${t.label}</strong><span>Qualidade x${t.mult} • $${t.cost.toLocaleString()}</span></div>
+                </label>`).join('')}
+            </div>
+            <div style="text-align:right; margin-top:12px;">
+                <button class="btn-primary" id="saveEqTier">Salvar</button>
+            </div>`;
+        const m = window.modernModalSystem.createModal({ id:'equipments-inline', title:'🎛️ Equipamentos do Estúdio', content: html, size:'small' });
+        window.modernModalSystem.openModal(m);
+        const saveBtn = m.querySelector('#saveEqTier');
+        this.addPressHandler(saveBtn, () => {
+            const sel = m.querySelector('input[name="eqTier"]:checked')?.value;
+            if (!sel) return;
+            this.equipment.tier = sel;
+            // Atualiza rótulo do modal de gravação
+            try { modal.querySelector('#eqTierLabel').textContent = sel; } catch(_){ }
+            this.showNotification('💽 Equipamento atualizado!', 'success');
+            m.remove();
+            this.updateStudioStats();
+            this.gameEngine.systems?.dataManager?.saveGame?.();
+        });
+    }
+
 
     updateStudioStats() {
-        // Atualiza as estatísticas do estúdio na interface
+        // Atualiza as estatísticas do estúdio na interface (dashboard + cards)
         const player = this.gameEngine.gameData.player;
-        const songs = player.songs || [];
-        
-        // Atualiza contadores na página do estúdio
-        const statsElements = {
-            songs: document.querySelector('#studioPage .stats-grid .stat-item:nth-child(1) .stat-value'),
-            quality: document.querySelector('#studioPage .stats-grid .stat-item:nth-child(2) .stat-value'),
-            time: document.querySelector('#studioPage .stats-grid .stat-item:nth-child(3) .stat-value'),
-            costs: document.querySelector('#studioPage .stats-grid .stat-item:nth-child(4) .stat-value')
-        };
-        
-        if (statsElements.songs) {
-            statsElements.songs.textContent = songs.length;
+        const songsArr = Array.isArray(player.songs) ? player.songs : [];
+        const songs = songsArr;
+
+        // Dashboard do Estúdio
+        const elSongs = document.getElementById('studioSongsCount');
+        const elQuality = document.getElementById('studioAvgQuality');
+        const elStreams = document.getElementById('studioTotalStreams');
+        const elRevenue = document.getElementById('studioRevenue');
+
+        if (elSongs) elSongs.textContent = String(songs.length);
+        if (songs.length > 0) {
+            const avgQ = songs.reduce((s, x) => s + (x.quality || 0), 0) / songs.length;
+            if (elQuality) elQuality.textContent = `${Math.round((avgQ <= 1 ? avgQ*100 : avgQ) )}%`;
+            const totalStreams = songs.reduce((s, x) => s + (x.streams || 0), 0);
+            const totalRevenue = songs.reduce((s, x) => s + (x.revenue || 0), 0);
+            if (elStreams) elStreams.textContent = totalStreams.toLocaleString();
+            if (elRevenue) elRevenue.textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
+        } else {
+            if (elQuality) elQuality.textContent = '0%';
+            if (elStreams) elStreams.textContent = '0';
+            if (elRevenue) elRevenue.textContent = '$0';
         }
-        
-        if (statsElements.quality && songs.length > 0) {
-            const avgQuality = songs.reduce((sum, song) => sum + song.quality, 0) / songs.length;
-            statsElements.quality.textContent = Math.round(avgQuality * 100) + '%';
+
+        // Atualiza status dos cards
+        const recordStatus = document.querySelector('#studioPage .record-card .nav-card-status');
+        if (recordStatus) {
+            const pend = (this.compositions?.length || 0);
+            recordStatus.innerHTML = `<i class="fas fa-circle"></i> ${pend} Pendentes`;
+        }
+
+        const collabStatus = document.querySelector('#studioPage .collab-card .nav-card-status');
+        if (collabStatus) {
+            const pend = (this.collabInbox?.length || 0);
+            collabStatus.innerHTML = `<i class=\"fas fa-circle\"></i> ${pend} Pedidos`;
+        }
+
+        const teamStatus = document.querySelector('#studioPage .team-card .nav-card-status');
+        if (teamStatus) {
+            const qtd = (this.team?.length || 0);
+            teamStatus.innerHTML = `<i class=\"fas fa-circle\"></i> ${qtd} Membros`;
         }
     }
 
@@ -992,6 +1242,8 @@ export class StudioManager {
         this.updateCharts();
         this.calculateWeeklyRevenue();
         this.updateTrends();
+        // Atualiza dashboard e cards após as mudanças semanais
+        try { this.updateStudioStats(); } catch (e) { console.warn('updateStudioStats falhou após weeklyUpdate', e); }
     }
 
     updateCharts() {
@@ -1622,15 +1874,7 @@ export class StudioManager {
         }
     }
 
-    updateStudioStats() {
-        // Atualiza as estatísticas do estúdio na interface
-        const composedCount = this.compositions ? this.compositions.length : 0;
-        const recordedCount = this.currentProjects ? this.currentProjects.length : 0;
-        
-        // Atualiza contadores na interface
-        document.querySelector('.record-card .nav-card-status').innerHTML = 
-            `<i class="fas fa-circle"></i> ${composedCount} Pendentes`;
-    }
+    
 
     // Função para abrir interface de gravação (que você já tinha)
     openRecordingInterface() {
@@ -1655,5 +1899,224 @@ export class StudioManager {
         // Abre interface de equipamentos
         console.log('Abrindo interface de equipamentos...');
         this.showNotification('⚙️ Interface de Equipamentos será implementada em breve!', 'info');
+    }
+
+    // Eventos para nova interface profissional
+    setupRecordingEventsPro(modal, recordingPro) {
+        // Configurar carousels de estúdio e produtor
+        recordingPro.setupCarousels();
+
+        // Botão de procurar artistas para colaboração
+        const collabBrowserBtn = modal.querySelector('#openCollabBrowserBtn');
+        if (collabBrowserBtn) {
+            collabBrowserBtn.addEventListener('click', () => {
+                recordingPro.openCollabBrowser();
+            });
+        }
+
+        // Atualizar custos quando seleções mudarem
+        const studioInputs = modal.querySelectorAll('input[name="selectedStudio"]');
+        const producerInputs = modal.querySelectorAll('input[name="selectedProducer"]');
+        const compositionSelect = modal.querySelector('#selectedComposition');
+
+        const updateCosts = () => {
+            let studioCost = 0;
+            let producerCost = 0;
+            let collabCost = recordingPro.selectedCollabs ? 
+                recordingPro.selectedCollabs.reduce((sum, collab) => sum + collab.cost, 0) : 0;
+
+            // Calcular custo do estúdio
+            const selectedStudio = modal.querySelector('input[name="selectedStudio"]:checked');
+            if (selectedStudio) {
+                studioCost = parseInt(selectedStudio.dataset.cost) || 0;
+            }
+
+            // Calcular custo do produtor
+            const selectedProducer = modal.querySelector('input[name="selectedProducer"]:checked');
+            if (selectedProducer) {
+                producerCost = parseInt(selectedProducer.dataset.cost) || 0;
+            }
+
+            // Atualizar display de custos
+            const studioCostDisplay = modal.querySelector('#studioCost');
+            const producerCostDisplay = modal.querySelector('#producerCostDisplay');
+            const collabCostDisplay = modal.querySelector('#collabCost');
+            const totalCostDisplay = modal.querySelector('#totalCost');
+            const collabCostItem = modal.querySelector('#collabCostItem');
+
+            if (studioCostDisplay) studioCostDisplay.textContent = `$${studioCost.toLocaleString()}`;
+            if (producerCostDisplay) producerCostDisplay.textContent = `$${producerCost.toLocaleString()}`;
+            if (collabCostDisplay) collabCostDisplay.textContent = `$${collabCost.toLocaleString()}`;
+            if (totalCostDisplay) totalCostDisplay.textContent = `$${(studioCost + producerCost + collabCost).toLocaleString()}`;
+            
+            if (collabCostItem) {
+                collabCostItem.style.display = collabCost > 0 ? 'flex' : 'none';
+            }
+
+            // Calcular e mostrar qualidade estimada
+            this.updateQualityPreview(modal, selectedStudio, selectedProducer, compositionSelect, recordingPro.selectedCollabs);
+
+            // Verificar se pode pagar
+            const totalCost = studioCost + producerCost + collabCost;
+            const startBtn = modal.querySelector('#startRecordingBtn');
+            const playerMoney = this.getPlayerMoney();
+            
+            if (startBtn) {
+                startBtn.disabled = totalCost > playerMoney || !compositionSelect?.value;
+                startBtn.textContent = totalCost > playerMoney ? 
+                    '💰 Dinheiro Insuficiente' : 
+                    (compositionSelect?.value ? '🎵 Iniciar Gravação' : '🎵 Selecione uma Faixa');
+            }
+        };
+
+        // Eventos de mudança
+        studioInputs.forEach(input => {
+            input.addEventListener('change', updateCosts);
+        });
+        producerInputs.forEach(input => {
+            input.addEventListener('change', updateCosts);
+        });
+        if (compositionSelect) {
+            compositionSelect.addEventListener('change', updateCosts);
+        }
+
+        // Botão de iniciar gravação
+        const startBtn = modal.querySelector('#startRecordingBtn');
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                this.executeRecordingPro(modal, recordingPro);
+            });
+        }
+
+        // Calcular custos iniciais
+        setTimeout(updateCosts, 100);
+    }
+
+    updateQualityPreview(modal, selectedStudio, selectedProducer, compositionSelect, selectedCollabs) {
+        const qualityFill = modal.querySelector('.quality-fill');
+        const qualityText = modal.querySelector('#estimatedQuality');
+        
+        if (!qualityFill || !qualityText || !compositionSelect?.value) {
+            if (qualityFill) qualityFill.style.width = '0%';
+            if (qualityText) qualityText.textContent = '--';
+            return;
+        }
+
+        // Qualidade base da composição
+        const composition = this.compositions.find(c => c.id === compositionSelect.value);
+        let baseQuality = composition?.quality || 0.5;
+
+        // Multiplicador do estúdio
+        let studioMultiplier = 1.0;
+        if (selectedStudio) {
+            studioMultiplier = parseFloat(selectedStudio.dataset.multiplier) || 1.0;
+        }
+
+        // Habilidade do produtor
+        let producerSkill = 0.3;
+        if (selectedProducer) {
+            producerSkill = parseFloat(selectedProducer.dataset.skill) || 0.3;
+        }
+
+        // Bonus de colaboração (múltiplos artistas)
+        let collabBonus = 0;
+        if (selectedCollabs && selectedCollabs.length > 0) {
+            selectedCollabs.forEach(collab => {
+                collabBonus += (collab.rating * 0.05) + (collab.hype * 0.001);
+            });
+            // Aplicar diminishing returns para muitos artistas
+            collabBonus = collabBonus * (1 - (selectedCollabs.length - 1) * 0.1);
+        }
+
+        // Cálculo final
+        let finalQuality = baseQuality * studioMultiplier * (0.7 + producerSkill * 0.3) + collabBonus;
+        finalQuality = Math.min(finalQuality, 1.0); // Cap em 100%
+
+        const qualityPercent = Math.round(finalQuality * 100);
+        qualityFill.style.width = `${qualityPercent}%`;
+        qualityText.textContent = `${qualityPercent}%`;
+    }
+
+    executeRecordingPro(modal, recordingPro) {
+        const compositionSelect = modal.querySelector('#selectedComposition');
+        const selectedStudio = modal.querySelector('input[name="selectedStudio"]:checked');
+        const selectedProducer = modal.querySelector('input[name="selectedProducer"]:checked');
+
+        if (!compositionSelect?.value) {
+            this.showNotification('Selecione uma composição para gravar.', 'warning');
+            return;
+        }
+
+        const composition = this.compositions.find(c => c.id === compositionSelect.value);
+        if (!composition) {
+            this.showNotification('Composição não encontrada.', 'error');
+            return;
+        }
+
+        // Calcular custos
+        const studioCost = parseInt(selectedStudio?.dataset.cost) || 0;
+        const producerCost = parseInt(selectedProducer?.dataset.cost) || 0;
+        const collabCost = recordingPro.selectedCollabs ? 
+            recordingPro.selectedCollabs.reduce((sum, collab) => sum + collab.cost, 0) : 0;
+        const totalCost = studioCost + producerCost + collabCost;
+
+        // Verificar fundos
+        if (totalCost > this.getPlayerMoney()) {
+            this.showNotification('Dinheiro insuficiente para essa configuração.', 'warning');
+            return;
+        }
+
+        // Aplicar bonificações conforme configuração escolhida
+        const studioMultiplier = parseFloat(selectedStudio?.dataset.multiplier) || 1.0;
+        const producerSkill = parseFloat(selectedProducer?.dataset.skill) || 0.3;
+        let collabBonus = 0;
+        if (recordingPro.selectedCollabs && recordingPro.selectedCollabs.length > 0) {
+            recordingPro.selectedCollabs.forEach(collab => {
+                collabBonus += (collab.rating * 0.05) + (collab.hype * 0.001);
+            });
+            // Aplicar diminishing returns para muitos artistas
+            collabBonus = collabBonus * (1 - (recordingPro.selectedCollabs.length - 1) * 0.1);
+        }
+
+        // Processar gravação
+        const recording = {
+            id: 'rec_' + Date.now(),
+            compositionId: composition.id,
+            title: composition.title,
+            genre: composition.genre,
+            baseQuality: composition.quality,
+            finalQuality: Math.min(composition.quality * studioMultiplier * (0.7 + producerSkill * 0.3) + collabBonus, 1.0),
+            studioUsed: selectedStudio?.value || 'own',
+            producerUsed: selectedProducer?.value || 'self',
+            collaborations: recordingPro.selectedCollabs || [],
+            costs: { studio: studioCost, producer: producerCost, collaboration: collabCost },
+            totalCost: totalCost,
+            recordedAt: Date.now(),
+            status: 'recorded'
+        };
+
+        // Salvar gravação
+        if (!this.recordings) this.recordings = [];
+        this.recordings.push(recording);
+
+        // Deduzir dinheiro
+        this.gameEngine.gameData.player.money -= totalCost;
+
+        // Marcar composição como gravada
+        composition.status = 'recorded';
+        composition.recordingId = recording.id;
+
+        // Feedback
+        this.showNotification(`🎵 "${recording.title}" gravada com sucesso! Qualidade: ${Math.round(recording.finalQuality * 100)}%`, 'success');
+
+        // Fechar modal
+        modal.remove();
+
+        // Atualizar estatísticas
+        this.updateStudioStats();
+    }
+
+    getPlayerMoney() {
+        return this.gameEngine?.gameData?.player?.money || 0;
     }
 }
