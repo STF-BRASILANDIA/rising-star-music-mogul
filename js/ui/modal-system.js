@@ -63,6 +63,9 @@ class ModernModalSystem {
             body.mm-open .modern-modal .modern-modal-body,
             body.mm-open .modern-modal .modern-modal-body.mm-scrollable,
             body.mm-open .modern-modal .modern-modal-body.mm-force-scroll { touch-action: pan-y; overscroll-behavior: contain; }
+            /* Ativação discreta de scroll quando necessário */
+            .modern-modal .modern-modal-body.mm-scroll-active { overflow-y:auto !important; -webkit-overflow-scrolling:touch; }
+            .modern-modal .modern-modal-body { max-height: var(--mm-body-max, auto); }
         `;
         document.head.appendChild(style);
     }
@@ -231,18 +234,29 @@ class ModernModalSystem {
             }
 
             body .modern-modal .modern-modal-body {
-                /* 🔧 Robustez para mobile: evitar que o conteúdo desapareça em webviews (iOS) */
+                /* 🔧 Mobile scroll fix: altura definida + overflow garantido */
                 padding: 16px 18px 20px 18px !important;
-                overflow-y: auto !important;
-                max-height: calc(90vh - 100px) !important;
+                overflow-y: scroll !important;
+                height: auto !important;
+                min-height: 150px !important;
+                max-height: var(--mm-body-max, calc(90vh - 100px)) !important;
                 background: transparent !important;
-                flex: 1 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: flex-start !important;
-                align-items: stretch !important;
+                display: block !important;
                 box-sizing: border-box !important;
                 position: relative !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            /* Layouts específicos com rolagem explícita */
+            body .modern-modal .modern-modal-body.modal-skills-layout,
+            body .modern-modal .modern-modal-body.modal-settings-layout {
+                overflow-y: auto !important;
+                overscroll-behavior: contain !important;
+            }
+            body .modern-modal .modern-modal-body.modal-skills-layout > .skills-grid,
+            body .modern-modal .modern-modal-body.modal-settings-layout > .settings-container {
+                display: block !important;
+                min-height: fit-content !important;
             }
 
             /* Garantir que filhos não sejam escondidos por CSS externo agressivo */
@@ -573,6 +587,8 @@ class ModernModalSystem {
 
         // Ajustar layout responsivo (especialmente em mobile onde estava sobrando espaço)
         setTimeout(() => this._adjustModalViewport(modalElement), 80);
+    // Agendar observadores de conteúdo / scroll após layout inicial
+    setTimeout(() => this._attachContentObserver(modalElement), 140);
 
         // Setup close button - evitar listeners duplicados
         const closeBtn = modalElement.querySelector('.modern-modal-close');
@@ -593,6 +609,12 @@ class ModernModalSystem {
 
         // Configurar bloqueio de scroll de fundo e permitir apenas dentro do body
         this._setupScrollIsolation(modalElement);
+
+        // Observar crescimento dinâmico de conteúdo e reajustar viewport
+        this._attachResizeObserver(modalElement);
+
+        // Auto-fix caso overflow não esteja habilitado corretamente
+        setTimeout(() => this._autoFixScroll(modalElement), 140);
     }
 
     /**
@@ -632,11 +654,9 @@ class ModernModalSystem {
             modalElement.style.setProperty('--mm-header-h', headerH + 'px');
             modalElement.style.setProperty('--mm-footer-h', footerH + 'px');
             const bodyMax = usable - headerH - footerH - 6;
-            if (bodyMax > 40) {
-                bodyEl.style.maxHeight = bodyMax + 'px';
-            } else {
-                bodyEl.style.maxHeight = Math.max(usable - headerH - footerH - 6, 120) + 'px';
-            }
+            const finalBodyMax = bodyMax > 40 ? bodyMax : Math.max(usable - headerH - footerH - 6, 120);
+            bodyEl.style.maxHeight = finalBodyMax + 'px';
+            modalElement.style.setProperty('--mm-body-max', finalBodyMax + 'px');
             bodyEl.style.overflowY = 'auto';
             bodyEl.style.webkitOverflowScrolling = 'touch';
         } else {
@@ -648,8 +668,10 @@ class ModernModalSystem {
             const bodyMax = targetMax - headerH - footerH - 8;
             if (bodyMax > 160) {
                 bodyEl.style.maxHeight = bodyMax + 'px';
+                modalElement.style.setProperty('--mm-body-max', bodyMax + 'px');
             } else {
                 bodyEl.style.removeProperty('max-height');
+                modalElement.style.setProperty('--mm-body-max', bodyMax > 0 ? bodyMax + 'px' : '');
             }
             bodyEl.style.overflowY = 'auto';
             bodyEl.style.webkitOverflowScrolling = 'touch';
@@ -658,6 +680,7 @@ class ModernModalSystem {
                 const approx = Math.round(vh * 0.7);
                 if (bodyEl.scrollHeight > approx) {
                     bodyEl.style.maxHeight = approx + 'px';
+                    modalElement.style.setProperty('--mm-body-max', approx + 'px');
                 }
             }
         }
@@ -668,8 +691,51 @@ class ModernModalSystem {
                 if (bodyEl.scrollHeight > bodyEl.clientHeight + 4 && getComputedStyle(bodyEl).overflowY === 'visible') {
                     bodyEl.style.overflowY = 'auto';
                 }
+                this._recalcBodyScroll(modalElement);
             } catch {}
         }, 120);
+    }
+
+    /**
+     * Observa alterações de conteúdo para manter scroll consistente sem mudar design.
+     */
+    _attachContentObserver(modalElement) {
+        if (!modalElement || !modalElement.isConnected) return;
+        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+        // Evitar múltiplos
+        if (!this._contentObservers) this._contentObservers = new Map();
+        if (this._contentObservers.has(modalElement)) return;
+
+        const recalc = () => this._recalcBodyScroll(modalElement);
+        let lastH = bodyEl.scrollHeight;
+        const mo = new MutationObserver(() => {
+            const current = bodyEl.scrollHeight;
+            if (Math.abs(current - lastH) > 24) {
+                lastH = current;
+                recalc();
+            }
+        });
+        try { mo.observe(bodyEl, { childList: true, subtree: true, characterData: true }); } catch {}
+        // ResizeObserver se disponível
+        let ro = null;
+        if (window.ResizeObserver) {
+            ro = new ResizeObserver(() => recalc());
+            try { ro.observe(bodyEl); } catch {}
+        }
+        this._contentObservers.set(modalElement, { mo, ro });
+        // Recalc inicial
+        recalc();
+    }
+
+    /**
+     * Recalcula necessidade de scroll e ativa classe sem alterar layout visual.
+     */
+    _recalcBodyScroll(modalElement) {
+        const bodyEl = modalElement && modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+        const needsScroll = bodyEl.scrollHeight > bodyEl.clientHeight + 2;
+        bodyEl.classList.toggle('mm-scroll-active', needsScroll);
     }
 
     /**
@@ -856,7 +922,8 @@ class ModernModalSystem {
     /**
      * Define o layout do modal baseado no tipo
      */
-    getModalLayout(type, { id, title, content, showFooter, footerContent }) {
+    getModalLayout(type, options = {}) {
+        const { id, title = 'Modal', content = '', showFooter = false, footerContent = '' } = options;
         const safeId = id || ('modal-' + Date.now());
         const baseHeader = `
             <div class="modern-modal-header">
@@ -1063,6 +1130,51 @@ class ModernModalSystem {
         } catch (err) {
             console.warn('Post close audit error', err);
         }
+    }
+
+    /**
+     * Observa mudanças de conteúdo e recalcula viewport se necessário.
+     */
+    _attachResizeObserver(modalElement) {
+        if (!modalElement || !modalElement.isConnected) return;
+        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+        if (bodyEl._mmObserverAttached) return;
+        const ro = new MutationObserver((muts) => {
+            // Evitar spam: debounce simples
+            if (bodyEl._mmResizeTimer) clearTimeout(bodyEl._mmResizeTimer);
+            bodyEl._mmResizeTimer = setTimeout(() => {
+                try { this._adjustModalViewport(modalElement); this._autoFixScroll(modalElement); } catch {}
+            }, 60);
+        });
+        ro.observe(bodyEl, { childList: true, subtree: true, characterData: true });
+        bodyEl._mmObserverAttached = true;
+        bodyEl._mmObserver = ro;
+    }
+
+    /**
+     * Corrige automaticamente se o scroll deveria existir mas não está presente.
+     */
+    _autoFixScroll(modalElement) {
+        if (!modalElement) return;
+        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+        const needsScroll = bodyEl.scrollHeight > bodyEl.clientHeight + 4;
+        const cs = getComputedStyle(bodyEl);
+        if (needsScroll && !(cs.overflowY === 'auto' || cs.overflowY === 'scroll')) {
+            bodyEl.style.overflowY = 'auto';
+        }
+        // Se ainda sem scroll, tentar forçar max-height com base no viewport
+        if (needsScroll && bodyEl.scrollHeight <= window.innerHeight && !bodyEl.style.maxHeight) {
+            bodyEl.style.maxHeight = Math.round(window.innerHeight * 0.82) + 'px';
+        }
+    }
+
+    /**
+     * API pública para recalcular manualmente (debug / scripts externos)
+     */
+    recalcAllModals() {
+        this.modalStack.forEach(m => { this._adjustModalViewport(m); this._autoFixScroll(m); });
     }
 
     /**
