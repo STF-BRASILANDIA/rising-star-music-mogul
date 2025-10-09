@@ -1018,12 +1018,86 @@ export class GameHub {
 
     // Ações de criação musical
     _createSong() {
-        this._showNotification('Criando nova música...', 'info');
-        // TODO: Integrar com sistema de criação de música
-        if (this.game?.createTrack) {
-            this.game.createTrack();
-        } else {
-            console.log('🎵 Sistema de criação de música será implementado');
+        try {
+            // Evitar múltiplos modais abertos duplicados
+            const existing = document.getElementById('song-create-modal');
+            let modal;
+            if (existing) {
+                modal = existing;
+            } else {
+                const content = `
+                    <form id="songCreationForm" class="song-create-form" autocomplete="off">
+                        <div class="form-row">
+                            <label>Título da Música</label>
+                            <input type="text" id="songTitleInput" required placeholder="Ex: Sunrise Dreams" maxlength="60" />
+                        </div>
+                        <div class="form-row">
+                            <label>Gênero</label>
+                            <select id="songGenreSelect" required>
+                                <option value="pop">Pop</option>
+                                <option value="rock">Rock</option>
+                                <option value="rap">Rap</option>
+                                <option value="edm">EDM</option>
+                                <option value="rnb">R&B</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>Inspiração / Mood</label>
+                            <input type="text" id="songMoodInput" placeholder="Ex: nostálgica, energética" maxlength="80" />
+                        </div>
+                        <div class="form-row">
+                            <label>Notas</label>
+                            <textarea id="songNotesInput" rows="3" placeholder="Ideias, temas, referência..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelSongBtn" class="btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn-primary">Criar 🎵</button>
+                        </div>
+                    </form>`;
+                modal = window.modernModalSystem.createModal({
+                    id: 'song-create-modal',
+                    title: '🎵 Criar Nova Música',
+                    type: 'standard',
+                    size: 'medium',
+                    content
+                });
+            }
+            window.modernModalSystem.openModal(modal);
+
+            const form = modal.querySelector('#songCreationForm');
+            if (form && !form.dataset.bound) {
+                form.dataset.bound = '1';
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const title = form.querySelector('#songTitleInput').value.trim();
+                    const genre = form.querySelector('#songGenreSelect').value;
+                    const mood = form.querySelector('#songMoodInput').value.trim();
+                    if (!title) {
+                        this._showNotification('Título obrigatório', 'error');
+                        return;
+                    }
+                    const songData = { title, genre, mood, createdAt: new Date() };
+                    try {
+                        if (this.game?.createSong) {
+                            this.game.createSong(songData);
+                        } else if (this.game?.createTrack) {
+                            this.game.createTrack(songData);
+                        } else {
+                            console.log('Stub createSong:', songData);
+                        }
+                        this._showNotification(`Música "${title}" criada!`, 'success');
+                        window.modernModalSystem.closeModal(modal);
+                    } catch(errCreate) {
+                        console.error('Erro ao criar música', errCreate);
+                        this._showNotification('Falha ao criar música', 'error');
+                    }
+                });
+                const cancelBtn = form.querySelector('#cancelSongBtn');
+                if (cancelBtn) cancelBtn.addEventListener('click', () => window.modernModalSystem.closeModal(modal));
+            }
+        } catch (err) {
+            console.error('Erro ao abrir modal de criação de música', err);
+            this._showNotification('Erro ao abrir criação de música', 'error');
         }
     }
 

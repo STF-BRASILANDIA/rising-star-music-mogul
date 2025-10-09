@@ -10,19 +10,11 @@
  * - Sistema responsivo
  */
 
-const MODAL_SYSTEM_VERSION = '2.0.0'; // unificação & robustez
-
 class ModernModalSystem {
     constructor() {
-        if (window.__ModernModalSystemInstance) {
-            return window.__ModernModalSystemInstance; // singleton guard
-        }
         this.activeModals = new Set();
         this.modalStack = [];
         this.backdropElement = null;
-        this._mutationObserver = null;
-        this._visibilityCheckScheduled = false;
-        window.__ModernModalSystemInstance = this;
         
         this.init();
     }
@@ -30,11 +22,36 @@ class ModernModalSystem {
     init() {
         this.createBackdrop();
         this.injectStyles();
+        this.injectHardeningStyles();
         this.setupEventListeners();
-        this._ensureObserver();
-        console.info(`[ModalSystem] Versão ${MODAL_SYSTEM_VERSION}`);
         
         console.log('🎭 Modern Modal System initialized');
+    }
+
+    /**
+     * Injeta uma camada de CSS de "hardening" que desativa efeitos residuais
+     * de sistemas de modal antigos quando nenhum modal moderno está aberto.
+     */
+    injectHardeningStyles() {
+        const id = 'modern-modal-hardening';
+        if (document.getElementById(id)) return;
+        const style = document.createElement('style');
+        style.id = id;
+        style.textContent = `
+            /* HARDENING LAYER - neutraliza interferências quando não há modais modernos abertos */
+            body:not(.mm-open) .modern-modal-backdrop { display: none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; }
+            body:not(.mm-open) .modern-modal { opacity:0 !important; visibility:hidden !important; pointer-events:none !important; }
+            /* Restaura pointer-events se algum estilo legado deixou o body travado */
+            body:not(.mm-open) { pointer-events:auto !important; }
+            /* Alguns seletores legados comuns */
+            body:not(.mm-open) #songComposerModal { pointer-events:auto !important; }
+            /* Evita que overlays órfãos bloqueiem a tela */
+            body:not(.mm-open) .overlay, 
+            body:not(.mm-open) .modal-overlay, 
+            body:not(.mm-open) .backdrop, 
+            body:not(.mm-open) .legacy-modal-backdrop { pointer-events:none !important; opacity:0 !important; }
+        `;
+        document.head.appendChild(style);
     }
 
     /**
@@ -52,7 +69,7 @@ class ModernModalSystem {
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            z-index: 20000;
+            z-index: 999998;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -85,12 +102,11 @@ class ModernModalSystem {
                     0 16px 32px rgba(0, 0, 0, 0.2),
                     inset 0 1px 0 rgba(255, 255, 255, 0.4),
                     inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-                z-index: 20001 !important;
+                z-index: 1000000 !important;
                 opacity: 0 !important;
                 visibility: hidden !important;
                 transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 max-width: 90vw !important;
-                /* Altura base simplificada: cálculo refinado em _adjustModalViewport */
                 max-height: 90vh !important;
                 height: auto !important;
                 min-height: auto !important;
@@ -205,8 +221,7 @@ class ModernModalSystem {
                 /* 🔧 Robustez para mobile: evitar que o conteúdo desapareça em webviews (iOS) */
                 padding: 16px 18px 20px 18px !important;
                 overflow-y: auto !important;
-                /* max-height dinâmica atribuída em runtime; manter um valor alto preventivo */
-                max-height: 9999px !important;
+                max-height: calc(90vh - 100px) !important;
                 background: transparent !important;
                 flex: 1 !important;
                 display: flex !important;
@@ -294,9 +309,12 @@ class ModernModalSystem {
 
             /* 📱 Responsividade iOS/macOS */
             @media (max-width: 768px) {
-                body .modern-modal:not(.mobile-full) {
+                body .modern-modal {
                     width: 96vw !important;
+                    height: fit-content !important;
+                    min-height: auto !important;
                     max-width: none !important;
+                    max-height: 95vh !important;
                     border-radius: 20px !important;
                 }
                 
@@ -334,27 +352,38 @@ class ModernModalSystem {
             /* 📱 FULL SCREEN MOBILE SHEET MODE (aplicado via classe .mobile-full) */
             @media (max-width: 810px) {
                 body .modern-modal.mobile-full {
-                    top: 0 !important;
-                    left: 0 !important;
-                    transform: none !important;
+                    top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important; /* remove translateY para usar top */
                     width: 100vw !important;
-                    height: 100dvh !important; /* dynamic viewport height */
                     max-width: 100vw !important;
-                    max-height: 100dvh !important;
-                    border-radius: 20px 20px 24px 24px !important;
+                    height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
+                    max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px) !important;
+                    border-radius: 24px 24px 28px 28px !important;
                 }
                 body .modern-modal.mobile-full .modern-modal-header {
                     position: sticky !important;
-                    top: env(safe-area-inset-top, 0px) !important;
+                    top: 0 !important;
                     z-index: 5 !important;
+                }
+                body .modern-modal.mobile-full .modern-modal-body {
+                    /* header + footer dinâmicos via variáveis setadas no JS */
+                    --mm-header-h: 60px;
+                    --mm-footer-h: 0px;
+                    max-height: calc(
+                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
+                    ) !important;
+                }
+                body .modern-modal.mobile-full.has-footer .modern-modal-body {
+                    max-height: calc(
+                        100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px - var(--mm-header-h) - var(--mm-footer-h)
+                    ) !important;
                 }
                 body .modern-modal.mobile-full .modern-modal-footer {
                     position: sticky !important;
-                    bottom: env(safe-area-inset-bottom, 0px) !important;
+                    bottom: 0 !important;
                     z-index: 6 !important;
-                }
-                body .modern-modal.mobile-full .modern-modal-body {
-                    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+                    backdrop-filter: blur(20px) !important;
                 }
             }
 
@@ -486,6 +515,11 @@ class ModernModalSystem {
     openModal(modalElement) {
         if (!modalElement) return;
 
+        // Memoriza foco anterior na primeira abertura da pilha
+        if (!this.modalStack.length) {
+            this._lastFocusedBeforeOpen = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        }
+
         // 🚧 PREVENIR MÚLTIPLOS CLIQUES - Se este modal já está ativo, não abrir novamente
         if (this.activeModals.has(modalElement)) {
             console.log('🎭 Modal já está ativo, ignorando abertura duplicada:', modalElement.id || 'unnamed');
@@ -501,7 +535,13 @@ class ModernModalSystem {
 
         // Ativa modal
         modalElement.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        // Marcar body como tendo modal aberto (classe em vez de só manipular overflow direto)
+        if (!document.body.classList.contains('mm-open')) {
+            document.body.classList.add('mm-open');
+        }
+        if (document.body.style.overflow !== 'hidden') {
+            document.body.style.overflow = 'hidden';
+        }
 
         // 🩺 Diagnóstico: se o body estiver aparentemente vazio em 50ms, marcar para placeholder
         try {
@@ -521,16 +561,22 @@ class ModernModalSystem {
         // Ajustar layout responsivo (especialmente em mobile onde estava sobrando espaço)
         setTimeout(() => this._adjustModalViewport(modalElement), 80);
 
-        // Setup close button
+        // Setup close button - evitar listeners duplicados
         const closeBtn = modalElement.querySelector('.modern-modal-close');
-        if (closeBtn) {
+        if (closeBtn && !closeBtn.hasAttribute('data-listener-set')) {
             closeBtn.onclick = () => this.closeModal(modalElement);
+            closeBtn.setAttribute('data-listener-set', 'true');
         }
 
         console.log('🎭 Modal opened:', modalElement.id || 'unnamed');
-
-        // Programar verificação de visibilidade pós ciclo
-        this._scheduleVisibilityAudit();
+        // Foco inicial acessível
+        setTimeout(() => {
+            try {
+                const auto = modalElement.querySelector('[autofocus]');
+                const target = auto || modalElement.querySelector('.modern-modal-close') || modalElement;
+                if (target && target.focus) target.focus({ preventScroll: true });
+            } catch {}
+        }, 30);
     }
 
     /**
@@ -544,76 +590,39 @@ class ModernModalSystem {
         const header = modalElement.querySelector('.modern-modal-header');
         const footer = modalElement.querySelector('.modern-modal-footer');
         const isMobile = window.innerWidth <= 810;
+
         const vh = window.innerHeight;
+        const headerH = header ? header.getBoundingClientRect().height : 0;
+        const footerH = footer ? footer.getBoundingClientRect().height : 0;
 
         if (isMobile) {
-            modalElement.classList.add('mobile-full');
-            // Alturas confiadas ao CSS (100dvh). Apenas ajustar body se necessário após medição.
-            requestAnimationFrame(() => {
-                const headerH = header ? header.getBoundingClientRect().height : 0;
-                const footerH = footer ? footer.getBoundingClientRect().height : 0;
-                const usable = vh - headerH - footerH - 10;
-                if (usable > 80) {
-                    bodyEl.style.maxHeight = usable + 'px';
-                }
-            });
+            // Aplicar layout sheet full-screen controlado
+            if (!modalElement.classList.contains('mobile-full')) modalElement.classList.add('mobile-full');
+            const usable = vh - 16; // pequena margem
+            modalElement.style.height = usable + 'px';
+            modalElement.style.maxHeight = usable + 'px';
+            modalElement.style.top = 'calc(env(safe-area-inset-top, 0px) + 8px)';
+            modalElement.style.left = '50%';
+            // variáveis ajudam o CSS a recalcular se necessário
+            modalElement.style.setProperty('--mm-header-h', headerH + 'px');
+            modalElement.style.setProperty('--mm-footer-h', footerH + 'px');
+            const bodyMax = usable - headerH - footerH - 6;
+            if (bodyMax > 40) bodyEl.style.maxHeight = bodyMax + 'px';
+            bodyEl.style.overflowY = 'auto';
         } else {
+            // Desktop / large screen: comportamento centrado, altura automática até limite
             modalElement.classList.remove('mobile-full');
+            // Limpar estilos que interferem na centralização
             ['height','max-height','top','left'].forEach(p => modalElement.style.removeProperty(p));
-            requestAnimationFrame(() => {
-                const headerH = header ? header.getBoundingClientRect().height : 0;
-                const footerH = footer ? footer.getBoundingClientRect().height : 0;
-                const targetMax = Math.min(Math.round(vh * 0.82), vh - 120);
-                const bodyMax = targetMax - headerH - footerH - 8;
-                if (bodyMax > 160) {
-                    bodyEl.style.maxHeight = bodyMax + 'px';
-                } else {
-                    bodyEl.style.removeProperty('max-height');
-                }
-                bodyEl.style.overflowY = 'auto';
-            });
+            const targetMax = Math.min(Math.round(vh * 0.82), vh - 120); // ~82% do viewport ou menos
+            const bodyMax = targetMax - headerH - footerH - 8;
+            if (bodyMax > 160) {
+                bodyEl.style.maxHeight = bodyMax + 'px';
+            } else {
+                bodyEl.style.removeProperty('max-height');
+            }
+            bodyEl.style.overflowY = 'auto';
         }
-    }
-
-    /** Agenda uma auditoria de visibilidade (evita várias em sequência) */
-    _scheduleVisibilityAudit() {
-        if (this._visibilityCheckScheduled) return;
-        this._visibilityCheckScheduled = true;
-        setTimeout(() => {
-            this._visibilityCheckScheduled = false;
-            this._auditActiveModals();
-        }, 120);
-    }
-
-    /** Verifica se algum modal ativo ficou invisível por conflito de estilos e reaplica classe */
-    _auditActiveModals() {
-        this.activeModals.forEach(modal => {
-            if (!modal.isConnected) return;
-            const styles = window.getComputedStyle(modal);
-            if (styles.visibility === 'hidden' || styles.opacity === '0') {
-                // Forçar reflow & reativação
-                modal.classList.add('active');
-            }
-        });
-    }
-
-    /** Inicializa um MutationObserver para detectar remoção acidental de "active" */
-    _ensureObserver() {
-        if (this._mutationObserver) return;
-        this._mutationObserver = new MutationObserver(mutations => {
-            let needsAudit = false;
-            for (const m of mutations) {
-                if (m.type === 'attributes' && m.attributeName === 'class' && m.target.classList.contains('modern-modal')) {
-                    if (this.activeModals.has(m.target) && !m.target.classList.contains('active')) {
-                        // Se for removido inadvertidamente, recolocar
-                        m.target.classList.add('active');
-                        needsAudit = true;
-                    }
-                }
-            }
-            if (needsAudit) this._scheduleVisibilityAudit();
-        });
-        this._mutationObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
     }
 
     /**
@@ -632,16 +641,49 @@ class ModernModalSystem {
         this.modalStack = this.modalStack.filter(m => m !== modalElement);
         this.activeModals.delete(modalElement);
 
-        // Desativa modal
-        modalElement.classList.remove('active');
+        // Desativa modal - remover classes mobile e limpar estilos inline
+        modalElement.classList.remove('active', 'mobile-full');
+        ['height', 'max-height', 'top', 'left'].forEach(prop => {
+            modalElement.style.removeProperty(prop);
+        });
 
-        // Se não há mais modais, esconde backdrop
+        // Limpar event listeners e atributo de controle
+        const closeBtn = modalElement.querySelector('.modern-modal-close');
+        if (closeBtn) {
+            closeBtn.onclick = null;
+            closeBtn.removeAttribute('data-listener-set');
+        }
+
+        // 🔧 CORREÇÃO CRÍTICA: sempre restaurar overflow mesmo com outros modais
+        // (evita travamento de interação que é o bug principal)
         if (this.modalStack.length === 0) {
             this.hideBackdrop();
-            document.body.style.overflow = '';
+            this._forceRestoreBodyInteraction();
+            document.body.classList.remove('mm-open');
+            this._postCloseAudit();
+        } else {
+            // Verificar se ainda há modais realmente visíveis
+            const hasVisibleModals = this.modalStack.some(m => 
+                m.classList && m.classList.contains('active') && 
+                m.style.display !== 'none' && 
+                m.style.visibility !== 'hidden'
+            );
+            if (!hasVisibleModals) {
+                this.hideBackdrop();
+                this._forceRestoreBodyInteraction();
+                // Limpar pilha órfã
+                this.modalStack = [];
+                this.activeModals.clear();
+                document.body.classList.remove('mm-open');
+                this._postCloseAudit();
+            }
         }
 
         console.log('🎭 Modal closed:', modalElement.id || 'unnamed');
+        if (!this.modalStack.length && this._lastFocusedBeforeOpen) {
+            try { this._lastFocusedBeforeOpen.focus({ preventScroll: true }); } catch {}
+            this._lastFocusedBeforeOpen = null;
+        }
     }
 
     /**
@@ -679,6 +721,22 @@ class ModernModalSystem {
     }
 
     /**
+     * 🚑 FUNÇÃO DE EMERGÊNCIA: força restauração da interação do body
+     * Resolve o bug crítico de não conseguir clicar após fechar modal
+     */
+    _forceRestoreBodyInteraction() {
+        const attempts = [
+            () => { document.body.style.overflow = 'auto'; },
+            () => { document.body.style.overflow = ''; },
+            () => { document.body.style.removeProperty('overflow'); },
+            () => { document.body.style.cssText = document.body.style.cssText.replace(/overflow:[^;]+;?/g, ''); },
+            () => { if (document.body.style.overflow === 'hidden') { document.body.style.overflow = 'visible'; setTimeout(() => document.body.style.removeProperty('overflow'), 50); } }
+        ];
+        attempts.forEach((fn,i)=>setTimeout(fn, i*40));
+        setTimeout(()=>{ if (!this.modalStack.length && getComputedStyle(document.body).overflow === 'hidden') { document.body.style.overflow = 'auto'; } }, 350);
+    }
+
+    /**
      * Atualiza o conteúdo (body) de um modal existente
      */
     updateModalContent(id, newHtml) {
@@ -710,7 +768,9 @@ class ModernModalSystem {
             type = 'standard',
             showFooter = false,
             footerContent = '',
-            customClass = ''
+            customClass = '',
+            ariaLabel = null,
+            describedBy = null
         } = options;
 
         // 🚧 VERIFICAR SE JÁ EXISTE UM MODAL COM ESTE ID
@@ -720,18 +780,26 @@ class ModernModalSystem {
             return existingModal;
         }
 
-        const modal = document.createElement('div');
-        modal.id = id;
-        modal.className = `modern-modal ${size} modal-type-${type} ${customClass}`.trim();
+    const modal = document.createElement('div');
+    modal.id = id;
+    modal.className = `modern-modal ${size} modal-type-${type} ${customClass}`.trim();
+    // Acessibilidade
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    const headingId = `${id}-title`;
+    modal.setAttribute('aria-labelledby', headingId);
+    if (ariaLabel) modal.setAttribute('aria-label', ariaLabel);
+    if (describedBy) modal.setAttribute('aria-describedby', describedBy);
 
         // Define o layout baseado no tipo
-        const modalLayout = this.getModalLayout(type, { title, content, showFooter, footerContent });
+    const modalLayout = this.getModalLayout(type, { id, title, content, showFooter, footerContent });
         modal.innerHTML = modalLayout;
 
-        // Adiciona event listener para o botão de fechar
+        // Adiciona event listener para o botão de fechar - evitar duplicação
         const closeBtn = modal.querySelector('.modern-modal-close');
-        if (closeBtn) {
+        if (closeBtn && !closeBtn.hasAttribute('data-listener-set')) {
             closeBtn.addEventListener('click', () => this.closeModal(modal));
+            closeBtn.setAttribute('data-listener-set', 'true');
         }
 
         document.body.appendChild(modal);
@@ -741,11 +809,12 @@ class ModernModalSystem {
     /**
      * Define o layout do modal baseado no tipo
      */
-    getModalLayout(type, { title, content, showFooter, footerContent }) {
+    getModalLayout(type, { id, title, content, showFooter, footerContent }) {
+        const safeId = id || ('modal-' + Date.now());
         const baseHeader = `
             <div class="modern-modal-header">
-                <h2 class="modern-modal-title">${title}</h2>
-                <button class="modern-modal-close" type="button"></button>
+                <h2 class="modern-modal-title" id="${safeId}-title">${title}</h2>
+                <button class="modern-modal-close" type="button" aria-label="Fechar"></button>
             </div>
         `;
 
@@ -822,20 +891,227 @@ class ModernModalSystem {
                 `;
         }
     }
-}
 
-// Instância global - inicializada após DOM ready
-if (!window.modernModalSystem) {
-    if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!window.modernModalSystem) window.modernModalSystem = new ModernModalSystem();
-            console.log('🎭 Modern Modal System carregado (DOMContentLoaded)');
+    /**
+     * 🚑 FUNÇÃO DE EMERGÊNCIA GLOBAL: limpar todos os modais e restaurar interação
+     * Chame esta função se modais ficarem travado: window.modernModalSystem.emergencyCleanup()
+     */
+    emergencyCleanup() {
+        console.warn('🚑 EMERGENCY MODAL CLEANUP - forçando limpeza de todos os modais');
+        
+        // Fechar todos os modais da pilha
+        [...this.modalStack].forEach(modal => {
+            if (modal && modal.classList) {
+                modal.classList.remove('active', 'mobile-full');
+                modal.style.display = 'none';
+            }
         });
-    } else {
-        window.modernModalSystem = new ModernModalSystem();
-        console.log('🎭 Modern Modal System carregado (immediate)');
+        
+        // Limpar state
+        this.modalStack = [];
+        this.activeModals.clear();
+        
+        // Forçar limpeza do backdrop
+        if (this.backdropElement) {
+            this.backdropElement.style.opacity = '0';
+            this.backdropElement.style.visibility = 'hidden';
+            this.backdropElement.style.display = 'none';
+            setTimeout(() => {
+                if (this.backdropElement) this.backdropElement.style.removeProperty('display');
+            }, 300);
+        }
+        
+        // Múltiplas tentativas de restaurar body
+        this._forceRestoreBodyInteraction();
+        
+        // Remover todos os modais órfãos do DOM
+        document.querySelectorAll('.modern-modal').forEach(modal => {
+            if (!modal.classList.contains('active')) {
+                modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 500);
+            }
+        });
+        
+        console.log('🚑 Emergency cleanup completed - body interaction restored');
+        return true;
+    }
+
+    /**
+     * Força a restauração da interação do body (múltiplas tentativas)
+     */
+    /* (removido: duplicata antiga de _forceRestoreBodyInteraction) */
+
+    /**
+     * Audit pós-fechamento para remover overlays órfãos ou elementos que bloqueiam interação.
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                const headingId = `${id}-title`;
+                modal.setAttribute('aria-labelledby', headingId);
+                if (ariaLabel) modal.setAttribute('aria-label', ariaLabel);
+                if (describedBy) modal.setAttribute('aria-describedby', describedBy);
+     */
+    _postCloseAudit() {
+        try {
+            // 1. Remover backdrops órfãos visíveis
+            document.querySelectorAll('.modern-modal-backdrop').forEach(bd => {
+                if (!this.modalStack.length) {
+                    bd.style.opacity = '0';
+                    bd.style.visibility = 'hidden';
+                    setTimeout(() => { if (bd.parentElement && !this.modalStack.length) bd.style.removeProperty('display'); }, 300);
+                }
+            });
+
+            // 2. Normalizar pointer-events de body se algum overlay deixou travado
+            if (!this.modalStack.length) {
+                document.body.style.pointerEvents = 'auto';
+                ['overflow','overflowY','overflowX'].forEach(p => {
+                    if (getComputedStyle(document.body)[p] === 'hidden') {
+                        document.body.style[p] = 'auto';
+                    }
+                });
+            }
+
+            // 3. Detectar elementos full-screen que possam estar bloqueando
+            if (!this.modalStack.length) {
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const blockers = [...document.querySelectorAll('div,section')]
+                    .filter(el => {
+                        if (!el.isConnected) return false;
+                        const cs = getComputedStyle(el);
+                        if (cs.pointerEvents === 'auto') return false;
+                        if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+                        const r = el.getBoundingClientRect();
+                        const covers = r.width >= vw * 0.9 && r.height >= vh * 0.9 && r.top <= 5 && r.left <= 5;
+                        if (!covers) return false;
+                            const baseFooter = showFooter ? `
+                                <div class="modern-modal-footer">
+                                    ${footerContent}
+                                </div>
+                            ` : '';
+                        // Evitar mexer em elementos do jogo conhecidos (canvas, main game container)
+                        const id = (el.id||'').toLowerCase();
+                        if (id.includes('game') || id.includes('root')) return false;
+                        return true;
+                    });
+                blockers.forEach(el => {
+                    el.style.pointerEvents = 'none';
+                });
+            }
+            // Watchdog: garante limpeza final após breve delay
+            setTimeout(() => {
+                if (!this.modalStack.length) {
+                    document.body.classList.remove('mm-open');
+                    if (getComputedStyle(document.body).overflow === 'hidden') {
+                        document.body.style.overflow = 'auto';
+                        setTimeout(() => document.body.style.removeProperty('overflow'), 80);
+                    }
+                }
+            }, 500);
+        } catch (err) {
+            console.warn('Post close audit error', err);
+        }
     }
 }
 
+// Instância global - inicializada após DOM ready
+(function initializeModalSystem() {
+    if (window.modernModalSystem) {
+        console.log('🎭 Modern Modal System já existe, ignorando reinicialização');
+        return;
+    }
+
+    const initialize = () => {
+        window.modernModalSystem = new ModernModalSystem();
+        console.log('🎭 Modern Modal System inicializado');
+    };
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
+    }
+})();
+
 // Para compatibilidade, também adiciona ao objeto global
 window.ModernModalSystem = ModernModalSystem;
+
+/**
+ * 🚑 FUNÇÃO DE EMERGÊNCIA GLOBAL
+ * Se os botões ficarem travados após fechar modal, execute no console:
+ * window.fixModalInteraction()
+ */
+window.fixModalInteraction = function() {
+    console.log('🚑 Executando correção de emergência...');
+    
+    // Forçar limpeza do body
+    document.body.style.overflow = '';
+    document.body.style.removeProperty('overflow');
+    
+    // Esconder todos os backdrops órfãos
+    const backdrops = document.querySelectorAll('.modern-modal-backdrop');
+    backdrops.forEach(backdrop => {
+        backdrop.style.opacity = '0';
+        backdrop.style.visibility = 'hidden';
+    });
+    
+    // Desativar todos os modais órfãos
+    const modals = document.querySelectorAll('.modern-modal.active');
+    modals.forEach(modal => {
+        modal.classList.remove('active', 'mobile-full');
+        modal.style.removeProperty('height');
+        modal.style.removeProperty('max-height');
+        modal.style.removeProperty('top');
+        modal.style.removeProperty('left');
+    });
+    
+    // Limpar pilha de modais
+    if (window.modernModalSystem) {
+        window.modernModalSystem.modalStack = [];
+        window.modernModalSystem.activeModals.clear();
+    }
+    
+    setTimeout(() => {
+        document.body.style.overflow = 'auto';
+        setTimeout(() => document.body.style.removeProperty('overflow'), 100);
+    }, 150);
+    
+    console.log('✅ Correção aplicada! Tente clicar nos botões agora.');
+};
+
+// 🚑 FUNÇÃO GLOBAL DE EMERGÊNCIA (pode ser chamada do console)
+window.fixModalsBug = function() {
+    console.log('🚑 EMERGÊNCIA: Forçando limpeza de modais...');
+    
+    // Primeira abordagem: usar sistema se disponível
+    if (window.modernModalSystem && window.modernModalSystem.emergencyCleanup) {
+        return window.modernModalSystem.emergencyCleanup();
+    }
+    
+    // Fallback manual crítico
+    console.log('🔧 Aplicando correção manual...');
+    document.body.style.overflow = '';
+    document.body.style.removeProperty('overflow');
+    document.body.style.overflowX = '';
+    document.body.style.overflowY = '';
+    
+    // Forçar recálculo
+    document.body.offsetHeight;
+    
+    // Esconder todos os modais e backdrops
+    document.querySelectorAll('.modern-modal').forEach(m => {
+        m.style.display = 'none';
+        m.classList.remove('active', 'mobile-full');
+    });
+    document.querySelectorAll('.modern-modal-backdrop').forEach(b => {
+        b.style.display = 'none';
+        b.style.opacity = '0';
+        b.style.visibility = 'hidden';
+    });
+    
+    console.log('✅ Correção manual aplicada! Body overflow:', document.body.style.overflow);
+    return true;
+};
+
+// Shortcut ainda mais rápido
+window.fixModals = window.fixModalsBug;

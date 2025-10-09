@@ -3,7 +3,7 @@
  * Provides PWA functionality, offline support, and caching
  */
 
-const CACHE_NAME = 'rising-star-v1.4.2';
+const CACHE_NAME = 'rising-star-v1.4.2'; // bump para distribuir correções de modal
 const STATIC_CACHE = 'rising-star-static-v1.2.2';
 const DYNAMIC_CACHE = 'rising-star-dynamic-v1.2.2';
 
