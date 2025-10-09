@@ -55,6 +55,9 @@ class ModernModalSystem {
             .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar { width: 8px; }
             .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 6px; }
             .modern-modal .modern-modal-body.mm-scrollable::-webkit-scrollbar-track { background: transparent; }
+            .modern-modal .modern-modal-body.mm-force-scroll { overflow-y:auto !important; position:relative; }
+            .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { min-height: fit-content; }
+            .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { display:block; }
         `;
         document.head.appendChild(style);
     }
@@ -861,8 +864,8 @@ class ModernModalSystem {
             case 'skills':
                 return `
                     ${baseHeader}
-                    <div class="modern-modal-body modal-skills-layout">
-                        <div class="skills-grid">
+                    <div class="modern-modal-body modal-skills-layout mm-force-scroll">
+                        <div class="skills-grid mm-inner-scroll">
                             ${content}
                         </div>
                     </div>
@@ -894,8 +897,8 @@ class ModernModalSystem {
             case 'settings':
                 return `
                     ${baseHeader}
-                    <div class="modern-modal-body modal-settings-layout">
-                        <div class="settings-container">
+                    <div class="modern-modal-body modal-settings-layout mm-force-scroll">
+                        <div class="settings-container mm-inner-scroll">
                             ${content}
                         </div>
                     </div>
