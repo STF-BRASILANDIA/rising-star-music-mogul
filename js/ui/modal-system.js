@@ -59,10 +59,9 @@ class ModernModalSystem {
             .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { min-height: fit-content; }
             .modern-modal .modern-modal-body.mm-force-scroll > .mm-inner-scroll { display:block; }
             /* Bloqueio de chain scroll */
-            body.mm-open { overscroll-behavior: contain; touch-action: none; }
-            body.mm-open .modern-modal { touch-action: none; }
-            body.mm-open .modern-modal .modern-modal-body, \
-            body.mm-open .modern-modal .modern-modal-body.mm-scrollable, \
+            body.mm-open { overscroll-behavior: contain; }
+            body.mm-open .modern-modal .modern-modal-body,
+            body.mm-open .modern-modal .modern-modal-body.mm-scrollable,
             body.mm-open .modern-modal .modern-modal-body.mm-force-scroll { touch-action: pan-y; overscroll-behavior: contain; }
         `;
         document.head.appendChild(style);
@@ -604,6 +603,9 @@ class ModernModalSystem {
         if (!modalElement || !modalElement.classList) return;
         const bodyEl = modalElement.querySelector('.modern-modal-body');
         if (!bodyEl) return;
+        // Garantir que o body funcione como área flexível scrollável
+        bodyEl.style.display = 'block';
+        bodyEl.style.flex = '1 1 auto';
         const header = modalElement.querySelector('.modern-modal-header');
         const footer = modalElement.querySelector('.modern-modal-footer');
         const isMobile = window.innerWidth <= 810;
@@ -1067,7 +1069,25 @@ class ModernModalSystem {
      * Configura isolamento de scroll: impede que wheel/touch move "escape" para o fundo.
      */
     _setupScrollIsolation(modalElement) {
-        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        let bodyEl = modalElement.querySelector('.modern-modal-body');
+        // Fallback: alguns modais (ex notificações legado) podem ter .notification-modal
+        if (!bodyEl) {
+            const notif = modalElement.querySelector('.notification-modal');
+            if (notif) {
+                // Normalizar estilo para se comportar como conteúdo interno
+                notif.style.position = 'relative';
+                notif.style.width = '100%';
+                notif.style.height = 'auto';
+                notif.style.maxHeight = 'none';
+                // Criar wrapper body se necessário
+                const wrapper = document.createElement('div');
+                wrapper.className = 'modern-modal-body mm-scrollable';
+                // Mover filhos do notif para wrapper (mantém notif como container neutro)
+                while (notif.firstChild) wrapper.appendChild(notif.firstChild);
+                notif.appendChild(wrapper);
+                bodyEl = wrapper;
+            }
+        }
         if (!bodyEl) return;
         if (!this._scrollBlockers) this._scrollBlockers = [];
 
@@ -1078,20 +1098,19 @@ class ModernModalSystem {
             return (oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 2;
         };
 
-        const target = bodyEl;
+    const target = bodyEl;
         target.classList.add('mm-scrollable');
         target.style.overscrollBehavior = 'contain';
 
         // Função que trava propagação para fundo
         const wheelHandler = (e) => {
-            if (!isScrollable(target)) {
-                e.preventDefault();
-                return;
-            }
+            const scrollable = isScrollable(target);
+            if (!scrollable) return; // deixa navegador tentar; fallback de altura ajusta depois
             const delta = e.deltaY;
             const atTop = target.scrollTop <= 0;
             const atBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1;
             if ((delta < 0 && atTop) || (delta > 0 && atBottom)) {
+                // bloquear propagação para fundo
                 e.preventDefault();
             }
         };
@@ -1116,18 +1135,40 @@ class ModernModalSystem {
         const preventBackdrop = (e) => { e.preventDefault(); };
 
         // Listeners (passive:false para poder prevenir)
-        target.addEventListener('wheel', wheelHandler, { passive: false });
+    target.addEventListener('wheel', wheelHandler, { passive: false });
         target.addEventListener('touchstart', touchStart, { passive: false });
         target.addEventListener('touchmove', touchMove, { passive: false });
         this.backdropElement.addEventListener('wheel', preventBackdrop, { passive: false });
         this.backdropElement.addEventListener('touchmove', preventBackdrop, { passive: false });
 
         // Guardar removers
-        this._scrollBlockers.push(() => target.removeEventListener('wheel', wheelHandler, { passive: false }));
+    this._scrollBlockers.push(() => target.removeEventListener('wheel', wheelHandler, { passive: false }));
         this._scrollBlockers.push(() => target.removeEventListener('touchstart', touchStart, { passive: false }));
         this._scrollBlockers.push(() => target.removeEventListener('touchmove', touchMove, { passive: false }));
         this._scrollBlockers.push(() => this.backdropElement.removeEventListener('wheel', preventBackdrop, { passive: false }));
         this._scrollBlockers.push(() => this.backdropElement.removeEventListener('touchmove', preventBackdrop, { passive: false }));
+    }
+
+    /**
+     * Diagnóstico: loga info de scroll das instâncias abertas.
+     */
+    debugScrollStatus() {
+        const modals = document.querySelectorAll('.modern-modal.active');
+        console.group('[ModalScrollDebug]');
+        modals.forEach(m => {
+            const body = m.querySelector('.modern-modal-body');
+            if (!body) { console.log(m.id,'SEM BODY'); return; }
+            const info = {
+                id: m.id || '(sem id)',
+                bodyClient: body.clientHeight,
+                bodyScroll: body.scrollHeight,
+                overflowY: getComputedStyle(body).overflowY,
+                hasScroll: body.scrollHeight > body.clientHeight + 2,
+                classes: body.className
+            };
+            console.log(info);
+        });
+        console.groupEnd();
     }
 }
 
