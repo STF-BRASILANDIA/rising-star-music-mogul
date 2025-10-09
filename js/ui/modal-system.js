@@ -429,6 +429,16 @@ class ModernModalSystem {
                 this.closeTopModal();
             }
         });
+
+        // Reajustar altura quando viewport mudar (rotate, resize, barra de endereço iOS)
+        const resizeHandler = () => {
+            if (!this.modalStack || this.modalStack.length === 0) return;
+            // Ajustar apenas o topo (geralmente o que importa visualmente)
+            const topModal = this.modalStack[this.modalStack.length - 1];
+            this._adjustModalViewport(topModal);
+        };
+        window.addEventListener('resize', resizeHandler);
+        window.addEventListener('orientationchange', () => setTimeout(resizeHandler, 120));
     }
 
     /**
@@ -469,6 +479,9 @@ class ModernModalSystem {
             console.warn('Modal body diag error', diagErr);
         }
 
+        // Ajustar layout responsivo (especialmente em mobile onde estava sobrando espaço)
+        setTimeout(() => this._adjustModalViewport(modalElement), 80);
+
         // Setup close button
         const closeBtn = modalElement.querySelector('.modern-modal-close');
         if (closeBtn) {
@@ -476,6 +489,54 @@ class ModernModalSystem {
         }
 
         console.log('🎭 Modal opened:', modalElement.id || 'unnamed');
+    }
+
+    /**
+     * Ajusta altura e área scrollável do modal para aproveitar melhor o viewport em mobile.
+     * Evita modais "baixos" que mostram só o topo do conteúdo.
+     */
+    _adjustModalViewport(modalElement) {
+        if (!modalElement || !modalElement.classList) return;
+        const isMobile = window.innerWidth <= 820; // margem de segurança para tablets pequenos
+        if (!isMobile) {
+            // Limpa estilos inline se existirem (desktop gerencia sozinho)
+            modalElement.style.removeProperty('height');
+            modalElement.style.removeProperty('max-height');
+            const bodyEl = modalElement.querySelector('.modern-modal-body');
+            if (bodyEl) bodyEl.style.removeProperty('max-height');
+            return;
+        }
+
+        const header = modalElement.querySelector('.modern-modal-header');
+        const footer = modalElement.querySelector('.modern-modal-footer');
+        const bodyEl = modalElement.querySelector('.modern-modal-body');
+        if (!bodyEl) return;
+
+        const viewportH = window.innerHeight;
+        // Usar até 90% do viewport deixando espaço para gesto/navegação
+        const targetModalH = Math.min(Math.round(viewportH * 0.9), viewportH - 12);
+        modalElement.style.height = targetModalH + 'px';
+        modalElement.style.maxHeight = targetModalH + 'px';
+
+        const headerH = header ? header.offsetHeight : 0;
+        const footerH = footer ? footer.offsetHeight : 0;
+        const paddingReserve = 8; // margem extra
+        const bodyMax = targetModalH - headerH - footerH - paddingReserve;
+        if (bodyMax > 80) { // sanity check
+            bodyEl.style.maxHeight = bodyMax + 'px';
+        }
+
+        // Se o conteúdo for pequeno, não forçar altura enorme – ajustar para conteúdo mínimo de 60% viewport
+        const naturalContentH = headerH + footerH + bodyEl.scrollHeight;
+        if (naturalContentH < targetModalH * 0.6) {
+            const minWanted = Math.round(viewportH * 0.6);
+            modalElement.style.height = Math.min(minWanted, targetModalH) + 'px';
+            modalElement.style.maxHeight = Math.min(minWanted, targetModalH) + 'px';
+            bodyEl.style.maxHeight = (Math.min(minWanted, targetModalH) - headerH - footerH - paddingReserve) + 'px';
+        }
+
+        // Garantir scroll se o conteúdo excede
+        bodyEl.style.overflowY = 'auto';
     }
 
     /**
